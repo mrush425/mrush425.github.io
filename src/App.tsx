@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import CustomNavbar from './Navbar';
 import Home from './home';
 import About from './About';
-import { getLeagueData } from './SleeperApiMethods';
+import {getLeagueData} from './SleeperApiMethods'
 import { Current_League_Id } from './Constants';
-import LeagueData from "./Interfaces/LeagueData";
-import YearData from './YearData';
+import LeagueData from "./Interfaces/LeagueData"
+import YearData from './YearData'
+
+
 
 function App() {
 
