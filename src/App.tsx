@@ -1,49 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-const user = {
-  name: 'Future Home of the League of the Trolls Website',
-  imageUrl: 'https://images.unsplash.com/photo-1627477150479-b7f109c3aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80',
-  imageSize: 200,
-};
+// App.tsx
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import CustomNavbar from './Navbar';
+import Home from './home';
+import About from './About';
+import { getLeagueData } from './SleeperApiMethods';
+import { Current_League_Id } from './Constants';
+import LeagueData from "./Interfaces/LeagueData";
+import YearData from './YearData';
 
 function App() {
+
   return (
-    <div className="App">
-      <h1>{user.name}</h1>
-      <img
-        className="avatar"
-        src={user.imageUrl}
-        alt={'Photo of ' + user.name}
-        style={{
-          width: user.imageSize,
-          height: user.imageSize
-        }}
-      />
-    </div>
+    <Router>
+      <div className="App">
+        <CustomNavbar />
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
-
-//function App() {
-//  return (
-//    <div className="App">
-//      <header className="App-header">
-//        <img src={logo} className="App-logo" alt="logo" />
-//        <p>
-//          Edit <code>src/App.tsx</code> and save to reload.
-//        </p>
-//        <a
-//          className="App-link"
-//          href="https://reactjs.org"
-//          target="_blank"
-//          rel="noopener noreferrer"
-//        >
-//          Learn React
-//        </a>
-//      </header>
-//    </div>
-//  );
-//}
 
 export default App;
