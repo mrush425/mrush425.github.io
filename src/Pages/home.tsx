@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import '../Stylesheets/App.css'
 
 const user = {
   name: 'Future Home of the League of the Trolls Website',

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
-import LeagueData from './Interfaces/LeagueData';
+import LeagueData from '../Interfaces/LeagueData';
 
 interface NavbarProps {
   data: LeagueData[]; // Use the LeagueData type for the data prop
