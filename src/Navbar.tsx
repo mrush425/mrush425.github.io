@@ -1,14 +1,24 @@
 // Navbar.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
 import LeagueData from './Interfaces/LeagueData';
 
 interface NavbarProps {
   data: LeagueData[]; // Use the LeagueData type for the data prop
 }
 
-const CustomNavbar: React.FC = ({}) => {
+const CustomNavbar: React.FC<NavbarProps> = ({ data }) => {
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleMouseEnter = () => {
+    setDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setDropdownOpen(false);
+  };
+
   const logoImageUrl =
     'https://images.unsplash.com/photo-1627477150479-b7f109c3aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80';
 
@@ -35,6 +45,25 @@ const CustomNavbar: React.FC = ({}) => {
           <Nav.Link as={Link} to="/about">
             About
           </Nav.Link>
+
+          {/* Display seasons in a dropdown */}
+          <NavDropdown
+            title="Seasons"
+            id="basic-nav-dropdown"
+            show={isDropdownOpen}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {data.map((league) => (
+              <NavDropdown.Item
+                key={league.league_id}
+                as={Link}
+                to={`/season/${league.season}`}
+              >
+                Season {league.season}
+              </NavDropdown.Item>
+            ))}
+          </NavDropdown>
         </Nav>
       </Container>
     </Navbar>
