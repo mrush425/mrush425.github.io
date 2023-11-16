@@ -1,0 +1,24 @@
+/* YearNavBar.css */
+.year-navbar-container {
+    display: flex;
+    gap: 8px; /* Adjust the gap as needed */
+  }
+  
+  .year-navbar-container .btn-custom {
+    background-color: rgb(212, 205, 243); /* Soft blue color */
+    color: #000000; /* Black text color */
+    /* Add more styles as needed */
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+  }
+  
+  .year-navbar-container .btn-custom:hover {
+    background-color: rgb(187, 175, 240); /* Darker blue color on hover */
+    /* Add more styles for hover state as needed */
+  }
+
+  .year-navbar-container {
+    border: 1px solid #ccc; /* Add a border with a color of your choice */
+    padding: 10px; /* Add padding for better appearance */
+    border-radius: 5px; /* Optional: Add border-radius for rounded corners */
+  }
+  

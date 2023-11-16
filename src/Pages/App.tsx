@@ -8,6 +8,7 @@ import { getLeagueData } from '../SleeperApiMethods';
 import { Current_League_Id } from '../Constants';
 import LeagueData from "../Interfaces/LeagueData";
 import YearData from './YearData';
+import DraftHeatMap from './DraftHeatMap'; // Import the DraftHeatMap component
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
@@ -17,13 +18,13 @@ function App() {
     // Fetch league data when the component mounts
     const fetchLeagueData = async () => {
       try {
-          const data = await getLeagueData(Current_League_Id);
-          setLeagueData(data);
-          setDataFetched(true);
+        const data = await getLeagueData(Current_League_Id);
+        setLeagueData(data);
+        setDataFetched(true);
       } catch (error) {
-          console.error('Error fetching league data:', error);
+        console.error('Error fetching league data:', error);
       }
-  };
+    };
 
     fetchLeagueData();
   }, []); // Run this effect only once on mount
@@ -44,9 +45,17 @@ function App() {
             {/* Add a dynamic route for each season */}
             {leagueData.map((league) => (
               <Route
-      key={league.season}
-      path={`/season/${league.season}`}
-      element={<YearData data={league} />}
+                key={league.season}
+                path={`/season/${league.season}`}
+                element={<YearData data={league} />}
+              />
+            ))}
+            {/* Add a dynamic route for Draft Heat Map */}
+            {leagueData.map((league) => (
+              <Route
+                key={league.season}
+                path={`/season/${league.season}/draft-heatmap`}
+                element={<DraftHeatMap data={league}/>}
               />
             ))}
             {/* Add a catch-all route for unknown routes */}

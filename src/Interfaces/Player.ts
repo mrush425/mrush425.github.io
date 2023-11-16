@@ -1,0 +1,53 @@
+interface Player {
+    player_id: string;
+    high_school: string | null;
+    yahoo_id: number | null;
+    team: string | null;
+    sport: string;
+    espn_id: number | null;
+    injury_status: string | null;
+    birth_city: string | null;
+    position: string | null;
+    practice_participation: string | null;
+    oddsjam_id: string | null;
+    rotoworld_id: number | null;
+    swish_id: number | null;
+    injury_start_date: string | null;
+    search_first_name: string;
+    last_name: string;
+    hashtag: string;
+    full_name: string;
+    search_full_name: string;
+    injury_body_part: string | null;
+    birth_date: string | null;
+    birth_country: string | null;
+    birth_state: string | null;
+    practice_description: string | null;
+    rotowire_id: number | null;
+    sportradar_id: string;
+    pandascore_id: number | null;
+    weight: string;
+    status: string;
+    age: number | null;
+    college: string | null;
+    gsis_id: string | null;
+    news_updated: number | null;
+    injury_notes: string | null;
+    first_name: string;
+    active: boolean;
+    fantasy_data_id: number;
+    search_last_name: string;
+    search_rank: number;
+    height: string;
+    depth_chart_order: number | null;
+    years_exp: number;
+    metadata: {
+        rookie_year?: string;
+    } | null;
+    stats_id: number | null;
+    fantasy_positions: string[] | null;
+    depth_chart_position: string | null;
+    number: number;
+}
+
+export default Player;

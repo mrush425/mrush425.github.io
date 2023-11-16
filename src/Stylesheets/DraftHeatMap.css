@@ -1,0 +1,11 @@
+/* DraftHeatMap.css */
+.draft-heatmap-table {
+    border-collapse: collapse;
+  }
+  
+  .draft-heatmap-table th, .draft-heatmap-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
