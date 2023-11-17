@@ -1,31 +1,65 @@
-// DraftHeatMap.tsx
 import React, { useState, useEffect } from 'react';
 import LeagueData from '../Interfaces/LeagueData';
 import YearNavBar from '../Navigation/YearNavBar';
-import DraftPick from '../Interfaces/DraftPick'; // Import the DraftPick interface
-import SleeperUser from '../Interfaces/SleeperUser'; // Import the SleeperUser interface
-import SleeperRoster from '../Interfaces/SleeperRoster'; // Import the SleeperRoster interface
-import PlayerYearStats from '../Interfaces/PlayerYearStats'; // Import the PlayerYearStats interface
-
-import '../Stylesheets/DraftHeatMap.css'; // Import a CSS file for styling
+import DraftPick from '../Interfaces/DraftPick';
+import SleeperUser from '../Interfaces/SleeperUser';
+import SleeperRoster from '../Interfaces/SleeperRoster';
+import PlayerYearStats from '../Interfaces/PlayerYearStats';
+import '../Stylesheets/DraftHeatMap.css';
+import DraftInfo from '../Interfaces/DraftInfo';
 
 interface DraftHeatMapProps {
   data: LeagueData;
 }
 
+const positionOrderedLists: Record<string, PlayerYearStats[]> = {};
+
+const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): void => {
+  playerStats.forEach((stats) => {
+    const position = stats.player.position;
+    if (!positionOrderedLists[position]) {
+      positionOrderedLists[position] = [];
+    }
+
+    // Check if the player is already in the list based on the player_id
+    const isPlayerInList = positionOrderedLists[position].some((player) => player.player_id === stats.player_id);
+
+    if (!isPlayerInList) {
+      positionOrderedLists[position].push(stats);
+    }
+  });
+
+  // Sort each position list in descending order based on points scored
+  for (const position in positionOrderedLists) {
+    if (positionOrderedLists.hasOwnProperty(position)) {
+      positionOrderedLists[position].sort((a, b) => b.stats.pts_half_ppr - a.stats.pts_half_ppr);
+    }
+  }
+
+  console.log(positionOrderedLists);
+};
+
+const calculatePercentileRanges = (listLength: number): [number, number, number, number] => {
+  const green = Math.floor(listLength * 0.06);
+  const lightGreen = Math.floor(listLength * 0.3);
+  const yellow = Math.floor(listLength * 0.68);
+  const lightRed = Math.floor(listLength * 0.92);
+
+  return [green, lightGreen, yellow, lightRed];
+};
+
 const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
-  // Helper function to get team name from user ID
   const getUserTeamName = (userId: string, users: SleeperUser[]): string => {
     const user = users.find((u) => u.user_id === userId);
     return user?.metadata.team_name || 'Unknown Team';
   };
 
-  // Helper function to get player stats
   const getPlayerStats = (playerId: string, playerStats: PlayerYearStats[]): PlayerYearStats | undefined => {
     return playerStats.find((stats) => stats.player_id === playerId);
   };
 
   const [draftPicks, setDraftPicks] = useState<DraftPick[]>([]);
+  const [draftInfo, setDraftInfo] = useState<DraftInfo[]>([]);
   const [rosters, setRosters] = useState<SleeperRoster[]>([]);
   const [users, setUsers] = useState<SleeperUser[]>([]);
   const [playerStats, setPlayerStats] = useState<PlayerYearStats[]>([]);
@@ -42,6 +76,22 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
       }
     };
 
+    const fetchDraftInfo = async () => {
+      try {
+        const response = await fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`);
+        const info: DraftInfo[] | DraftInfo = await response.json();
+        setDraftInfo(Array.isArray(info) ? info : [info]);
+        console.log('Draft Info:', info);
+      } catch (error) {
+        console.error('Error fetching draft info:', error);
+      }
+    };
+
+    fetchDraftPicks();
+    fetchDraftInfo();
+  }, [data.draft_id]); // Only fetch draft picks when data.draft_id changes
+
+  useEffect(() => {
     const fetchRosters = async () => {
       try {
         const response = await fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`);
@@ -78,6 +128,7 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
         );
 
         setPlayerStats(playerStatsData);
+        populatePositionOrderedLists(playerStatsData);
       } catch (error) {
         console.error('Error fetching player stats:', error);
       } finally {
@@ -85,13 +136,11 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
       }
     };
 
-    fetchDraftPicks();
     fetchRosters();
     fetchUsers();
     fetchPlayerStats();
-  }, [data.draft_id, data.league_id, data.season, draftPicks]);
+  }, [data.league_id, data.season, draftPicks]);
 
-  // Organize draft picks by round
   const draftPicksByRound: Record<number, DraftPick[]> = {};
   draftPicks.forEach((pick) => {
     const round = pick.round;
@@ -101,58 +150,135 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
     draftPicksByRound[round].push(pick);
   });
 
-  // Map roster ID to team name
   const rosterIdToTeamName: Record<number, string> = {};
   rosters.forEach((roster) => {
     rosterIdToTeamName[roster.roster_id] = getUserTeamName(roster.owner_id, users);
   });
 
   if (isLoading) {
-    // Show a loading screen while data is being fetched
     return <div>Loading...</div>;
   }
+
+  // Convert draft_order object to an array of userIds in the correct order
+  const orderedUserIds: string[] = Object.keys(draftInfo[0]?.draft_order || {}).sort(
+    (a, b) => draftInfo[0].draft_order[a] - draftInfo[0].draft_order[b]
+  );
+
+  // Fetch corresponding team names from SleeperUser objects
+  const orderedTeamNames: string[] = orderedUserIds.map((userId) => {
+    const user = users.find((u) => u.user_id === userId);
+    return user ? user.metadata.team_name || 'Unknown Team' : 'Unknown Team';
+  });
+
+  const renderHeaderRow = (): React.ReactNode => {
+    console.log('Draft Info in renderHeaderRow:', draftInfo);
+    return (
+      <tr>
+        {orderedTeamNames.map((teamName) => (
+          <th key={teamName}>{teamName}</th>
+        ))}
+      </tr>
+    );
+  };
+
+  const wasPickByRoster = (pickNumber: number, rosterId: number): boolean=> {
+    return false;
+    const pickRemainder = pickNumber%24;
+    if(pickRemainder<=12){
+      return rosterId===pickRemainder;
+    }
+    else{
+      return rosterId===24-pickRemainder;
+    }
+  };
+
+  const generateCellContent = (pick: DraftPick, playerStats: PlayerYearStats[], positionOrderedLists: Record<string, PlayerYearStats[]>, users: SleeperUser[], rosterIdToTeamName: Record<number, string>): React.ReactNode => {
+    const playerStat = getPlayerStats(pick.player_id, playerStats);
+    const position = playerStat?.player.position || '';
+    const positionList = positionOrderedLists[position] || [];
+    const index = positionList.findIndex((p) => p.player_id === pick.player_id);
+  
+    const [green, lightGreen, yellow, lightRed] = calculatePercentileRanges(positionList.length);
+  
+    let backgroundColor = '';
+    if (index < green) backgroundColor = 'green';
+    else if (index < lightGreen) backgroundColor = 'lightgreen';
+    else if (index < yellow) backgroundColor = 'yellow';
+    else if (index < lightRed) backgroundColor = 'lightcoral';
+    else backgroundColor = 'darkred';
+  
+    const pickedByUser = users.find((user) => user.user_id === pick.picked_by);
+    const isPickedByColumnOwner = pickedByUser && wasPickByRoster(pick.pick_no,pick.roster_id);
+
+    // if(!isPickedByColumnOwner) {
+    //   console.log(pick.pick_no + " " + pick.roster_id);
+    // }
+
+  
+    return (
+      <div>
+        <div>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</div>
+        <div>{`Points: ${playerStat?.stats.pts_half_ppr}`}</div>
+        {!isPickedByColumnOwner && pickedByUser && <div>{`Picked by: ${pickedByUser.metadata.team_name}`}</div>}
+        <div>{`Rank of drafted ${playerStat?.player.position}: ${index + 1}`}</div>
+      </div>
+    );
+  };
+  
+  const renderOddOrEvenRoundPicks = (picksInRound: DraftPick[] | null, isOddRound: boolean): React.ReactNode[] => {
+    if (!picksInRound) return [];
+    return (isOddRound ? picksInRound : picksInRound.slice().reverse()).map((pick) => {
+      const playerStat = getPlayerStats(pick.player_id, playerStats);
+      const position = playerStat?.player.position || '';
+      const positionList = positionOrderedLists[position] || [];
+      const index = positionList.findIndex((p) => p.player_id === pick.player_id);
+  
+      const [green, lightGreen, yellow, lightRed] = calculatePercentileRanges(positionList.length);
+  
+      let backgroundColor = '';
+      if (index < green) backgroundColor = 'green';
+      else if (index < lightGreen) backgroundColor = 'lightgreen';
+      else if (index < yellow) backgroundColor = 'yellow';
+      else if (index < lightRed) backgroundColor = 'lightcoral';
+      else backgroundColor = 'darkred';
+  
+      return (
+        <td key={pick.pick_no} style={{ backgroundColor }}>
+          {generateCellContent(pick, playerStats, positionOrderedLists, users, rosterIdToTeamName)}
+        </td>
+      );
+    });
+  };
+  
+  const renderOddRoundPicks = (picksInRound: DraftPick[] | null): React.ReactNode[] => {
+    return renderOddOrEvenRoundPicks(picksInRound, true);
+  };
+  
+  const renderEvenRoundPicks = (picksInRound: DraftPick[] | null): React.ReactNode[] => {
+    return renderOddOrEvenRoundPicks(picksInRound, false);
+  };
+
+  const renderTableBody = (): React.ReactNode[] => {
+    return Object.keys(draftPicksByRound).map((roundStr) => {
+      const round = parseInt(roundStr, 10);
+      const picksInRound = draftPicksByRound[round];
+      const isOddRound = round % 2 !== 0;
+
+      return (
+        <tr key={round}>
+          {isOddRound ? renderOddRoundPicks(picksInRound) : renderEvenRoundPicks(picksInRound)}
+        </tr>
+      );
+    });
+  };
 
   return (
     <div>
       <YearNavBar data={data} />
 
-      {/* Display draft picks using a table with styling */}
       <table className="draft-heatmap-table">
-        <thead>
-          <tr>
-            {draftPicksByRound[1]?.map((pick) => (
-              <th key={pick.pick_no}>{rosterIdToTeamName[pick.roster_id]}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(draftPicksByRound).map((roundStr) => {
-            const round = parseInt(roundStr, 10);
-            const picksInRound = draftPicksByRound[round];
-            const isOddRound = round % 2 !== 0;
-
-            return (
-              <tr key={round}>
-                {isOddRound
-                  ? picksInRound.map((pick) => (
-                      <td key={pick.pick_no}>
-                        {pick.metadata.first_name} {pick.metadata.last_name}{' '}
-                        {getPlayerStats(pick.player_id, playerStats)?.stats.pos_rank_half_ppr}
-                      </td>
-                    ))
-                  : picksInRound
-                      .slice()
-                      .reverse()
-                      .map((pick) => (
-                        <td key={pick.pick_no}>
-                          {pick.metadata.first_name} {pick.metadata.last_name}{' '}
-                          {getPlayerStats(pick.player_id, playerStats)?.stats.pos_rank_half_ppr}
-                        </td>
-                      ))}
-              </tr>
-            );
-          })}
-        </tbody>
+        <thead>{renderHeaderRow()}</thead>
+        <tbody>{renderTableBody()}</tbody>
       </table>
     </div>
   );
