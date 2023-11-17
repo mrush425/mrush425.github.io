@@ -174,8 +174,9 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
     console.log('Draft Info in renderHeaderRow:', draftInfo);
     return (
       <tr>
-        {orderedTeamNames.map((teamName) => (
-          <th key={teamName}>{teamName}</th>
+        {orderedTeamNames.map((teamName, index) => (
+          // Add a condition to render the th only if teamName is not "Unknown Team"
+          teamName !== 'Unknown Team' && <th key={index}>{teamName}</th>
         ))}
       </tr>
     );
