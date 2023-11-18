@@ -12,9 +12,10 @@ interface DraftHeatMapProps {
   data: LeagueData;
 }
 
-const positionOrderedLists: Record<string, PlayerYearStats[]> = {};
+let positionOrderedLists: Record<string, PlayerYearStats[]> = {};
 
 const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): void => {
+  positionOrderedLists={};
   playerStats.forEach((stats) => {
     const position = stats.player.position;
     if (!positionOrderedLists[position]) {
@@ -36,7 +37,6 @@ const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): void => {
     }
   }
 
-  console.log(positionOrderedLists);
 };
 
 const calculatePercentileRanges = (listLength: number): [number, number, number, number] => {
@@ -47,6 +47,7 @@ const calculatePercentileRanges = (listLength: number): [number, number, number,
 
   return [green, lightGreen, yellow, lightRed];
 };
+
 
 const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   const getUserTeamName = (userId: string, users: SleeperUser[]): string => {
@@ -66,30 +67,49 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDraftPicks = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}/picks`);
-        const picks: DraftPick[] = await response.json();
+        const [picksResponse, infoResponse, rostersResponse, usersResponse] = await Promise.all([
+          fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}/picks`),
+          fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`),
+          fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`),
+          fetch(`https://api.sleeper.app/v1/league/${data.league_id}/users`),
+        ]);
+
+        const picks: DraftPick[] = await picksResponse.json();
+        const info: DraftInfo[] | DraftInfo = await infoResponse.json();
+        const rosters: SleeperRoster[] = await rostersResponse.json();
+        const users: SleeperUser[] = await usersResponse.json();
+
         setDraftPicks(picks);
-      } catch (error) {
-        console.error('Error fetching draft picks:', error);
-      }
-    };
-
-    const fetchDraftInfo = async () => {
-      try {
-        const response = await fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`);
-        const info: DraftInfo[] | DraftInfo = await response.json();
         setDraftInfo(Array.isArray(info) ? info : [info]);
-        console.log('Draft Info:', info);
+        setRosters(rosters);
+        setUsers(users);
+
+        const playerIds = picks.map((pick) => pick.player_id);
+        const playerStatsResponses = await Promise.all(
+          playerIds.map((playerId) =>
+            fetch(
+              `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${data.season}`
+            )
+          )
+        );
+
+        const playerStatsData = await Promise.all(
+          playerStatsResponses.map((response) => response.json())
+        );
+
+        setPlayerStats(playerStatsData);
+        populatePositionOrderedLists(playerStatsData);
       } catch (error) {
-        console.error('Error fetching draft info:', error);
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchDraftPicks();
-    fetchDraftInfo();
-  }, [data.draft_id]); // Only fetch draft picks when data.draft_id changes
+    fetchData();
+  }, [data.draft_id, data.league_id, data.season]);
 
   useEffect(() => {
     const fetchRosters = async () => {
@@ -171,7 +191,6 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   });
 
   const renderHeaderRow = (): React.ReactNode => {
-    console.log('Draft Info in renderHeaderRow:', draftInfo);
     return (
       <tr>
         {orderedTeamNames.map((teamName, index) => (
@@ -210,11 +229,6 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   
     const pickedByUser = users.find((user) => user.user_id === pick.picked_by);
     const isPickedByColumnOwner = pickedByUser && wasPickByRoster(pick.pick_no,pick.roster_id);
-
-    // if(!isPickedByColumnOwner) {
-    //   console.log(pick.pick_no + " " + pick.roster_id);
-    // }
-
   
     return (
       <div>
