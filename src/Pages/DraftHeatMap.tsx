@@ -39,13 +39,15 @@ const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): void => {
 
 };
 
-const calculatePercentileRanges = (listLength: number): [number, number, number, number] => {
-  const green = Math.floor(listLength * 0.06);
-  const lightGreen = Math.floor(listLength * 0.3);
-  const yellow = Math.floor(listLength * 0.68);
-  const lightRed = Math.floor(listLength * 0.92);
+const calculatePercentileRanges = (listLength: number): [number, number, number, number, number, number] => {
+  const firstPercentile = Math.floor(listLength * 0.05);
+  const secondPercentile = Math.floor(listLength * 0.2);
+  const thirdPercentile = Math.floor(listLength * 0.4);
+  const fourthPercentile = Math.floor(listLength * 0.6);
+  const fifthPercentile = Math.floor(listLength * 0.8);
+  const sixthPercentile = Math.floor(listLength * 0.95);
 
-  return [green, lightGreen, yellow, lightRed];
+  return [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile];
 };
 
 
@@ -218,20 +220,31 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
     const positionList = positionOrderedLists[position] || [];
     const index = positionList.findIndex((p) => p.player_id === pick.player_id);
   
-    const [green, lightGreen, yellow, lightRed] = calculatePercentileRanges(positionList.length);
+    const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] = calculatePercentileRanges(positionList.length);
   
-    let backgroundColor = '';
-    if (index < green) backgroundColor = 'green';
-    else if (index < lightGreen) backgroundColor = 'lightgreen';
-    else if (index < yellow) backgroundColor = 'yellow';
-    else if (index < lightRed) backgroundColor = 'lightcoral';
-    else backgroundColor = 'darkred';
+    let textColor = '';  // Add this line
+  
+    if (index < firstPercentile) {
+      textColor = 'white';  
+    } else if (index < secondPercentile) {
+      textColor = 'black'; 
+    } else if (index < thirdPercentile) {
+      textColor = 'black';  
+    } else if (index < fourthPercentile) {
+      textColor = 'black';  
+    } else if (index < fifthPercentile) {
+      textColor = 'black';  
+    } else if (index < sixthPercentile) {
+      textColor = 'black';  
+    } else {
+      textColor = 'white';  
+    }
   
     const pickedByUser = users.find((user) => user.user_id === pick.picked_by);
-    const isPickedByColumnOwner = pickedByUser && wasPickByRoster(pick.pick_no,pick.roster_id);
+    const isPickedByColumnOwner = pickedByUser && wasPickByRoster(pick.pick_no, pick.roster_id);
   
     return (
-      <div>
+      <div style={{ color: textColor }}>  {/* Add style attribute for text color */}
         <div>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</div>
         <div>{`Points: ${playerStat?.stats.pts_half_ppr}`}</div>
         {!isPickedByColumnOwner && pickedByUser && <div>{`Picked by: ${pickedByUser.metadata.team_name}`}</div>}
@@ -248,14 +261,22 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
       const positionList = positionOrderedLists[position] || [];
       const index = positionList.findIndex((p) => p.player_id === pick.player_id);
   
-      const [green, lightGreen, yellow, lightRed] = calculatePercentileRanges(positionList.length);
+      const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] = calculatePercentileRanges(positionList.length);
   
       let backgroundColor = '';
-      if (index < green) backgroundColor = 'green';
-      else if (index < lightGreen) backgroundColor = 'lightgreen';
-      else if (index < yellow) backgroundColor = 'yellow';
-      else if (index < lightRed) backgroundColor = 'lightcoral';
-      else backgroundColor = 'darkred';
+
+      //console.log(index + " " + firstPercentile+ " " + secondPercentile+ " " + thirdPercentile+ " " + fourthPercentile+ " " + fifthPercentile+ " " + sixthPercentile);
+
+      if(index===61) console.log("here");
+      if (index < firstPercentile) backgroundColor = '#33cc33';
+      else if (index < secondPercentile) backgroundColor = '#adebad';
+      else if (index < thirdPercentile) backgroundColor = '#ffff99';
+      else if (index < fourthPercentile) backgroundColor = '#ffff00';
+      else if (index < fifthPercentile) backgroundColor = '#ffcc99';
+      else if (index < sixthPercentile) backgroundColor = '#ff8566';
+      else backgroundColor = '#e62e00';
+
+      if(index===61) console.log(backgroundColor);
   
       return (
         <td key={pick.pick_no} style={{ backgroundColor }}>
