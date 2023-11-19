@@ -7,6 +7,7 @@ import SleeperRoster from '../Interfaces/SleeperRoster';
 import PlayerYearStats from '../Interfaces/PlayerYearStats';
 import '../Stylesheets/DraftHeatMap.css';
 import DraftInfo from '../Interfaces/DraftInfo';
+import { text } from 'stream/consumers';
 
 interface DraftHeatMapProps {
   data: LeagueData;
@@ -224,7 +225,10 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   
     let textColor = '';  // Add this line
   
-    if (index < firstPercentile) {
+    if(position==="DEF" || position==="K"){
+      textColor = 'black';
+    }
+    else if (index < firstPercentile) {
       textColor = 'white';  
     } else if (index < secondPercentile) {
       textColor = 'black'; 
@@ -267,16 +271,15 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
 
       //console.log(index + " " + firstPercentile+ " " + secondPercentile+ " " + thirdPercentile+ " " + fourthPercentile+ " " + fifthPercentile+ " " + sixthPercentile);
 
-      if(index===61) console.log("here");
-      if (index < firstPercentile) backgroundColor = '#33cc33';
-      else if (index < secondPercentile) backgroundColor = '#adebad';
-      else if (index < thirdPercentile) backgroundColor = '#ffff99';
-      else if (index < fourthPercentile) backgroundColor = '#ffff00';
-      else if (index < fifthPercentile) backgroundColor = '#ffcc99';
-      else if (index < sixthPercentile) backgroundColor = '#ff8566';
-      else backgroundColor = '#e62e00';
+      if (position==="DEF" || position==="K") backgroundColor="#ffffff"
+      else if (index < firstPercentile) backgroundColor = '#488f31';
+      else if (index < secondPercentile) backgroundColor = '#87b474';
+      else if (index < thirdPercentile) backgroundColor = '#c3d9b8';
+      else if (index < fourthPercentile) backgroundColor = '#fffad6';
+      else if (index < fifthPercentile) backgroundColor = '#fcc4c5';
+      else if (index < sixthPercentile) backgroundColor = '#f1878e';
+      else backgroundColor = '#de425b';
 
-      if(index===61) console.log(backgroundColor);
   
       return (
         <td key={pick.pick_no} style={{ backgroundColor }}>
