@@ -260,45 +260,52 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                                         1 || 0;
 
                                     
-                                    const getBackgroundColor = (position: string, positionRank: number): string => {
+                                    const getBackgroundColor = (position: string, positionRank: number, playerStats: PlayerYearStats | undefined): [string,string] => {
                                         // Calculate percentile ranges
                                         const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] =
                                             calculatePercentileRanges(positionOrderedLists[position]?.length || 0);
 
+                                        if (playerStats?.player.first_name==="Raheem"){
+                                            console.log(positionRank,firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile);
+                                        }
+
                                         // Determine background color based on percentiles
                                         let backgroundColor = '#ffffff'; // default color
+                                        let textColor = '#000000';
 
                                         if (position === 'DEF' || position === 'K') {
                                             backgroundColor = '#ffffff';
-                                        } else if (positionRank < firstPercentile) {
+                                        } else if (positionRank <= firstPercentile) {
                                             backgroundColor = '#488f31';
-                                        } else if (positionRank < secondPercentile) {
+                                            textColor='#ffffff';
+                                        } else if (positionRank <= secondPercentile) {
                                             backgroundColor = '#87b474';
-                                        } else if (positionRank < thirdPercentile) {
+                                        } else if (positionRank <= thirdPercentile) {
                                             backgroundColor = '#c3d9b8';
-                                        } else if (positionRank < fourthPercentile) {
+                                        } else if (positionRank <= fourthPercentile) {
                                             backgroundColor = '#fffad6';
-                                        } else if (positionRank < fifthPercentile) {
+                                        } else if (positionRank <= fifthPercentile) {
                                             backgroundColor = '#fcc4c5';
-                                        } else if (positionRank < sixthPercentile) {
+                                        } else if (positionRank <= sixthPercentile) {
                                             backgroundColor = '#f1878e';
                                         } else {
                                             backgroundColor = '#de425b';
+                                            textColor='#ffffff';
                                         }
-                                        return backgroundColor;
+                                        return [backgroundColor,textColor];
                                     }
 
-                                    let backgroundColor = getBackgroundColor(position,positionRank);
+                                    let [backgroundColor,textColor] = getBackgroundColor(position,positionRank,playerStatsItem);
 
 
-                                    const getNextPlayerInfo = (currentPick: DraftPick | undefined): [PlayerYearStats | undefined, number | undefined, string | undefined, DraftPick | undefined] => {
+                                    const getNextPlayerInfo = (currentPick: DraftPick | undefined): [PlayerYearStats | undefined, number | undefined, string | undefined, string | undefined, DraftPick | undefined] => {
                                         if(currentPick === undefined) {
-                                            return [undefined, undefined, undefined, undefined];
+                                            return [undefined, undefined, undefined, undefined, undefined];
                                         }
                                         const currentPickIndex = draftPicks.findIndex(p => p.pick_no === currentPick.pick_no);
                                         
                                         if (currentPickIndex === -1) {
-                                            return [undefined, undefined, undefined, undefined];
+                                            return [undefined, undefined, undefined, undefined, undefined];
                                         }
                                     
                                         const playerIndex = draftPicks.findIndex(
@@ -306,7 +313,7 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                                         );
                                     
                                         if (playerIndex === -1) {
-                                            return [undefined, undefined, undefined, undefined];
+                                            return [undefined, undefined, undefined, undefined, undefined];
                                         }
                                     
                                         const playerStats =
@@ -318,26 +325,27 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                                                 (player) => player.player_id === draftPicks[playerIndex].player_id
                                             ) + 1;
                                     
-                                        const backgroundColor = getBackgroundColor(position, playerRank);
-                                        return [playerStats, playerRank, backgroundColor,draftPicks[playerIndex]];
+                                        const [backgroundColor,textColor] = getBackgroundColor(position, playerRank, playerStats);
+
+                                        return [playerStats, playerRank, backgroundColor,textColor,draftPicks[playerIndex]];
                                     };
 
                                     // Get information for next, second, and third players using the getNextPlayerInfo function
-                                    const [nextPlayerStats, nextPlayerRank,nextBackgroundColor,nextPick] = getNextPlayerInfo(pick);
-                                    const [secondPlayerStats, secondPlayerRank,secondBackgroundColor,secondPick] = getNextPlayerInfo(nextPick);
-                                    const [thirdPlayerStats, thirdPlayerRank,thirdBackgroundColor,thirdPick] = getNextPlayerInfo(secondPick);
+                                    const [nextPlayerStats, nextPlayerRank,nextBackgroundColor,nextTextColor,nextPick] = getNextPlayerInfo(pick);
+                                    const [secondPlayerStats, secondPlayerRank,secondBackgroundColor,secondTextColor,secondPick] = getNextPlayerInfo(nextPick);
+                                    const [thirdPlayerStats, thirdPlayerRank,thirdBackgroundColor,thirdTextColor,thirdPick] = getNextPlayerInfo(secondPick);
 
                                     return (
                                         <tr key={pick.pick_no}>
-                                            <td style={{ backgroundColor: backgroundColor }}>{pick.pick_no}</td>
-                                            <td style={{ backgroundColor: backgroundColor }}>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</td>
-                                            <td style={{ backgroundColor: backgroundColor }}>{positionRank}</td>
-                                            <td style={{ backgroundColor: nextBackgroundColor }}>{nextPlayerStats ? `${nextPlayerStats.player.first_name} ${nextPlayerStats.player.last_name}` : ''}</td>
-                                            <td style={{ backgroundColor: nextBackgroundColor }}>{nextPlayerRank || ''}</td>
-                                            <td style={{ backgroundColor: secondBackgroundColor }}>{secondPlayerStats ? `${secondPlayerStats.player.first_name} ${secondPlayerStats.player.last_name}` : ''}</td>
-                                            <td style={{ backgroundColor: secondBackgroundColor }}>{secondPlayerRank || ''}</td>
-                                            <td style={{ backgroundColor: thirdBackgroundColor }}>{thirdPlayerStats ? `${thirdPlayerStats.player.first_name} ${thirdPlayerStats.player.last_name}` : ''}</td>
-                                            <td style={{ backgroundColor: thirdBackgroundColor }}>{thirdPlayerRank || ''}</td>
+                                            <td style={{ backgroundColor: backgroundColor, color:textColor }}>{pick.pick_no}</td>
+                                            <td style={{ backgroundColor: backgroundColor, color:textColor  }}>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</td>
+                                            <td style={{ backgroundColor: backgroundColor, color:textColor  }}>{positionRank}</td>
+                                            <td style={{ backgroundColor: nextBackgroundColor, color:nextTextColor  }}>{nextPlayerStats ? `${nextPlayerStats.player.first_name} ${nextPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: nextBackgroundColor, color:nextTextColor  }}>{nextPlayerRank || ''}</td>
+                                            <td style={{ backgroundColor: secondBackgroundColor, color:secondTextColor  }}>{secondPlayerStats ? `${secondPlayerStats.player.first_name} ${secondPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: secondBackgroundColor, color:secondTextColor  }}>{secondPlayerRank || ''}</td>
+                                            <td style={{ backgroundColor: thirdBackgroundColor, color:thirdTextColor  }}>{thirdPlayerStats ? `${thirdPlayerStats.player.first_name} ${thirdPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: thirdBackgroundColor, color:thirdTextColor  }}>{thirdPlayerRank || ''}</td>
                                             {/* Add additional table cells based on the draft pick properties */}
                                         </tr>
                                     );
