@@ -3,6 +3,7 @@
 /* Center the table on the screen */
 .team-draft-picks-table {
   margin: auto;
+  margin-top: 20px;
 }
 
 /* Add a border to each row in the table */
