@@ -354,10 +354,6 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                     </table>
                 </div>
             )}
-
-            <table className="draft-heatmap-table">
-                {/* Add your table content here */}
-            </table>
         </div>
     );
 };

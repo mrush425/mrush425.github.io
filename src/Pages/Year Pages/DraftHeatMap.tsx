@@ -78,17 +78,17 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
           fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`),
           fetch(`https://api.sleeper.app/v1/league/${data.league_id}/users`),
         ]);
-
+  
         const picks: DraftPick[] = await picksResponse.json();
         const info: DraftInfo[] | DraftInfo = await infoResponse.json();
         const rosters: SleeperRoster[] = await rostersResponse.json();
         const users: SleeperUser[] = await usersResponse.json();
-
+  
         setDraftPicks(picks);
         setDraftInfo(Array.isArray(info) ? info : [info]);
         setRosters(rosters);
         setUsers(users);
-
+  
         const playerIds = picks.map((pick) => pick.player_id);
         const playerStatsResponses = await Promise.all(
           playerIds.map((playerId) =>
@@ -97,11 +97,11 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
             )
           )
         );
-
+  
         const playerStatsData = await Promise.all(
           playerStatsResponses.map((response) => response.json())
         );
-
+  
         setPlayerStats(playerStatsData);
         populatePositionOrderedLists(playerStatsData);
       } catch (error) {
@@ -110,31 +110,11 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
         setIsLoading(false);
       }
     };
-
+  
     fetchData();
   }, [data.draft_id, data.league_id, data.season]);
 
   useEffect(() => {
-    const fetchRosters = async () => {
-      try {
-        const response = await fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`);
-        const rosters: SleeperRoster[] = await response.json();
-        setRosters(rosters);
-      } catch (error) {
-        console.error('Error fetching rosters:', error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`https://api.sleeper.app/v1/league/${data.league_id}/users`);
-        const users: SleeperUser[] = await response.json();
-        setUsers(users);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
     const fetchPlayerStats = async () => {
       try {
         const playerIds = draftPicks.map((pick) => pick.player_id);
@@ -158,9 +138,6 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
         setIsLoading(false);
       }
     };
-
-    fetchRosters();
-    fetchUsers();
     fetchPlayerStats();
   }, [data.league_id, data.season, draftPicks]);
 
