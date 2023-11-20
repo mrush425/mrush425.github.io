@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LeagueData from '../Interfaces/LeagueData';
-import '../Stylesheets/YearNavBar.css'; // Create a CSS file for styling
+import '../Stylesheets/Year Stylesheets/YearNavBar.css'; // Create a CSS file for styling
 
 interface YearNavBarProps {
   data: LeagueData;
@@ -16,6 +16,9 @@ const YearNavBar: React.FC<YearNavBarProps> = ({ data }) => {
       </Link>
       <Link to={`/season/${data.season}/draft-heatmap`} className="btn-custom btn btn-sm">
         Draft Heat Map
+      </Link>
+      <Link to={`/season/${data.season}/draft-report-card`} className="btn-custom btn btn-sm">
+        Draft Report Card
       </Link>
     </div>
   );

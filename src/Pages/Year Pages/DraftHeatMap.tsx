@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import LeagueData from '../Interfaces/LeagueData';
-import YearNavBar from '../Navigation/YearNavBar';
-import DraftPick from '../Interfaces/DraftPick';
-import SleeperUser from '../Interfaces/SleeperUser';
-import SleeperRoster from '../Interfaces/SleeperRoster';
-import PlayerYearStats from '../Interfaces/PlayerYearStats';
-import '../Stylesheets/DraftHeatMap.css';
-import DraftInfo from '../Interfaces/DraftInfo';
+import LeagueData from '../../Interfaces/LeagueData';
+import YearNavBar from '../../Navigation/YearNavBar';
+import DraftPick from '../../Interfaces/DraftPick';
+import SleeperUser from '../../Interfaces/SleeperUser';
+import SleeperRoster from '../../Interfaces/SleeperRoster';
+import PlayerYearStats from '../../Interfaces/PlayerYearStats';
+import '../../Stylesheets/Year Stylesheets/DraftHeatMap.css'; // Create a CSS file for styling
+import DraftInfo from '../../Interfaces/DraftInfo';
 import { text } from 'stream/consumers';
 
 interface DraftHeatMapProps {

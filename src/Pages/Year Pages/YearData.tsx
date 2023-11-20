@@ -1,8 +1,8 @@
 // YearData.tsx
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import LeagueData from '../Interfaces/LeagueData';
-import YearNavBar from '../Navigation/YearNavBar'; // Import the YearNavBar component
+import LeagueData from '../../Interfaces/LeagueData';
+import YearNavBar from '../../Navigation/YearNavBar'; // Import the YearNavBar component
 
 interface YearDataProps {
   data: LeagueData;

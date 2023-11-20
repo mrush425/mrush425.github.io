@@ -7,8 +7,9 @@ import About from './About';
 import { getLeagueData } from '../SleeperApiMethods';
 import { Current_League_Id } from '../Constants';
 import LeagueData from "../Interfaces/LeagueData";
-import YearData from './YearData';
-import DraftHeatMap from './DraftHeatMap'; // Import the DraftHeatMap component
+import YearData from './Year Pages/YearData';
+import DraftHeatMap from './Year Pages/DraftHeatMap'; // Import the DraftHeatMap component
+import DraftReportCard from './Year Pages/DraftReportCard';
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
@@ -56,6 +57,13 @@ function App() {
                 key={league.season}
                 path={`/season/${league.season}/draft-heatmap`}
                 element={<DraftHeatMap data={league}/>}
+              />
+            ))}
+            {leagueData.map((league) => (
+              <Route
+                key={league.season}
+                path={`/season/${league.season}/draft-report-card`}
+                element={<DraftReportCard data={league}/>}
               />
             ))}
             {/* Add a catch-all route for unknown routes */}
