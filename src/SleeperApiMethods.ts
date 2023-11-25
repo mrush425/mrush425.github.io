@@ -1,4 +1,5 @@
 import LeagueData from "./Interfaces/LeagueData";
+import MatchupInfo from "./Interfaces/MatchupInfo";
 
 export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
   const data = new Array();
@@ -22,4 +23,37 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
   }
 
   return data;
+}
+
+export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInfo[]> {
+  const matchups: MatchupInfo[] = [];
+  let maxWeek = 0;
+
+  if (leagueData.nflSeasonInfo.season > leagueData.season) {
+    maxWeek = leagueData.settings.playoff_week_start + 2;
+  } else {
+    maxWeek = leagueData.nflSeasonInfo.week;
+  }
+
+  const apiUrl = 'https://api.sleeper.app/v1/league/' + leagueData.league_id + '/matchups/';
+
+  const fetchMatchup = async (week: number): Promise<MatchupInfo> => {
+    const response = await fetch(apiUrl + week);
+    const data = await response.json();
+
+    return {
+      week,
+      matchups: data,
+    };
+  };
+
+  const promises: Promise<MatchupInfo>[] = [];
+
+  for (let week = 1; week <= maxWeek; week++) {
+    promises.push(fetchMatchup(week));
+  }
+
+  matchups.push(...(await Promise.all(promises)));
+
+  return matchups;
 }

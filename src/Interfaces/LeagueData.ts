@@ -1,3 +1,4 @@
+import MatchupInfo from "./MatchupInfo";
 import SleeperRoster from "./SleeperRoster";
 import SleeperUser from "./SleeperUser";
 
@@ -143,6 +144,7 @@ interface ScoringSettings {
     name: string;
     rosters: SleeperRoster[];
     users: SleeperUser[];
+    matchupInfo: MatchupInfo[];
   }
 
 
