@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
 import PlayerYearStats from "../../Interfaces/PlayerYearStats";
 import SleeperUser from "../../Interfaces/SleeperUser";
-import DraftPick from "../../Interfaces/DraftPick";
-import DraftInfo from "../../Interfaces/DraftInfo";
-import SleeperRoster from "../../Interfaces/SleeperRoster";
+
 
 export const calculatePercentileRanges = (listLength: number): [number, number, number, number, number, number] => {
     const firstPercentile = Math.floor(listLength * 0.05);

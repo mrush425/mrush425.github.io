@@ -3,7 +3,6 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import DraftPick from '../../Interfaces/DraftPick';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import SleeperRoster from '../../Interfaces/SleeperRoster';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import '../../Stylesheets/Year Stylesheets/DraftReportCard.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
@@ -17,33 +16,28 @@ interface DraftReportCardProps {
 let positionOrderedLists: Record<string, PlayerYearStats[]> = {};
 
 const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
+
+    const users = data.users;
     
     const [draftPicks, setDraftPicks] = useState<DraftPick[]>([]);
     const [draftInfo, setDraftInfo] = useState<DraftInfo[]>([]);
-    const [rosters, setRosters] = useState<SleeperRoster[]>([]);
-    const [users, setUsers] = useState<SleeperUser[]>([]);
     const [allPlayerStats, setPlayerStats] = useState<PlayerYearStats[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [picksResponse, infoResponse, rostersResponse, usersResponse] = await Promise.all([
+                const [picksResponse, infoResponse] = await Promise.all([
                     fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}/picks`),
                     fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`),
-                    fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`),
-                    fetch(`https://api.sleeper.app/v1/league/${data.league_id}/users`),
                 ]);
 
                 const picks: DraftPick[] = await picksResponse.json();
                 const info: DraftInfo[] | DraftInfo = await infoResponse.json();
-                const rosters: SleeperRoster[] = await rostersResponse.json();
-                const users: SleeperUser[] = await usersResponse.json();
+
 
                 setDraftPicks(picks);
                 setDraftInfo(Array.isArray(info) ? info : [info]);
-                setRosters(rosters);
-                setUsers(users);
 
                 const playerIds = picks.map((pick) => pick.player_id);
                 const playerStatsResponses = await Promise.all(

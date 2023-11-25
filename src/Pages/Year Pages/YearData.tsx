@@ -12,38 +12,11 @@ interface YearDataProps {
 }
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
-  const [rosters, setRosters] = useState<SleeperRoster[]>([]);
-  const [users, setUsers] = useState<SleeperUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>('wins'); // Initial sort by 'wins'
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [rostersResponse, usersResponse] = await Promise.all([
-          fetch(`https://api.sleeper.app/v1/league/${data.league_id}/rosters`),
-          fetch(`https://api.sleeper.app/v1/league/${data.league_id}/users`),
-        ]);
+  const rosters = data.rosters;
+  const users = data.users;
 
-        const rosters: SleeperRoster[] = await rostersResponse.json();
-        const users: SleeperUser[] = await usersResponse.json();
-
-        setRosters(rosters);
-        setUsers(users);
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [data.draft_id, data.league_id, data.season]);
-
-  const handleSort = (property: string) => {
-    setSortBy(property);
-  };
 
   const sortedRosters = rosters.slice().sort((a, b) => {
     if (sortBy === 'wins') {
@@ -52,10 +25,6 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
       return 0;
     }
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   console.log(data);
 

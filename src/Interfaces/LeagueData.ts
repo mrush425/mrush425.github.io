@@ -1,3 +1,6 @@
+import SleeperRoster from "./SleeperRoster";
+import SleeperUser from "./SleeperUser";
+
 interface ScoringSettings {
     st_ff: number;
     pts_allow_7_13: number;
@@ -138,6 +141,8 @@ interface ScoringSettings {
     nflSeasonInfo: NflSeasonInfo;
     status: string;
     name: string;
+    rosters: SleeperRoster[];
+    users: SleeperUser[];
   }
 
 
