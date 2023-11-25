@@ -1,10 +1,11 @@
-table {
+/* Update the class name to be more specific */
+.schedule-comparison-table {
     border-collapse: collapse;
     width: 100%;
   }
   
-  td {
-    border: 1px solid #dddddd;
+  .schedule-comparison-table td {
+    border: 1px solid #727272;
     text-align: left;
     padding: 8px;
   }
