@@ -94,6 +94,18 @@ interface ScoringSettings {
     latest_league_winner_roster_id: string;
     continued: string;
   }
+
+  interface NflSeasonInfo{
+    season_start_date: string;
+    previous_season: string;
+    league_create_season: string;
+    display_week: number;
+    league_season: string;
+    season_type: string;
+    season: string;
+    leg: number;
+    week: number;
+  }
   
   interface LeagueData {
     total_rosters: number;
@@ -123,8 +135,11 @@ interface ScoringSettings {
     shard: number;
     settings: Settings;
     metadata: Metadata;
+    nflSeasonInfo: NflSeasonInfo;
     status: string;
     name: string;
   }
+
+
   
   export default LeagueData;

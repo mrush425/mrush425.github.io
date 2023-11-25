@@ -57,6 +57,8 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     return <div>Loading...</div>;
   }
 
+  console.log(data);
+
   return (
     <div>
       <YearNavBar data={data} /> {/* Render the YearNavBar component */}

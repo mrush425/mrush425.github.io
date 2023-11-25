@@ -10,10 +10,12 @@ import LeagueData from "../Interfaces/LeagueData";
 import YearData from './Year Pages/YearData';
 import DraftHeatMap from './Year Pages/DraftHeatMap'; // Import the DraftHeatMap component
 import DraftReportCard from './Year Pages/DraftReportCard';
+import ScheduleComparison from './Year Pages/ScheduleComparison';
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
+
 
   useEffect(() => {
     // Fetch league data when the component mounts
@@ -51,7 +53,13 @@ function App() {
                 element={<YearData data={league} />}
               />
             ))}
-            {/* Add a dynamic route for Draft Heat Map */}
+            {leagueData.map((league) => (
+              <Route
+                key={league.season}
+                path={`/season/${league.season}/schedule-comparison`}
+                element={<ScheduleComparison data={league}/>}
+              />
+            ))}
             {leagueData.map((league) => (
               <Route
                 key={league.season}

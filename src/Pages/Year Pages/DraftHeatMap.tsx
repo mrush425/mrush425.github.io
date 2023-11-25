@@ -7,7 +7,7 @@ import SleeperRoster from '../../Interfaces/SleeperRoster';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import '../../Stylesheets/Year Stylesheets/DraftHeatMap.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
-import { text } from 'stream/consumers';
+import {getBackgroundAndTextColor, getPlayerStats, populatePositionOrderedLists } from './SharedDraftMethods';
 
 interface DraftHeatMapProps {
   data: LeagueData;
@@ -15,52 +15,7 @@ interface DraftHeatMapProps {
 
 let positionOrderedLists: Record<string, PlayerYearStats[]> = {};
 
-const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): void => {
-  positionOrderedLists={};
-  playerStats.forEach((stats) => {
-    const position = stats.player.position;
-    if (!positionOrderedLists[position]) {
-      positionOrderedLists[position] = [];
-    }
-
-    // Check if the player is already in the list based on the player_id
-    const isPlayerInList = positionOrderedLists[position].some((player) => player.player_id === stats.player_id);
-
-    if (!isPlayerInList) {
-      positionOrderedLists[position].push(stats);
-    }
-  });
-
-  // Sort each position list in descending order based on points scored
-  for (const position in positionOrderedLists) {
-    if (positionOrderedLists.hasOwnProperty(position)) {
-      positionOrderedLists[position].sort((a, b) => b.stats.pts_half_ppr - a.stats.pts_half_ppr);
-    }
-  }
-
-};
-
-const calculatePercentileRanges = (listLength: number): [number, number, number, number, number, number] => {
-  const firstPercentile = Math.floor(listLength * 0.05);
-  const secondPercentile = Math.floor(listLength * 0.2);
-  const thirdPercentile = Math.floor(listLength * 0.4);
-  const fourthPercentile = Math.floor(listLength * 0.6);
-  const fifthPercentile = Math.floor(listLength * 0.8);
-  const sixthPercentile = Math.floor(listLength * 0.95);
-
-  return [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile];
-};
-
-
 const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
-  const getUserTeamName = (userId: string, users: SleeperUser[]): string => {
-    const user = users.find((u) => u.user_id === userId);
-    return user?.metadata.team_name || 'Unknown Team';
-  };
-
-  const getPlayerStats = (playerId: string, playerStats: PlayerYearStats[]): PlayerYearStats | undefined => {
-    return playerStats.find((stats) => stats.player_id === playerId);
-  };
 
   const [draftPicks, setDraftPicks] = useState<DraftPick[]>([]);
   const [draftInfo, setDraftInfo] = useState<DraftInfo[]>([]);
@@ -103,7 +58,8 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
         );
   
         setPlayerStats(playerStatsData);
-        populatePositionOrderedLists(playerStatsData);
+        positionOrderedLists=populatePositionOrderedLists(playerStatsData);
+
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -114,33 +70,6 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
     fetchData();
   }, [data.draft_id, data.league_id, data.season]);
 
-  useEffect(() => {
-    const fetchPlayerStats = async () => {
-      try {
-        const playerIds = draftPicks.map((pick) => pick.player_id);
-        const playerStatsResponses = await Promise.all(
-          playerIds.map((playerId) =>
-            fetch(
-              `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${data.season}`
-            )
-          )
-        );
-
-        const playerStatsData = await Promise.all(
-          playerStatsResponses.map((response) => response.json())
-        );
-
-        setPlayerStats(playerStatsData);
-        populatePositionOrderedLists(playerStatsData);
-      } catch (error) {
-        console.error('Error fetching player stats:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPlayerStats();
-  }, [data.league_id, data.season, draftPicks]);
-
   const draftPicksByRound: Record<number, DraftPick[]> = {};
   draftPicks.forEach((pick) => {
     const round = pick.round;
@@ -148,11 +77,6 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
       draftPicksByRound[round] = [];
     }
     draftPicksByRound[round].push(pick);
-  });
-
-  const rosterIdToTeamName: Record<number, string> = {};
-  rosters.forEach((roster) => {
-    rosterIdToTeamName[roster.roster_id] = getUserTeamName(roster.owner_id, users);
   });
 
   if (isLoading) {
@@ -181,54 +105,18 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
     );
   };
 
-  const wasPickByRoster = (pickNumber: number, rosterId: number): boolean=> {
-    return false;
-    const pickRemainder = pickNumber%24;
-    if(pickRemainder<=12){
-      return rosterId===pickRemainder;
-    }
-    else{
-      return rosterId===24-pickRemainder;
-    }
-  };
-
-  const generateCellContent = (pick: DraftPick, playerStats: PlayerYearStats[], positionOrderedLists: Record<string, PlayerYearStats[]>, users: SleeperUser[], rosterIdToTeamName: Record<number, string>): React.ReactNode => {
+  const generateCellContent = (pick: DraftPick, playerStats: PlayerYearStats[], positionOrderedLists: Record<string, PlayerYearStats[]>, users: SleeperUser[], textColor: string): React.ReactNode => {
     const playerStat = getPlayerStats(pick.player_id, playerStats);
     const position = playerStat?.player.position || '';
     const positionList = positionOrderedLists[position] || [];
     const index = positionList.findIndex((p) => p.player_id === pick.player_id);
-  
-    const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] = calculatePercentileRanges(positionList.length);
-  
-    let textColor = '';  // Add this line
-  
-    if(position==="DEF" || position==="K"){
-      textColor = 'black';
-    }
-    else if (index < firstPercentile) {
-      textColor = 'white';  
-    } else if (index < secondPercentile) {
-      textColor = 'black'; 
-    } else if (index < thirdPercentile) {
-      textColor = 'black';  
-    } else if (index < fourthPercentile) {
-      textColor = 'black';  
-    } else if (index < fifthPercentile) {
-      textColor = 'black';  
-    } else if (index < sixthPercentile) {
-      textColor = 'black';  
-    } else {
-      textColor = 'white';  
-    }
-  
     const pickedByUser = users.find((user) => user.user_id === pick.picked_by);
-    const isPickedByColumnOwner = pickedByUser && wasPickByRoster(pick.pick_no, pick.roster_id);
   
     return (
       <div style={{ color: textColor }}>  {/* Add style attribute for text color */}
         <div>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</div>
         <div>{`Points: ${playerStat?.stats.pts_half_ppr}`}</div>
-        {!isPickedByColumnOwner && pickedByUser && <div>{`Picked by: ${pickedByUser.metadata.team_name}`}</div>}
+        {pickedByUser && <div>{`Picked by: ${pickedByUser.metadata.team_name}`}</div>}
         <div>{`Rank of drafted ${playerStat?.player.position}: ${index + 1}`}</div>
       </div>
     );
@@ -237,30 +125,16 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   const renderOddOrEvenRoundPicks = (picksInRound: DraftPick[] | null, isOddRound: boolean): React.ReactNode[] => {
     if (!picksInRound) return [];
     return (isOddRound ? picksInRound : picksInRound.slice().reverse()).map((pick) => {
-      const playerStat = getPlayerStats(pick.player_id, playerStats);
-      const position = playerStat?.player.position || '';
+      const individualPlayerStats = getPlayerStats(pick.player_id, playerStats);
+      const position = individualPlayerStats?.player.position || '';
       const positionList = positionOrderedLists[position] || [];
-      const index = positionList.findIndex((p) => p.player_id === pick.player_id);
-  
-      const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] = calculatePercentileRanges(positionList.length);
-  
-      let backgroundColor = '';
+      const playerRank = positionList.findIndex((p) => p.player_id === pick.player_id)+1;
 
-      //console.log(index + " " + firstPercentile+ " " + secondPercentile+ " " + thirdPercentile+ " " + fourthPercentile+ " " + fifthPercentile+ " " + sixthPercentile);
-
-      if (position==="DEF" || position==="K") backgroundColor="#ffffff"
-      else if (index < firstPercentile) backgroundColor = '#488f31';
-      else if (index < secondPercentile) backgroundColor = '#87b474';
-      else if (index < thirdPercentile) backgroundColor = '#c3d9b8';
-      else if (index < fourthPercentile) backgroundColor = '#fffad6';
-      else if (index < fifthPercentile) backgroundColor = '#fcc4c5';
-      else if (index < sixthPercentile) backgroundColor = '#f1878e';
-      else backgroundColor = '#de425b';
-
+      const [backgroundColor,textColor] = getBackgroundAndTextColor(position, playerRank, individualPlayerStats,positionOrderedLists);
   
       return (
         <td key={pick.pick_no} style={{ backgroundColor }}>
-          {generateCellContent(pick, playerStats, positionOrderedLists, users, rosterIdToTeamName)}
+          {generateCellContent(pick, playerStats, positionOrderedLists, users,textColor)}
         </td>
       );
     });
