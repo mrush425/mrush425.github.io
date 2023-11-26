@@ -179,6 +179,11 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
     return `${record.wins}-${record.losses}-${record.ties}`;
   };
 
+  const getRecordWinPercentage = (record: { wins: number, losses: number, ties: number }): string => {
+    const winPercentage: string = ((record.wins*100)/(record.wins+record.losses+record.ties)).toFixed(2) + "%";
+    return winPercentage;
+  };
+
   const getCellStyleForColumnSum = (columnSum: { wins: number, losses: number, ties: number }): React.CSSProperties => {
     const recordString = getRecordString(columnSum);
     return getCellStyle(recordString, findExtremeRecords(data.users.map((_, innerColIndex) =>
@@ -279,6 +284,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
             ))}
             <td className="schedule-table-blank-row"></td>
             <td><b>Vs League</b></td>
+            <td><b>Vs League Win %</b></td>
             <td><b>Average Record</b></td>
           </tr>
           {data.users.map((user, rowIndex) => (
@@ -303,7 +309,9 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
               <td>
                 {getRecordString(getRowSum(rowIndex))}
               </td>
-
+              <td>
+                {getRecordWinPercentage(getRowSum(rowIndex))}
+              </td>
               <td>
                 {getRecordString(getRowAverage(rowIndex))}
               </td>
@@ -320,6 +328,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
           </tr>
           {/* New row for column sums */}
           <tr>
@@ -328,7 +337,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
               const columnSum = getColumnSum(colIndex);
               return (
                 <td key={colIndex} style={getCellStyleForColumnSum(columnSum)}>
-                  {getRecordString(columnSum)}
+                  {getRecordString(columnSum)} ({getRecordWinPercentage(columnSum)})
                 </td>
               );
             })}
