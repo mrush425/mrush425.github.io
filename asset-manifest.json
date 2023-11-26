@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/mrush425.github.io/static/css/main.b15ea145.css",
-    "main.js": "/mrush425.github.io/static/js/main.f96b3d11.js",
+    "main.css": "/mrush425.github.io/static/css/main.822b3ca5.css",
+    "main.js": "/mrush425.github.io/static/js/main.a44e12a3.js",
     "static/js/787.28cb0dcd.chunk.js": "/mrush425.github.io/static/js/787.28cb0dcd.chunk.js",
     "index.html": "/mrush425.github.io/index.html",
-    "main.b15ea145.css.map": "/mrush425.github.io/static/css/main.b15ea145.css.map",
-    "main.f96b3d11.js.map": "/mrush425.github.io/static/js/main.f96b3d11.js.map",
+    "main.822b3ca5.css.map": "/mrush425.github.io/static/css/main.822b3ca5.css.map",
+    "main.a44e12a3.js.map": "/mrush425.github.io/static/js/main.a44e12a3.js.map",
     "787.28cb0dcd.chunk.js.map": "/mrush425.github.io/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b15ea145.css",
-    "static/js/main.f96b3d11.js"
+    "static/css/main.822b3ca5.css",
+    "static/js/main.a44e12a3.js"
   ]
 }
