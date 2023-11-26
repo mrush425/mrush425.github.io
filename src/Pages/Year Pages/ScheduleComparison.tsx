@@ -65,13 +65,29 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
       let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
       let scheduleRosterId = findRosterByUserId(schedule.user_id, data.rosters)?.roster_id;
       
-      const relevantMatchups = data.matchupInfo.filter(
-        (matchup) =>
-          matchup.week !== data.nflSeasonInfo.week && // Exclude matchups for the current week
-          matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
-          matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
-      );
+      let relevantMatchups;
+      if(data.nflSeasonInfo.season===data.season){
+        relevantMatchups = data.matchupInfo.filter(
+          (matchup) =>
+            matchup.week !== data.nflSeasonInfo.week &&
+            matchup.week < data.settings.playoff_week_start+1 && 
+            matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
+            matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
+        );
+      }
+      else{
+        relevantMatchups = data.matchupInfo.filter(
+          (matchup) =>
+            matchup.week < data.settings.playoff_week_start && 
+            matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
+            matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
+        );
+      }
+
       
+      if(team.metadata.team_name==="Fantasy Football Team" && schedule.metadata.team_name==="Allen hurdles a Barr"){
+        console.log(relevantMatchups);
+      }
     
       relevantMatchups.forEach((matchup) => {
         
@@ -140,6 +156,111 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
     return {};
   };
 
+  const isDiagonalCell = (rowIndex: number, colIndex: number) => rowIndex === colIndex;
+
+  const getColumnSum = (colIndex: number): { wins: number, losses: number, ties: number } => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+
+    for (let rowIndex = 0; rowIndex < data.users.length; rowIndex++) {
+      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+      const [wins, losses, ties] = record;
+
+      winsSum += wins;
+      lossesSum += losses;
+      tiesSum += ties;
+    }
+
+    return { wins: winsSum, losses: lossesSum, ties: tiesSum };
+  };
+
+  const getRecordString = (record: { wins: number, losses: number, ties: number }): string => {
+    return `${record.wins}-${record.losses}-${record.ties}`;
+  };
+
+  const getCellStyleForColumnSum = (columnSum: { wins: number, losses: number, ties: number }): React.CSSProperties => {
+    const recordString = getRecordString(columnSum);
+    return getCellStyle(recordString, findExtremeRecords(data.users.map((_, innerColIndex) =>
+      getRecordString(getColumnSum(innerColIndex))
+    )));
+  };
+
+  const getColumnAverage = (colIndex: number): { wins: number, losses: number, ties: number } => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+
+    for (let rowIndex = 0; rowIndex < data.users.length; rowIndex++) {
+      if (colIndex !== rowIndex) { // Exclude the sum column from the average calculation
+        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+        const [wins, losses, ties] = record;
+
+        winsSum += wins;
+        lossesSum += losses;
+        tiesSum += ties;
+      }
+    }
+
+    // Calculate the average based on the number of users (excluding the sum column)
+    const usersCount = data.users.length - 1;
+    return {
+      wins: Math.round(winsSum / usersCount),
+      losses: Math.round(lossesSum / usersCount),
+      ties: Math.round(tiesSum / usersCount),
+    };
+  };
+
+  const getRowSum = (rowIndex: number): { wins: number, losses: number, ties: number } => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+  
+    for (let colIndex = 0; colIndex < data.users.length; colIndex++) {
+      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+      const [wins, losses, ties] = record;
+  
+      winsSum += wins;
+      lossesSum += losses;
+      tiesSum += ties;
+    }
+  
+    return { wins: winsSum, losses: lossesSum, ties: tiesSum };
+  };
+  
+  const getRowAverage = (rowIndex: number): { wins: number, losses: number, ties: number } => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+  
+    for (let colIndex = 0; colIndex < data.users.length; colIndex++) {
+      if (colIndex !== rowIndex) { // Exclude the sum row from the average calculation
+        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+        const [wins, losses, ties] = record;
+  
+        winsSum += wins;
+        lossesSum += losses;
+        tiesSum += ties;
+      }
+    }
+  
+    // Calculate the average based on the number of users (excluding the sum row)
+    const usersCount = data.users.length - 1;
+    return {
+      wins: Math.round(winsSum / usersCount),
+      losses: Math.round(lossesSum / usersCount),
+      ties: Math.round(tiesSum / usersCount),
+    };
+  };
+
+  const getCellStyleForColumnAverage = (columnAverage: { wins: number, losses: number, ties: number }): React.CSSProperties => {
+    const recordString = getRecordString(columnAverage);
+    return getCellStyle(recordString, findExtremeRecords(data.users.map((_, innerColIndex) =>
+      getRecordString(getColumnAverage(innerColIndex))
+    )));
+  };
+
+
   return (
     <div className="schedule-comparison-container">
       <YearNavBar data={data} />
@@ -152,29 +273,78 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
         </thead>
         <tbody>
           <tr>
-            <td><b>Team Name</b></td>
+            <td className="diagonal-cell"><b>Team Name</b></td>
             {data.users.map((user, index) => (
               <td key={index + 1}>{user.metadata.team_name}</td>
             ))}
+            <td className="schedule-table-blank-row"></td>
+            <td><b>Vs League</b></td>
+            <td><b>Average Record</b></td>
           </tr>
           {data.users.map((user, rowIndex) => (
             <tr key={rowIndex}>
               <td>{user.metadata.team_name}</td>
               {data.users.map((_, colIndex) => (
-                <td key={colIndex} style={getCellStyle(
-                  displayRecord(data.users[rowIndex], data.users[colIndex]),
-                  findExtremeRecords(data.users.map((_, innerColIndex) =>
-                    displayRecord(data.users[rowIndex], data.users[innerColIndex])
-                  ))
-                )}>
+                <td key={colIndex}
+                  className={isDiagonalCell(rowIndex, colIndex) ? 'diagonal-cell' : ''}
+                  style={getCellStyle(
+                    displayRecord(data.users[rowIndex], data.users[colIndex]),
+                    findExtremeRecords(data.users.map((_, innerColIndex) =>
+                      displayRecord(data.users[rowIndex], data.users[innerColIndex])
+                    ))
+                  )}>
                   {displayRecord(
                     data.users[rowIndex], // Current team (row)
                     data.users[colIndex] // Schedule for the current column
                   )}
                 </td>
               ))}
+              <td className="schedule-table-blank-row"></td>
+              <td>
+                {getRecordString(getRowSum(rowIndex))}
+              </td>
+
+              <td>
+                {getRecordString(getRowAverage(rowIndex))}
+              </td>
             </tr>
           ))}
+          {/*Blank row for seperation*/}
+          <tr className="schedule-table-blank-row">
+            <td></td>
+            {data.users.map((_, colIndex) => {
+              return (
+                <td key={colIndex}></td>
+              );
+            })}
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          {/* New row for column sums */}
+          <tr>
+            <td><b>Whole League</b></td>
+            {data.users.map((_, colIndex) => {
+              const columnSum = getColumnSum(colIndex);
+              return (
+                <td key={colIndex} style={getCellStyleForColumnSum(columnSum)}>
+                  {getRecordString(columnSum)}
+                </td>
+              );
+            })}
+          </tr>
+          {/* New row for column averages */}
+          <tr>
+            <td><b>Average</b></td>
+            {data.users.map((_, colIndex) => {
+              const columnAverage = getColumnAverage(colIndex);
+              return (
+                <td key={colIndex} style={getCellStyleForColumnAverage(columnAverage)}>
+                  {getRecordString(columnAverage)}
+                </td>
+              );
+            })}
+          </tr>
         </tbody>
       </table>
     </div>
