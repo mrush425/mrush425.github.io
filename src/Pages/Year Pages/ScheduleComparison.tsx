@@ -70,7 +70,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
         relevantMatchups = data.matchupInfo.filter(
           (matchup) =>
             matchup.week !== data.nflSeasonInfo.week &&
-            matchup.week < data.settings.playoff_week_start+1 && 
+            matchup.week < data.settings.playoff_week_start && 
             matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
             matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
         );
@@ -82,11 +82,6 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
             matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
             matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
         );
-      }
-
-      
-      if(team.metadata.team_name==="Fantasy Football Team" && schedule.metadata.team_name==="Allen hurdles a Barr"){
-        console.log(relevantMatchups);
       }
     
       relevantMatchups.forEach((matchup) => {

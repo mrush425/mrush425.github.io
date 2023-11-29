@@ -11,6 +11,7 @@ import YearData from './Year Pages/YearData';
 import DraftHeatMap from './Year Pages/DraftHeatMap'; // Import the DraftHeatMap component
 import DraftReportCard from './Year Pages/DraftReportCard';
 import ScheduleComparison from './Year Pages/ScheduleComparison';
+import OvertimeComparison from './Year Pages/OvertimeComparison';
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
@@ -57,21 +58,29 @@ function App() {
               <Route
                 key={league.season}
                 path={`/season/${league.season}/schedule-comparison`}
-                element={<ScheduleComparison data={league}/>}
+                element={<ScheduleComparison data={league} />}
               />
             ))}
             {leagueData.map((league) => (
               <Route
                 key={league.season}
+                path={`/season/${league.season}/overtime-comparison`}
+                element={<OvertimeComparison data={league} />}
+              />
+            ))}
+
+            {leagueData.map((league) => (
+              <Route
+                key={league.season}
                 path={`/season/${league.season}/draft-heatmap`}
-                element={<DraftHeatMap data={league}/>}
+                element={<DraftHeatMap data={league} />}
               />
             ))}
             {leagueData.map((league) => (
               <Route
                 key={league.season}
                 path={`/season/${league.season}/draft-report-card`}
-                element={<DraftReportCard data={league}/>}
+                element={<DraftReportCard data={league} />}
               />
             ))}
             {/* Add a catch-all route for unknown routes */}

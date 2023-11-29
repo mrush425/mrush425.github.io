@@ -49,10 +49,6 @@ export const calculatePercentileRanges = (listLength: number): [number, number, 
     const [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile] =
         calculatePercentileRanges(positionOrderedLists[position]?.length || 0);
 
-    if (playerStats?.player.first_name==="Raheem"){
-        console.log(positionRank,firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile);
-    }
-
     // Determine background color based on percentiles
     let backgroundColor = '#ffffff'; // default color
     let textColor = '#000000';
