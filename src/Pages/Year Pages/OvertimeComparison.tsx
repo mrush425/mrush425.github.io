@@ -83,7 +83,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
       relevantWeek = data.settings.playoff_week_start;
     }
 
-    for (let week = 1; week <= relevantWeek; week++) {
+    for (let week = 1; week < relevantWeek; week++) {
       const stats = calculateStatsAsOfWeek(week);
       stats.forEach(stat => {
         const userStatsObject = allUserStats.find((userStats) => userStats.user_id === stat.user_id);
@@ -125,6 +125,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
       for (let i = 0; i < info.matchups.length / 2; i++) {
         individualMatchups.push([]);
       }
+
       info.matchups.forEach((matchup) => {
         // Find user_id for each roster_id
         individualMatchups[matchup.matchup_id - 1].push(matchup);
@@ -202,6 +203,21 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
     return relevantWeek;
   };
 
+  // Function to generate a hash code from a string
+  const hashCode = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+  };
+
+  // Function to convert a hash code to a hexadecimal color code
+  const intToRGB = (i: number) => {
+    const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
+    return "00000".substring(0, 6 - c.length) + c;
+  };
+
   return (
 
     <div>
@@ -219,18 +235,18 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
             label={{ value: 'Week', position: 'insideBottom', offset: 0 }}
             ticks={Array.from({ length: getRelevantWeek() }, (_, index) => index + 1)}
           />
-          <YAxis type="number" reversed={true} domain={[1, graphData.length]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
+          <YAxis type="number" reversed={true} domain={[1, graphData.length+1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
           <Tooltip />
           <Legend />
 
           {graphData.map((userData, index) => (
             <Line
               key={index}
-              type="monotone"
+              type="linear"
               dataKey="rank"
               data={userData.user_week_stats}
               name={userData.team_name}
-              stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+              stroke={`#${intToRGB(hashCode(userData.user_id))}`}
             />
           ))}
         </LineChart>
