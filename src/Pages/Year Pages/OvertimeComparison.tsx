@@ -43,20 +43,12 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
 
   useEffect(() => {
     const calculateAndSetGraphData = () => {
-      let relevantWeek: number;
-
-      if (data.nflSeasonInfo.season === data.season) {
-        relevantWeek = Math.min(data.nflSeasonInfo.week - 1, data.settings.playoff_week_start);
-      } else {
-        relevantWeek = data.settings.playoff_week_start;
-      }
 
       const statsArray: AllUserWeekStats[] = [];
 
 
       statsArray.push(...getAllUserWeekStats());
 
-      console.log(statsArray);
       setGraphData(statsArray);
     };
 
@@ -78,7 +70,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
     let relevantWeek: number;
 
     if (data.nflSeasonInfo.season === data.season) {
-      relevantWeek = Math.min(data.nflSeasonInfo.week - 1, data.settings.playoff_week_start);
+      relevantWeek = Math.min(data.nflSeasonInfo.week, data.settings.playoff_week_start-1);
     } else {
       relevantWeek = data.settings.playoff_week_start;
     }
@@ -137,16 +129,13 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
         const user2Matchup = individualMatchup[1];
         const user1Roster = data.rosters.find((roster) => roster.roster_id === user1Matchup?.roster_id);
         const user2Roster = data.rosters.find((roster) => roster.roster_id === user2Matchup?.roster_id);
-        //console.log(user1Roster);
-        //console.log(user2Roster);
+
 
         if (user1Matchup && user2Matchup) {
           // Find the index of the users in allUserStats array based on their user_id
           const user1WeekStats = allUserWeekStats.find((user) => user.user_id === user1Roster?.owner_id);
           const user2WeekStats = allUserWeekStats.find((user) => user.user_id === user2Roster?.owner_id);
-          //console.log(allUserStats);
-          //console.log(user1WeekStats);
-          //console.log(user2WeekStats);
+
           if (user1WeekStats && user2WeekStats) {
 
             // Determine the winner and update stats accordingly
@@ -191,16 +180,17 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
   };
 
   // Helper function to calculate relevant week
-  const getRelevantWeek = (): number => {
-    let relevantWeek: number;
+  const getLastRegularSeasonWeek = (): number => {
+    let lastRegularSeasonWeek: number;
 
     if (data.nflSeasonInfo.season === data.season) {
-      relevantWeek = Math.min(data.nflSeasonInfo.week - 1, data.settings.playoff_week_start);
+      lastRegularSeasonWeek = Math.min(data.nflSeasonInfo.week-1, data.settings.playoff_week_start-1);
     } else {
-      relevantWeek = data.settings.playoff_week_start;
+      lastRegularSeasonWeek = data.settings.playoff_week_start-1;
     }
 
-    return relevantWeek;
+    console.log(lastRegularSeasonWeek);
+    return lastRegularSeasonWeek;
   };
 
   // Function to generate a hash code from a string
@@ -224,18 +214,27 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
       <YearNavBar data={data} />
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <LineChart
-          width={1000} // Adjust the width as per your requirement
-          height={700} // Adjust the height as per your requirement
-          margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+          width={1200} // Adjust the width as per your requirement
+          height={720} // Adjust the height as per your requirement
+          margin={{ top: 40, right: 30, left: 20, bottom: 10 }}
         >
+          <text
+            x={(1200) / 2}
+            y={20}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            style={{ fontSize: '18px', fontWeight: 'bold' }}
+          >
+            {data.season} Overtime Comparison
+          </text>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             type="number"
             dataKey="week"
             label={{ value: 'Week', position: 'insideBottom', offset: 0 }}
-            ticks={Array.from({ length: getRelevantWeek() }, (_, index) => index + 1)}
+            ticks={Array.from({ length: getLastRegularSeasonWeek() }, (_, index) => index + 1)}
           />
-          <YAxis type="number" reversed={true} domain={[1, graphData.length+1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
+          <YAxis type="number" reversed={true} domain={[1, graphData.length + 1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
           <Tooltip />
           <Legend />
 
