@@ -5,7 +5,7 @@ import CustomNavbar from '../Navigation/Navbar';
 import Home from './home';
 import About from './About';
 import { getLeagueData } from '../SleeperApiMethods';
-import { Current_League_Id } from '../Constants';
+import { Current_League_Id } from '../Helper Files/Constants';
 import LeagueData from "../Interfaces/LeagueData";
 import YearData from './Year Pages/YearData';
 import DraftHeatMap from './Year Pages/DraftHeatMap'; // Import the DraftHeatMap component

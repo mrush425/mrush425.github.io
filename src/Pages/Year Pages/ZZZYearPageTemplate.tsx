@@ -3,8 +3,6 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
-import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId } from '../../HelperMethods';
 
 import '../../Stylesheets/Year Stylesheets/REPLACEME.css'; 
 

@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import '../../Stylesheets/Year Stylesheets/ScheduleComparison.css'; // Create a CSS file for styling
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId } from '../../HelperMethods';
+import { findRosterByUserId } from '../../Helper Files/HelperMethods';
 
 
 interface ScheduleComparisonProps {
