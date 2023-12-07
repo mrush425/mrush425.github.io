@@ -4,6 +4,8 @@ import LeagueData from "./Interfaces/LeagueData";
 import MatchupInfo from "./Interfaces/MatchupInfo";
 import PlayerYearStats from "./Interfaces/PlayerYearStats";
 import { populatePositionOrderedLists } from "./Pages/Year Pages/SharedDraftMethods";
+import trollData from './Data/trollData.json'; // Import your trollData.json
+
 
 export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
   const data = new Array();
@@ -16,6 +18,13 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
 
     const [leagueJson, stateJson, rosterJson, userJson] = await Promise.all([leaguePromise, statePromise, rosterPromise, userPromise]);
     
+    for (const user of userJson) {
+      const trollMatch = trollData.find(troll => troll['Sleeper ID'] === user.user_id);
+      if (trollMatch) {
+        user.metadata = user.metadata || {};
+        user.metadata.team_name = trollMatch.Nickname;
+      }
+    }
 
     // Add the additional information to the league data
     leagueJson.nflSeasonInfo = stateJson;

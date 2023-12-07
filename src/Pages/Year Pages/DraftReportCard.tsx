@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import DraftPick from '../../Interfaces/DraftPick';
-import SleeperUser from '../../Interfaces/SleeperUser';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import '../../Stylesheets/Year Stylesheets/DraftReportCard.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
 import TeamDropdown from './TeamDropdown'; // Adjust the path accordingly
-import {getBackgroundAndTextColor, getPlayerStats, populatePositionOrderedLists } from './SharedDraftMethods';
+import {getBackgroundAndTextColor, getPlayerStats } from './SharedDraftMethods';
 import { fetchDraftData } from '../../SleeperApiMethods';
 
 interface DraftReportCardProps {
@@ -25,45 +24,6 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
     const [allPlayerStats, setPlayerStats] = useState<PlayerYearStats[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const [picksResponse, infoResponse] = await Promise.all([
-    //                 fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}/picks`),
-    //                 fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`),
-    //             ]);
-
-    //             const picks: DraftPick[] = await picksResponse.json();
-    //             const info: DraftInfo[] | DraftInfo = await infoResponse.json();
-
-
-    //             setDraftPicks(picks);
-    //             setDraftInfo(Array.isArray(info) ? info : [info]);
-
-    //             const playerIds = picks.map((pick) => pick.player_id);
-    //             const playerStatsResponses = await Promise.all(
-    //                 playerIds.map((playerId) =>
-    //                     fetch(
-    //                         `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${data.season}`
-    //                     )
-    //                 )
-    //             );
-
-    //             const playerStatsData = await Promise.all(
-    //                 playerStatsResponses.map((response) => response.json())
-    //             );
-
-    //             setPlayerStats(playerStatsData);
-    //             positionOrderedLists=populatePositionOrderedLists(playerStatsData);
-    //         } catch (error) {
-    //             console.error('Error fetching data:', error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-
-    //     fetchData();
-    // }, [data.draft_id, data.league_id, data.season]);
 
     useEffect(() => {
         const fetchDataFromApi = async () => {
