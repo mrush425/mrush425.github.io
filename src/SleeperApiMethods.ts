@@ -1,5 +1,9 @@
+import DraftInfo from "./Interfaces/DraftInfo";
+import DraftPick from "./Interfaces/DraftPick";
 import LeagueData from "./Interfaces/LeagueData";
 import MatchupInfo from "./Interfaces/MatchupInfo";
+import PlayerYearStats from "./Interfaces/PlayerYearStats";
+import { populatePositionOrderedLists } from "./Pages/Year Pages/SharedDraftMethods";
 
 export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
   const data = new Array();
@@ -11,11 +15,13 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
     const userPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/users`).then(response => response.json());
 
     const [leagueJson, stateJson, rosterJson, userJson] = await Promise.all([leaguePromise, statePromise, rosterPromise, userPromise]);
+    
 
     // Add the additional information to the league data
     leagueJson.nflSeasonInfo = stateJson;
     leagueJson.rosters = rosterJson;
     leagueJson.users = userJson;
+    leagueJson.matchupInfo = await getMatchupData(leagueJson);
 
     data.push(leagueJson);
 
@@ -56,4 +62,36 @@ export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInf
   matchups.push(...(await Promise.all(promises)));
 
   return matchups;
+}
+
+export async function fetchDraftData(draftId: string, leagueId: string, season: string): Promise<[DraftPick[], DraftInfo[],PlayerYearStats[], Record<string, PlayerYearStats[]>]> {
+  try {
+      const [picksResponse, infoResponse] = await Promise.all([
+          fetch(`https://api.sleeper.app/v1/draft/${draftId}/picks`),
+          fetch(`https://api.sleeper.app/v1/draft/${draftId}`),
+      ]);
+
+      const picks: DraftPick[] = await picksResponse.json();
+      const info: DraftInfo[] | DraftInfo = await infoResponse.json();
+
+      const playerIds = picks.map((pick) => pick.player_id);
+      const playerStatsResponses = await Promise.all(
+          playerIds.map((playerId) =>
+              fetch(
+                  `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${season}`
+              )
+          )
+      );
+
+      const playerStatsData = await Promise.all(
+          playerStatsResponses.map((response) => response.json())
+      );
+
+      const positionOrderedLists = populatePositionOrderedLists(playerStatsData);
+
+      return [picks, Array.isArray(info) ? info : [info],playerStatsData,positionOrderedLists];
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      throw error;
+  }
 }

@@ -5,9 +5,6 @@ import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import UserWeekStats from '../../Interfaces/UserWeekStats';
 
-import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId } from '../../HelperMethods';
-
 import '../../Stylesheets/Year Stylesheets/OvertimeComparison.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'; // Import necessary components from recharts
 import AllUserWeekStats from '../../Interfaces/AllUserWeekStats';
@@ -17,29 +14,7 @@ interface OvertimeComparisonProps {
 }
 
 const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
-  let [matchupInfo, setMatchupInfo] = useState<MatchupInfo[]>([]);
-  const [dataFetched, setDataFetched] = useState(false);
   const [graphData, setGraphData] = useState<AllUserWeekStats[]>([]);
-
-  useEffect(() => {
-    const fetchMatchupData = async () => {
-      try {
-        const info = await getMatchupData(data);
-        setMatchupInfo(info);
-        data.matchupInfo = info;
-        setDataFetched(true);
-      } catch (error) {
-        console.error('Error fetching league data:', error);
-        setDataFetched(true); // Set dataFetched to true even in case of an error to avoid infinite loading
-      }
-    };
-
-    if (data.matchupInfo === undefined) {
-      fetchMatchupData();
-    } else {
-      setDataFetched(true);
-    }
-  }, [data]);
 
   useEffect(() => {
     const calculateAndSetGraphData = () => {
@@ -51,11 +26,10 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
 
       setGraphData(statsArray);
     };
+    calculateAndSetGraphData();
 
-    if (dataFetched) {
-      calculateAndSetGraphData();
-    }
-  }, [dataFetched, data]);
+  }, [data]);
+
 
   const getAllUserWeekStats = (): AllUserWeekStats[] => {
     let allUserStats: AllUserWeekStats[] = [];
@@ -249,6 +223,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
             />
           ))}
         </LineChart>
+        
       </div>
     </div>
   );

@@ -1,10 +1,7 @@
 // YearData.tsx
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar'; // Import the YearNavBar component
-import SleeperRoster from '../../Interfaces/SleeperRoster';
-import SleeperUser from '../../Interfaces/SleeperUser';
 import '../../Stylesheets/Year Stylesheets/YearData.css'; // Create a CSS file for styling
 
 interface YearDataProps {
@@ -12,8 +9,7 @@ interface YearDataProps {
 }
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
-  const [sortBy, setSortBy] = useState<string>('wins'); // Initial sort by 'wins'
-
+  const sortBy='wins';
   const rosters = data.rosters;
   const users = data.users;
 
@@ -31,9 +27,6 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
       <YearNavBar data={data} /> {/* Render the YearNavBar component */}
 
       <h2>{`Season ${data.season}`}</h2>
-      {/* Display other information about the season */}
-
-      {/* Display the team information table */}
       <table className="records-table">
         <thead>
           <tr>

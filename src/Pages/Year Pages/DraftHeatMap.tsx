@@ -6,7 +6,8 @@ import SleeperUser from '../../Interfaces/SleeperUser';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import '../../Stylesheets/Year Stylesheets/DraftHeatMap.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
-import {getBackgroundAndTextColor, getPlayerStats, populatePositionOrderedLists } from './SharedDraftMethods';
+import {getBackgroundAndTextColor, getPlayerStats } from './SharedDraftMethods';
+import { fetchDraftData } from '../../SleeperApiMethods';
 
 interface DraftHeatMapProps {
   data: LeagueData;
@@ -24,46 +25,23 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   const users = data.users;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [picksResponse, infoResponse] = await Promise.all([
-          fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}/picks`),
-          fetch(`https://api.sleeper.app/v1/draft/${data.draft_id}`),
-        ]);
-  
-        const picks: DraftPick[] = await picksResponse.json();
-        const info: DraftInfo[] | DraftInfo = await infoResponse.json();
-
-  
-        setDraftPicks(picks);
-        setDraftInfo(Array.isArray(info) ? info : [info]);
-
-  
-        const playerIds = picks.map((pick) => pick.player_id);
-        const playerStatsResponses = await Promise.all(
-          playerIds.map((playerId) =>
-            fetch(
-              `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${data.season}`
-            )
-          )
-        );
-  
-        const playerStatsData = await Promise.all(
-          playerStatsResponses.map((response) => response.json())
-        );
-  
-        setPlayerStats(playerStatsData);
-        positionOrderedLists=populatePositionOrderedLists(playerStatsData);
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    const fetchDataFromApi = async () => {
+        try {
+            const [picks, info, pStatsData, pOrderedLists] = await fetchDraftData(data.draft_id, data.league_id, data.season);
+            setDraftPicks(picks);
+            setDraftInfo(info);
+            setPlayerStats(pStatsData);
+            positionOrderedLists=pOrderedLists;
+            // ... (rest of the code)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
-  
-    fetchData();
-  }, [data.draft_id, data.league_id, data.season]);
+
+    fetchDataFromApi();
+}, [data.draft_id, data.league_id, data.season]);
 
   const draftPicksByRound: Record<number, DraftPick[]> = {};
   draftPicks.forEach((pick) => {

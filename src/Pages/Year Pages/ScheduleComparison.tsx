@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import '../../Stylesheets/Year Stylesheets/ScheduleComparison.css'; // Create a CSS file for styling
-import { getMatchupData } from '../../SleeperApiMethods';
-import MatchupInfo from '../../Interfaces/MatchupInfo';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import { findRosterByUserId } from '../../HelperMethods';
 
@@ -12,35 +10,7 @@ interface ScheduleComparisonProps {
   data: LeagueData;
 }
 
-
 const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
-  let [matchupInfo, setMatchupInfo] = useState<MatchupInfo[]>([]);
-  const [dataFetched, setDataFetched] = useState(false);
-
-  useEffect(() => {
-    const fetchMatchupData = async () => {
-      try {
-        const info = await getMatchupData(data);
-        setMatchupInfo(info);
-        data.matchupInfo = info;
-        setDataFetched(true);
-      } catch (error) {
-        console.error('Error fetching league data:', error);
-        setDataFetched(true); // Set dataFetched to true even in case of an error to avoid infinite loading
-      }
-    };
-
-    if (data.matchupInfo === undefined) {
-      fetchMatchupData();
-    } else {
-      setDataFetched(true);
-    }
-  }, [data, matchupInfo]);
-
-  if (!dataFetched) {
-    // Render a loading indicator or placeholder while data is being fetched
-    return <div>Loading...</div>;
-  }
 
   const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser): [wins:number, losses:number, ties:number] => {
     let wins: number = 0;
