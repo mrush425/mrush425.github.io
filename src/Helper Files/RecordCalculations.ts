@@ -96,7 +96,7 @@ export const getAverageLeagueRecordAtSchedule = (user: SleeperUser, data: League
     [winsSum, lossesSum, tiesSum] = getLeagueRecordAtSchedule(user, data);
 
     // Calculate the average based on the number of users (excluding the sum column)
-    const usersCount = data.users.length - 1;
+    const usersCount = data.users.length;
     return [
         Math.round(winsSum / usersCount),
         Math.round(lossesSum / usersCount),
@@ -129,7 +129,7 @@ export const getAverageRecordAgainstLeague = (user: SleeperUser, data: LeagueDat
     [winsSum, lossesSum, tiesSum] = getRecordAgainstLeague(user, data);
 
     // Calculate the average based on the number of users (excluding the sum column)
-    const usersCount = data.users.length - 1;
+    const usersCount = data.users.length;
     return [
         Math.round(winsSum / usersCount),
         Math.round(lossesSum / usersCount),

@@ -11,3 +11,6 @@
     border: 2px solid black; /* Border color and width for rows */
   }
 
+  .records-table tbody tr:nth-child(-n+6) {
+    background-color: lightgreen;
+  }
