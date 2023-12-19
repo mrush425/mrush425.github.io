@@ -3,11 +3,11 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
-import UserWeekStats from '../../Interfaces/UserWeekStats';
+import UserAsOfWeekStats from '../../Interfaces/UserAsOfWeekStats';
 
 import '../../Stylesheets/Year Stylesheets/OvertimeComparison.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'; // Import necessary components from recharts
-import AllUserWeekStats from '../../Interfaces/AllUserWeekStats';
+import AllUserWeekStats from '../../Interfaces/AllUserAsOfWeekStats';
 
 interface OvertimeComparisonProps {
   data: LeagueData;
@@ -44,7 +44,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
     let relevantWeek: number;
 
     if (data.nflSeasonInfo.season === data.season) {
-      relevantWeek = Math.min(data.nflSeasonInfo.week, data.settings.playoff_week_start-1);
+      relevantWeek = Math.min(data.nflSeasonInfo.week, data.settings.playoff_week_start);
     } else {
       relevantWeek = data.settings.playoff_week_start;
     }
@@ -63,8 +63,8 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
     return allUserStats;
   }
 
-  const calculateStatsAsOfWeek = (asOfWeek: number): UserWeekStats[] => {
-    let allUserWeekStats: UserWeekStats[] = [];
+  const calculateStatsAsOfWeek = (asOfWeek: number): UserAsOfWeekStats[] => {
+    let allUserWeekStats: UserAsOfWeekStats[] = [];
 
     // Step 1: Create a UserWeekStats object for each user in data.users
     data.users.forEach((user) => {

@@ -3,12 +3,12 @@ import SleeperUser from "../../Interfaces/SleeperUser";
 
 
 export const calculatePercentileRanges = (listLength: number): [number, number, number, number, number, number] => {
-    const firstPercentile = Math.floor(listLength * 0.05);
-    const secondPercentile = Math.floor(listLength * 0.2);
-    const thirdPercentile = Math.floor(listLength * 0.4);
-    const fourthPercentile = Math.floor(listLength * 0.6);
-    const fifthPercentile = Math.floor(listLength * 0.8);
-    const sixthPercentile = Math.floor(listLength * 0.95);
+    const firstPercentile = Math.ceil(listLength * 0.05);
+    const secondPercentile = Math.ceil(listLength * 0.2);
+    const thirdPercentile = Math.ceil(listLength * 0.4);
+    const fourthPercentile = Math.ceil(listLength * 0.6);
+    const fifthPercentile = Math.ceil(listLength * 0.8);
+    const sixthPercentile = Math.ceil(listLength * 0.95);
   
     return [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile];
   };

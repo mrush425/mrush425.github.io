@@ -17,8 +17,11 @@ const YearNavBar: React.FC<YearNavBarProps> = ({ data }) => {
       <Link to={`/season/${data.season}/schedule-comparison`} className="btn-custom btn btn-sm">
         Schedule Comparison
       </Link>
-      <Link to={`/season/${data.season}/Overtime-Comparison`} className="btn-custom btn btn-sm">
+      <Link to={`/season/${data.season}/overtime-comparison`} className="btn-custom btn btn-sm">
         Overtime Comparison
+      </Link>
+      <Link to={`/season/${data.season}/all-playoff-possibilities`} className="btn-custom btn btn-sm">
+        All Playoff Possibilities
       </Link>
       <Link to={`/season/${data.season}/draft-heatmap`} className="btn-custom btn btn-sm">
         Draft Heat Map

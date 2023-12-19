@@ -4,6 +4,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import '../../Stylesheets/Year Stylesheets/ScheduleComparison.css'; // Create a CSS file for styling
 import SleeperUser from '../../Interfaces/SleeperUser';
 import { findRosterByUserId } from '../../Helper Files/HelperMethods';
+import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
 
 
 interface ScheduleComparisonProps {
@@ -12,78 +13,8 @@ interface ScheduleComparisonProps {
 
 const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
 
-  const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser): [wins:number, losses:number, ties:number] => {
-    let wins: number = 0;
-    let losses: number = 0;
-    let ties: number = 0;
-
-    if (!data.matchupInfo) {
-      return [0, 0, 0]; // or handle it differently based on your use case
-    }
-
-    if(team.user_id===schedule.user_id){
-      const roster = findRosterByUserId(team.user_id,data.rosters);
-      if(roster){
-        wins=roster.settings.wins;
-        losses = roster.settings.losses;
-        ties = roster.settings.ties;
-      }
-    }
-
-    else {
-      // Find the matchupInfo for the current team and schedule
-      let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
-      let scheduleRosterId = findRosterByUserId(schedule.user_id, data.rosters)?.roster_id;
-      
-      let relevantMatchups;
-      if(data.nflSeasonInfo.season===data.season){
-        relevantMatchups = data.matchupInfo.filter(
-          (matchup) =>
-            matchup.week !== data.nflSeasonInfo.week &&
-            matchup.week < data.settings.playoff_week_start && 
-            matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
-            matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
-        );
-      }
-      else{
-        relevantMatchups = data.matchupInfo.filter(
-          (matchup) =>
-            matchup.week < data.settings.playoff_week_start && 
-            matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
-            matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
-        );
-      }
-    
-      relevantMatchups.forEach((matchup) => {
-        
-        const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
-        const scheduleMatchup = matchup.matchups.find((m) => m.roster_id === scheduleRosterId);
-        const oppMatchup = matchup.matchups.find((m) => m.matchup_id === scheduleMatchup?.matchup_id && m.roster_id!== scheduleMatchup?.roster_id); 
-    
-        if (teamMatchup && scheduleMatchup) {
-          if (scheduleMatchup.matchup_id === teamMatchup.matchup_id) {
-            // If schedule's opponent is the same as teamMatchup, compare directly to schedule
-            wins += teamMatchup.points > scheduleMatchup.points ? 1 : 0;
-            losses += teamMatchup.points < scheduleMatchup.points ? 1 : 0;
-            ties += teamMatchup.points === scheduleMatchup.points ? 1 : 0;
-          } else {
-            // Otherwise, compare teamMatchup to schedule's opponent
-            if(oppMatchup){
-              wins += teamMatchup.points > oppMatchup.points ? 1 : 0;
-              losses += teamMatchup.points < oppMatchup.points ? 1 : 0;
-              ties += teamMatchup.points === oppMatchup.points ? 1 : 0;
-            }
-          }
-        }
-      });
-    }
-    
-    return [wins, losses, ties];
-    
-  }
-
   const displayRecord = (team: SleeperUser, schedule: SleeperUser): string => {
-    const [wins,losses,ties] = calculateScheduleRecord(team,schedule);
+    const [wins,losses,ties] = calculateScheduleRecord(team,schedule,data);
     let recordString: string="";
     
     if(ties===0){
@@ -129,7 +60,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
     let tiesSum = 0;
 
     for (let rowIndex = 0; rowIndex < data.users.length; rowIndex++) {
-      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
       const [wins, losses, ties] = record;
 
       winsSum += wins;
@@ -163,7 +94,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
 
     for (let rowIndex = 0; rowIndex < data.users.length; rowIndex++) {
       if (colIndex !== rowIndex) { // Exclude the sum column from the average calculation
-        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
         const [wins, losses, ties] = record;
 
         winsSum += wins;
@@ -187,7 +118,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
     let tiesSum = 0;
   
     for (let colIndex = 0; colIndex < data.users.length; colIndex++) {
-      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+      const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
       const [wins, losses, ties] = record;
   
       winsSum += wins;
@@ -205,7 +136,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
   
     for (let colIndex = 0; colIndex < data.users.length; colIndex++) {
       if (colIndex !== rowIndex) { // Exclude the sum row from the average calculation
-        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex]);
+        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
         const [wins, losses, ties] = record;
   
         winsSum += wins;

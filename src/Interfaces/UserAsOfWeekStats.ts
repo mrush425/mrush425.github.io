@@ -1,4 +1,4 @@
-interface UserWeekStats {
+interface UserAsOfWeekStats {
     user_id: string;
     wins: number;
     losses: number;
@@ -9,5 +9,5 @@ interface UserWeekStats {
     week: number;
   }
   
-  export default UserWeekStats;
+  export default UserAsOfWeekStats;
   

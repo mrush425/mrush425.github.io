@@ -1,0 +1,21 @@
+/* AllPlayoffPossibilities.css */
+
+/* Add this style to center the table */
+.all-possibilities-table {
+    margin: 0 auto;
+  }
+  
+  /* Add this style to add borders to all cells in the table */
+  .all-possibilities-table th,
+  .all-possibilities-table td {
+    border: 1px solid black;
+    padding: 8px; /* Adjust the padding as needed */
+    text-align: center; /* Center-align text in cells */
+  }
+  
+  /* Optionally, you can add a style for the table header cells */
+  .all-possibilities-table th {
+    background-color: #f2f2f2; /* Add a background color to differentiate header cells */
+  }
+
+  
