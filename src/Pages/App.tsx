@@ -13,6 +13,7 @@ import DraftReportCard from './Year Pages/DraftReportCard';
 import ScheduleComparison from './Year Pages/ScheduleComparison';
 import OvertimeComparison from './Year Pages/OvertimeComparison';
 import AllPlayoffPossibilities from './Year Pages/AllPlayoffPossibilities';
+import Playoffs from './Year Pages/Playoffs';
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
@@ -84,11 +85,18 @@ function App() {
                 element={<DraftReportCard data={league} />}
               />
             ))}
-            // {leagueData.map((league) => (
+            {leagueData.map((league) => (
               <Route
                 key={league.season}
                 path={`/season/${league.season}/all-playoff-possibilities`}
                 element={<AllPlayoffPossibilities data={league} />}
+              />
+            ))}
+            {leagueData.map((league) => (
+              <Route
+                key={league.season}
+                path={`/season/${league.season}/playoffs`}
+                element={<Playoffs data={league} />}
               />
             ))}
             {/* Add a catch-all route for unknown routes */}

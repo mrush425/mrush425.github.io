@@ -1,0 +1,21 @@
+.TableDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .table-container {
+    width: 80%; /* Set the width of the container as needed */
+  }
+  
+  .PlayoffTable {
+    border-collapse: collapse;
+    margin: 0 auto; /* Set left and right margins to "auto" to center the table */
+  }
+
+.PlayoffTable tr {
+    height: 20px; /* Set the desired height for each row */
+    /* Add other styling properties as needed */
+  }
