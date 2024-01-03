@@ -1,0 +1,35 @@
+.statsTable {
+    margin: auto;
+    margin-top: 20px;
+  }
+
+.statsTable th {
+    min-width: 100px;
+}
+
+.statsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.statMenu {
+    min-width: 250px;
+    vertical-align: top;
+}
+
+.statMenuDiv{
+    max-height: 600px;
+    overflow: auto;
+}
+
+.statsColumn {
+    vertical-align: top;
+}
+
+.statButton {
+    width: 100%;
+}
+
+.active {
+    background-color: lightskyblue;
+}
