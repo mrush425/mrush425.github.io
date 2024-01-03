@@ -94,14 +94,14 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
     }
   };
 
-  const getScoreForWeek = (user: SleeperUser, week: Number): number => {
+  const getScoreForWeek = (user: SleeperUser, week: Number): string => {
     const roster = data.rosters.find(r => r.owner_id === user.user_id);
-    if (!roster) return 0;
+    if (!roster) return "0";
     const weekMatchup = data.matchupInfo.find((matchup) => matchup.week === week);
-    if(!weekMatchup) return 0;
+    if(!weekMatchup) return "0";
     const matchup = weekMatchup.matchups.find(m => m.roster_id === roster.roster_id);
-    if(!matchup) return 0;
-    return matchup.points;
+    if(!matchup) return "0";
+    return matchup.points.toFixed(2);
   };
   // Separate method to generate the table
   const generateTable = () => {

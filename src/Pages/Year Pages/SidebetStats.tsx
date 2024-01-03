@@ -17,18 +17,18 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
   const [header, setHeader] = useState<string>('Select a Sidebet');
   const [activeButton, setActiveButton] = useState<string>(''); // State to track the active button
 
-  const handleClick = (sidebetName: string) => {
-    const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebetName]?.(data);
+  const handleClick = (sidebet: Sidebet) => {
+    const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
 
     if (result !== undefined) {
       console.log(result);
       setSidebetStats(result);
     } else {
-      console.error(`Method ${sidebetName} not found`);
+      console.error(`Method ${sidebet.methodName} not found`);
       setSidebetStats([]);
     }
-    setHeader(sidebetName);
-    setActiveButton(sidebetName);
+    setHeader(sidebet.displayName);
+    setActiveButton(sidebet.methodName);
   };
 
   return (
@@ -51,7 +51,7 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
                         <td>
                           <button
                             className={`statButton ${activeButton === sidebet.methodName ? 'active' : ''}`}
-                            onClick={() => handleClick(sidebet.methodName)}
+                            onClick={() => handleClick(sidebet)}
                           >
                             {sidebet.displayName}
                           </button>
