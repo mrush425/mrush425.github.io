@@ -4,26 +4,22 @@ import SidebetStat from '../../Interfaces/SidebetStat';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import { findUserByRosterId } from '../../Helper Files/HelperMethods';
+import sidebetsData from '../../Data/sidebets.json';
+import SleeperRoster from '../../Interfaces/SleeperRoster';
+import Matchup from '../../Interfaces/Matchup';
+import { getLeagueRecordAtSchedule } from '../../Helper Files/RecordCalculations';
 
 class SidebetMethods {
   static Sidebets(): Sidebet[] {
-    return [
-      new Sidebet("Heartbreaker", "Heartbreaker"),
-      new Sidebet("GetWreckd", "Get Wreck'd"),
-      new Sidebet("Blackjack", "Blackjack"),
-      new Sidebet("MostPointsAgainst", "FS Team"),
-      new Sidebet("HelmentMaster", "Helmet Master"),
-      new Sidebet("Juggernaut", "Juggernaut"),
-      new Sidebet("Waffle", "The Waffle"),
-      new Sidebet("BetterLuckyThanGood", "Better Lucky Than Good")
-    ];
+    const sidebets: Sidebet[] = sidebetsData;
+
+    return sidebets;
   }
 
   static Heartbreaker(data: LeagueData): SidebetStat[] {
-    console.log("here");
     let orderedSidebets: SidebetStat[] = [];
     data.users.map((user) => {
-      orderedSidebets.push(this.UserHeartbreaker(data,user));
+      orderedSidebets.push(this.UserHeartbreaker(data, user));
     });
 
     orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? a.stat_number - b.stat_number : 100);
@@ -43,13 +39,13 @@ class SidebetMethods {
         let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
         let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
         if (matchup && opponentMatchup) {
-          if(matchup.points<opponentMatchup.points){
-            const difference = opponentMatchup.points-matchup.points;
-            if(difference<heartbreakerTotal){
-              week=matchupInfo.week;
-              heartbreakerTotal=difference;
-              opponent=(findUserByRosterId(opponentMatchup.roster_id,data)?.metadata.team_name || "");
-              points=matchup.points;
+          if (matchup.points < opponentMatchup.points) {
+            const difference = opponentMatchup.points - matchup.points;
+            if (difference < heartbreakerTotal) {
+              week = matchupInfo.week;
+              heartbreakerTotal = difference;
+              opponent = (findUserByRosterId(opponentMatchup.roster_id, data)?.metadata.team_name || "");
+              points = matchup.points;
               opponentPoints = opponentMatchup.points;
             }
           }
@@ -57,12 +53,62 @@ class SidebetMethods {
       }
     });
     let sidebetStat: SidebetStat = new SidebetStat();
-    sidebetStat.user=user;
-    sidebetStat.stat_number=heartbreakerTotal;
-    //sidebetStat.stats_display= heartbreakerTotal.toFixed(2)  + " (" + points + " - " + opponentPoints  + ") " + " Week "+ week + " against " + opponent;
+    sidebetStat.user = user;
+    sidebetStat.stat_number = heartbreakerTotal;
     sidebetStat.stats_display = heartbreakerTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
+  }
+
+  static MostPointsAgainst(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+
+    data.rosters.map((roster: SleeperRoster) => {
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = data.users.find(u => u.user_id === roster.owner_id);
+      sidebetStat.stat_number = roster.settings.fpts_against + roster.settings.fpts_against_decimal;
+      sidebetStat.stats_display = (roster.settings.fpts_against + roster.settings.fpts_against_decimal).toFixed(2);
+      orderedSidebets.push(sidebetStat);
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 100);
+    return orderedSidebets;
+  }
+
+  static Juggernaut(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.matchupInfo[data.settings.playoff_week_start + 1].matchups.map((matchup: Matchup) => {
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = findUserByRosterId(matchup.roster_id, data);
+      sidebetStat.stat_number = matchup.points;
+      sidebetStat.stats_display = matchup.points.toFixed(2);
+      orderedSidebets.push(sidebetStat);
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 100); //high to low
+    return orderedSidebets;
+  }
+
+  static Waffle(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+
+    data.users.map((user: SleeperUser) => {
+      let winsSum = 0;
+      let lossesSum = 0;
+      let tiesSum = 0;
+
+      [winsSum, lossesSum, tiesSum] = getLeagueRecordAtSchedule(user, data);
+
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = user;
+      sidebetStat.stats_record = {wins: winsSum, losses: lossesSum, ties: tiesSum};
+      sidebetStat.stats_display = sidebetStat.DisplayRecord();
+      orderedSidebets.push(sidebetStat);
+    });
+
+
+    orderedSidebets.sort((a, b) => (a.stats_record && b.stats_record) ? a.stats_record.wins - b.stats_record.wins: 1000); //low to high
+    return orderedSidebets;
   }
 
 
@@ -70,18 +116,24 @@ class SidebetMethods {
     let orderedSidebets: SidebetStat[] = [];
 
 
+    //let sidebetStat: SidebetStat = new SidebetStat();
+    //sidebetStat.user = 
+    //sidebetStat.stat_number = 
+    //sidebetStat.stats_display = 
+    //orderedSidebets.push(sidebetStat);
+
+    //orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 0); //high to low
+    //orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? a.stat_number - b.stat_number : 1000); //low to high
+    // orderedSidebets.sort((a, b) => (a.stats_record && b.stats_record) ? b.stats_record.wins - a.stats_record.wins: 0); //high to low
+    // orderedSidebets.sort((a, b) => (a.stats_record && b.stats_record) ? a.stats_record.wins - b.stats_record.wins: 1000); //low to high
     return orderedSidebets;
   }
 }
 
-export class Sidebet {
+export interface Sidebet {
   methodName: string;
   displayName: string;
-  constructor(methodName: string, displayName: string) {
-    this.methodName = methodName;
-    this.displayName = displayName;
-  }
-};
-
+  description: string;
+}
 
 export default SidebetMethods;

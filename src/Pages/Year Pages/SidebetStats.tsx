@@ -15,25 +15,30 @@ interface SidebetStatsProps {
 const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
   const [sidebetStats, setSidebetStats] = useState<SidebetStat[]>([]); // State to store draft picks for the selected team
   const [header, setHeader] = useState<string>('Select a Sidebet');
+  const [description, setDescription] = useState<string>('');
   const [activeButton, setActiveButton] = useState<string>(''); // State to track the active button
+  const [isImplemented, setIsImplemented] = useState<boolean>(true);
 
   const handleClick = (sidebet: Sidebet) => {
     const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
 
     if (result !== undefined) {
-      console.log(result);
+      setIsImplemented(true);
       setSidebetStats(result);
     } else {
-      console.error(`Method ${sidebet.methodName} not found`);
+      console.log("Method name: " + sidebet.methodName);
       setSidebetStats([]);
+      setIsImplemented(false);
     }
     setHeader(sidebet.displayName);
-    setActiveButton(sidebet.methodName);
+    setDescription(sidebet.description);
   };
+
 
   return (
     <div>
       <YearNavBar data={data} />
+
       <table>
         <tbody>
           <tr>
@@ -64,7 +69,12 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
             </td>
             <td className="statsColumn" key={"column2"} width={"100%"}>
               <h2>{header}</h2>
-              {sidebetStats && (
+              <div>{description}</div>
+              {!isImplemented ? (
+                <div className="notImplementedMessage">
+                  Stat not implemented
+                </div>
+              ) : (
                 <div>
                   {/* Display table of draft picks for the selected team */}
                   <table className="statsTable">

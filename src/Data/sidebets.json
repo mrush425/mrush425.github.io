@@ -1,0 +1,97 @@
+[
+    {
+      "methodName": "Heartbreaker",
+      "displayName": "Heartbreaker",
+      "description": "Lowest point differential in a single season loss."
+    },
+    {
+      "methodName": "MostPointsAgainst",
+      "displayName": "FS Team",
+      "description": "Highest total points against in regular season."
+    },
+    {
+      "methodName": "HelmetMaster",
+      "displayName": "Helmet Master",
+      "description": "Best guess of the NFL record of the persons selected helmet."
+    },
+    {
+      "methodName": "Juggernaut",
+      "displayName": "Juggernaut",
+      "description": "Highest single points scored in a regular season game."
+    },
+    {
+      "methodName": "Waffle",
+      "displayName": "Waffle",
+      "description": "The most difficult schedule based on everyone playing in your schedule."
+    },
+    {
+      "methodName": "BetterLuckyThanGood",
+      "displayName": "Better Lucky Than Good",
+      "description": "Least points in a win in the regular season."
+    },
+    {
+      "methodName": "BossWhenItCounts",
+      "displayName": "Being a Boss When it Counts",
+      "description": "Most points scored in the championship week."
+    },
+    {
+      "methodName": "MaybeNextTime",
+      "displayName": "Maybe Next Time",
+      "description": "Highest score in a loss in the regular season."
+    },
+    {
+      "methodName": "JamarcusRussel",
+      "displayName": "The Jamarcus Russel",
+      "description": "Biggest 1st round bust."
+    },
+    {
+      "methodName": "ParticipationRibbon",
+      "displayName": "Participation Ribbon",
+      "description": "Troll bowl winner."
+    },
+    {
+      "methodName": "KickedInDaBallz",
+      "displayName": "Kicked in da Ballz",
+      "description": "Most points against by kickers."
+    },
+    {
+      "methodName": "BestBadReceiver",
+      "displayName": "Helmet Master 4th String",
+      "description": "Most points from 4th string WR of Helmet Master team."
+    },
+    {
+      "methodName": "BlueBalls",
+      "displayName": "Blue Balls",
+      "description": "Most points against by defenses."
+    },
+    {
+      "methodName": "Underperformer",
+      "displayName": "Underperformer",
+      "description": "Furthest points away from projections throughout the regular season."
+    },
+    {
+      "methodName": "SetAndForgetWinner",
+      "displayName": "At Least I Draft Well",
+      "description": "Set and forget league winner."
+    },
+    {
+      "methodName": "ComingInHot",
+      "displayName": "Coming in Hot",
+      "description": "Most points scored in week 1"
+    },
+    {
+      "methodName": "GetWreckd",
+      "displayName": "Get Fuckin Wreck'd",
+      "description": "Biggest blowout in a regular season game"
+    },
+    {
+      "methodName": "Blackjack",
+      "displayName": "Blackjack",
+      "description": "Team with player closest to 21 points in a single game without going over"
+    },
+    {
+      "methodName": "ConnarEffect",
+      "displayName": "The Connar Effect",
+      "description": "Most points against by quarterbacks in the regular season."
+    }
+]

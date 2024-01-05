@@ -166,55 +166,6 @@ export const getRecordInTop50 = (user: SleeperUser, data: LeagueData): [wins: nu
     return [wins, losses, ties];
 };
 
-export const getRecordInTop502 = (user: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
-    let wins = 0;
-    let losses = 0;
-    let ties = 0;
-    
-
-    // Loop over each matchupInfo object from data.matchupInfo
-    data.matchupInfo.forEach((matchupInfo) => {
-        if (
-            (data.nflSeasonInfo.season === data.season &&
-                matchupInfo.week !== data.nflSeasonInfo.week &&
-                matchupInfo.week < data.settings.playoff_week_start) ||
-            (data.nflSeasonInfo.season !== data.season &&
-                matchupInfo.week < data.settings.playoff_week_start)
-        ) {
-            // Loop through the matchups in current matchupInfo
-            const sortedMatchups = matchupInfo.matchups
-                .filter((matchup) => {
-                    const userRoster = data.rosters.find((roster) => roster.owner_id === user.user_id);
-                    const currentRosterId = userRoster?.roster_id;
-
-                    // Add the matchup object to a sorted array that is sorted by matchup.points
-                    return (
-                        currentRosterId === matchup.roster_id &&
-                        currentRosterId !== undefined &&
-                        userRoster!.settings.wins++ // Use non-null assertion here
-                    );
-                })
-                .sort((a, b) => b.points - a.points);
-
-            // Check if the current user is in the top half of the array
-            const userIndex = sortedMatchups.findIndex(
-                (matchup) => matchup.roster_id === data.rosters.find((roster) => roster.owner_id === user.user_id)?.roster_id
-            );
-
-            // Add 1 to wins, losses, or ties based on the user's position in the sorted array
-            if (userIndex !== -1) {
-                userIndex < sortedMatchups.length / 2 ? wins++ : losses++;
-            } else {
-                ties++;
-            }
-        }
-    });
-
-    return [wins, losses, ties];
-};
-
-
-
 
 export const displayRecord = (wins: number, losses: number, ties: number): string => {
     return wins + "-" + losses + "-" + ties;
