@@ -4,6 +4,12 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar'; // Import the YearNavBar component
 import '../../Stylesheets/Year Stylesheets/YearData.css'; // Create a CSS file for styling
 import { displayRecord, getAverageLeagueRecordAtSchedule, getAverageRecordAgainstLeague, getLeagueRecordAtSchedule, getRecordAgainstLeague, getRecordInTop50 } from '../../Helper Files/RecordCalculations';
+import yearSidebetsData from '../../Data/yearSidebets.json';
+import SidebetMethods, { Sidebet, YearSidebet } from './SidebetMethods';
+import SidebetStat from '../../Interfaces/SidebetStat';
+import SidebetStats from './SidebetStats';
+import { getUserPlace } from '../../Helper Files/HelperMethods';
+
 
 interface YearDataProps {
   data: LeagueData;
@@ -56,6 +62,46 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     setSortedRosters(sortedData);
   }, [data.rosters, sortBy, sortDirection]); // Run the effect whenever data.rosters, sortBy, or sortDirection changes
 
+  const sidebetsDisplay: SidebetDisplay[] = [];
+  const getSidebetData = () => {
+    const yearSidebets: YearSidebet[] = yearSidebetsData.filter((yearSidebet) => yearSidebet.year === data.season);
+    yearSidebets.map((yearSidebet) => {
+      const sidebet: Sidebet | undefined = SidebetMethods.Sidebets().find(sidebet => sidebet.displayName === yearSidebet.sidebetName);
+      console.log(sidebet);
+      if (sidebet) {
+        const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
+        let sidebetDisplay: SidebetDisplay = {
+          sidebetName: sidebet.displayName,
+          winners: [],
+          statDisplays: []
+        };
+        if (result) {
+          sidebetDisplay.winners.push(result[0].user?.metadata.team_name || "something went wrong")
+          sidebetDisplay.statDisplays.push(result[0].stats_display || "something went wrong");
+          if (result[0].stat_number) {
+            for (let i = 1; i < result.length; i++) {
+              if (result[i].stat_number === result[0].stat_number) {
+                sidebetDisplay.statDisplays.push(result[i].stats_display || "something went wrong");
+              }
+            }
+          } else {
+            for (let i = 1; i < result.length; i++) {
+              if (result[i].stats_record?.wins === result[0].stats_record?.wins && result[i].stats_record?.losses === result[0].stats_record?.losses) {
+                sidebetDisplay.statDisplays.push(result[i].stats_display || "something went wrong");
+              }
+            }
+          }
+        } else {
+          sidebetDisplay.winners.push("n/a");
+          sidebetDisplay.statDisplays.push("n/a");
+        }
+        sidebetsDisplay.push(sidebetDisplay);
+      }
+    });
+  };
+
+  getSidebetData();
+
   return (
     <div>
       <YearNavBar data={data} /> {/* Render the YearNavBar component */}
@@ -94,13 +140,19 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedRosters.map((roster) => {
+          {sortedRosters.map((roster,index) => {
             const user = users.find((u) => u.user_id === roster.owner_id);
             let recordAgainstEveryone: string = "";
             let leagueRecordAtSchedule: string = "";
             let averageRecordAgainstEveryone: string = "";
             let averageLeagueRecordAtSchedule: string = "";
             let recordInTop50: string = "";
+            let className="";
+
+            if(user && getUserPlace(user.user_id,data)<6){
+              className="playoffs-team";
+            }
+
             if (user) {
               recordAgainstEveryone = displayRecord(...getRecordAgainstLeague(user, data));
               leagueRecordAtSchedule = displayRecord(...getLeagueRecordAtSchedule(user, data));
@@ -110,7 +162,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             }
 
             return (
-              <tr key={roster.roster_id}>
+              <tr className={className} key={roster.roster_id}>
                 <td>{user?.metadata.team_name}</td>
                 <td>{`${roster.settings.wins}-${roster.settings.losses}`}</td>
                 <td>{`${roster.settings.fpts}.${roster.settings.fpts_decimal}`}</td>
@@ -123,8 +175,56 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
           })}
         </tbody>
       </table>
+
+      <h3 style={{ marginTop: "30px" }}>Sidebets</h3>
+      <table className="sidebets-table">
+        <thead>
+          <tr>
+            <th>Sidebet</th>
+            <th>Winner</th>
+            <th>Stat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sidebetsDisplay.map((sidebetDisplay) => {
+            return (
+              <tr>
+                <td>{sidebetDisplay.sidebetName}</td>
+                <td>
+                  {sidebetDisplay.winners.map((winner, index) => (
+                    <table className='single-sidebet-table' key={index}>
+                      <tbody>
+                        <tr>
+                          <td>{winner}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  ))}
+                </td>
+                <td>
+                  {sidebetDisplay.statDisplays.map((statDisplay, index) => (
+                    <table className='single-sidebet-table' key={index}>
+                      <tbody>
+                        <tr>
+                          <td>{statDisplay}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  ))}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
+
+interface SidebetDisplay {
+  sidebetName: string | undefined,
+  winners: string[],
+  statDisplays: string[]
+}
 
 export default YearData;

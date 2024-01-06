@@ -55,7 +55,7 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = heartbreakerTotal;
-    sidebetStat.stats_display = heartbreakerTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+    sidebetStat.stats_display = heartbreakerTotal.toFixed(2) + " during week " + week + " against " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
   }
@@ -157,7 +157,7 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = betterLuckyThanGoodTotal;
-    sidebetStat.stats_display = betterLuckyThanGoodTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+    sidebetStat.stats_display = betterLuckyThanGoodTotal.toFixed(2) + " during week " + week + " against " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
   }
@@ -199,7 +199,7 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = juggernautTotal;
-    sidebetStat.stats_display = juggernautTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+    sidebetStat.stats_display = juggernautTotal.toFixed(2) + " during week " + week + " against " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
   }
@@ -242,7 +242,7 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = maybeNextTimeTotal;
-    sidebetStat.stats_display = maybeNextTimeTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+    sidebetStat.stats_display = maybeNextTimeTotal.toFixed(2) + " during week " + week + " against " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
   }
@@ -270,8 +270,8 @@ class SidebetMethods {
         let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
         let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
         if (matchup && opponentMatchup) {
-          if (matchup.points < opponentMatchup.points) {
-            const difference = opponentMatchup.points - matchup.points;
+          if (matchup.points > opponentMatchup.points) {
+            const difference = matchup.points - opponentMatchup.points ;
             if (difference > getWreckdTotal) {
               week = matchupInfo.week;
               getWreckdTotal = difference;
@@ -286,7 +286,7 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = getWreckdTotal;
-    sidebetStat.stats_display = getWreckdTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+    sidebetStat.stats_display = getWreckdTotal.toFixed(2) + " during week " + week + " against " + opponent + ": " + points + " - " + opponentPoints;
 
     return sidebetStat;
   }
@@ -303,7 +303,9 @@ class SidebetMethods {
 
   static UserCharger(data: LeagueData, user: SleeperUser): SidebetStat {
     let chargerTotal: number = 0;
-    let weeks: string = "";
+    let weeks10: string = "";
+    let weeks5: string ="";
+    let weeks1: string="";
 
 
     const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
@@ -314,11 +316,23 @@ class SidebetMethods {
         if (matchup && opponentMatchup) {
           if (matchup.points < opponentMatchup.points) {
             const difference = opponentMatchup.points - matchup.points;
-            if (difference < 10) {
-              if(weeks!==""){
-                weeks+=", "
+            if (difference < 1) {
+              if(weeks1!==""){
+                weeks1+=", "
               }
-              weeks += matchupInfo.week;
+              weeks1 += matchupInfo.week;
+              chargerTotal+=3;
+            } else if (difference < 5) {
+              if(weeks5!==""){
+                weeks5+=", "
+              }
+              weeks5 += matchupInfo.week;
+              chargerTotal+=2;
+            } else if (difference < 10) {
+              if(weeks10!==""){
+                weeks10+=", "
+              }
+              weeks10 += matchupInfo.week;
               chargerTotal++;
             }
           }
@@ -328,7 +342,87 @@ class SidebetMethods {
     let sidebetStat: SidebetStat = new SidebetStat();
     sidebetStat.user = user;
     sidebetStat.stat_number = chargerTotal;
-    sidebetStat.stats_display = chargerTotal.toFixed(0) + " during weeks " + weeks;
+    sidebetStat.stats_display = chargerTotal.toFixed(0);
+    if(weeks1!=="" || weeks5!=="" || weeks10!==""){
+      sidebetStat.stats_display += " - "
+    }
+    if(weeks1!==""){
+      sidebetStat.stats_display += " <1 week(s): " + weeks1;
+    }
+    if(weeks5!==""){
+      sidebetStat.stats_display += " <5 week(s): " + weeks5;
+    }
+    if(weeks10!==""){
+      sidebetStat.stats_display += " <10 week(s): " + weeks10;
+    }
+
+    return sidebetStat;
+  }
+
+  static Viking(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserViking(data, user));
+    });
+    console.log(orderedSidebets);
+    orderedSidebets.sort((a, b) => (b.stat_number || 0) - (a.stat_number || 0));
+    return orderedSidebets;
+  }
+
+  static UserViking(data: LeagueData, user: SleeperUser): SidebetStat {
+    let vikingTotal: number = 0;
+    let weeks10: string = "";
+    let weeks5: string ="";
+    let weeks1: string="";
+
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points > opponentMatchup.points) {
+            const difference = matchup.points-opponentMatchup.points;
+            if (difference < 1) {
+              if(weeks1!==""){
+                weeks1+=", "
+              }
+              weeks1 += matchupInfo.week;
+              vikingTotal+=3;
+            } else if (difference < 5) {
+              if(weeks5!==""){
+                weeks5+=", "
+              }
+              weeks5 += matchupInfo.week;
+              vikingTotal+=2;
+            } else if (difference < 10) {
+              if(weeks10!==""){
+                weeks10+=", "
+              }
+              weeks10 += matchupInfo.week;
+              vikingTotal++;
+            }
+          }
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = vikingTotal;
+    sidebetStat.stats_display = vikingTotal.toFixed(0);
+    if(weeks1!=="" || weeks5!=="" || weeks10!==""){
+      sidebetStat.stats_display += " - "
+    }
+    if(weeks1!==""){
+      sidebetStat.stats_display += " <1 week(s): " + weeks1;
+    }
+    if(weeks5!==""){
+      sidebetStat.stats_display += " <5 week(s): " + weeks5;
+    }
+    if(weeks10!==""){
+      sidebetStat.stats_display += " <10 week(s): " + weeks10;
+    }
 
     return sidebetStat;
   }
@@ -355,6 +449,11 @@ export interface Sidebet {
   methodName: string;
   displayName: string;
   description: string;
+}
+
+export interface YearSidebet{
+  year: string;
+  sidebetName: string;
 }
 
 export default SidebetMethods;

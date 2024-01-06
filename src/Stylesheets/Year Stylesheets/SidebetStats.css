@@ -33,3 +33,56 @@
 .active {
     background-color: lightskyblue;
 }
+
+.arrowButton {
+    margin-right:"10px";
+    border:"0px"
+}
+
+.statsHeaderTable{
+    margin: auto;
+}
+
+.arrowButtonCell{
+    width: 100px;
+    vertical-align: top;
+}
+
+.headerCell{
+    width: 500px;
+}
+
+@media (max-width: 768px) {
+    .statMenu {
+      display: none; /* Hide statMenuDiv on mobile */
+    }
+
+    .fullTable {
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .statsColumn h2 {
+        width: 100%;
+        position: relative;
+    }
+
+    .statsHeaderTable{
+        width: 100%;
+    }
+
+    .arrowButtonCell{
+        width: 50px;
+        vertical-align: top;
+    }
+
+    .headerCell{
+        width: 100%;
+    }
+
+    .statsTable {
+        margin: auto;
+        margin-top: 20px;
+    }
+}
+

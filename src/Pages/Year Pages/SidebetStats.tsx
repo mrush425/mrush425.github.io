@@ -13,13 +13,13 @@ interface SidebetStatsProps {
 }
 
 const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
-  const [sidebetStats, setSidebetStats] = useState<SidebetStat[]>([]); // State to store draft picks for the selected team
+  const [sidebetStats, setSidebetStats] = useState<SidebetStat[]>([]);
   const [header, setHeader] = useState<string>('Select a Sidebet');
   const [description, setDescription] = useState<string>('');
-  const [activeButton, setActiveButton] = useState<string>(''); // State to track the active button
+  const [activeButtonIndex, setActiveButtonIndex] = useState<number>(-1);
   const [isImplemented, setIsImplemented] = useState<boolean>(true);
 
-  const handleClick = (sidebet: Sidebet) => {
+  const handleButtonClick = (sidebet: Sidebet, index: number) => {
     const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
 
     if (result !== undefined) {
@@ -32,14 +32,44 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
     }
     setHeader(sidebet.displayName);
     setDescription(sidebet.description);
+    setActiveButtonIndex(index);
   };
 
+  const handleArrowKey = (direction: 'left' | 'right') => {
+    setActiveButtonIndex((prevIndex) => {
+      const newIndex =
+        direction === 'right'
+          ? (prevIndex + 1) % SidebetMethods.Sidebets().length
+          : (prevIndex - 1 + SidebetMethods.Sidebets().length) % SidebetMethods.Sidebets().length;
+
+      const selectedSidebet = SidebetMethods.Sidebets()[newIndex];
+      handleButtonClick(selectedSidebet, newIndex);
+
+      return newIndex;
+    });
+  };
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowRight') {
+        handleArrowKey('right');
+      } else if (event.key === 'ArrowLeft') {
+        handleArrowKey('left');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
 
   return (
     <div>
       <YearNavBar data={data} />
 
-      <table>
+      <table className='fullTable'>
         <tbody>
           <tr>
             <td className="statMenu" key={"column1"}>
@@ -51,12 +81,12 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {SidebetMethods.Sidebets().map((sidebet: Sidebet) => (
+                    {SidebetMethods.Sidebets().map((sidebet: Sidebet, index: number) => (
                       <tr key={sidebet.methodName}>
                         <td>
                           <button
-                            className={`statButton ${activeButton === sidebet.methodName ? 'active' : ''}`}
-                            onClick={() => handleClick(sidebet)}
+                            className={`statButton ${activeButtonIndex === index ? 'active' : ''}`}
+                            onClick={() => handleButtonClick(sidebet, index)}
                           >
                             {sidebet.displayName}
                           </button>
@@ -68,7 +98,19 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
               </div>
             </td>
             <td className="statsColumn" key={"column2"} width={"100%"}>
-              <h2>{header + " " + data.season}</h2>
+
+              <div style={{width:"100%"}}>
+              <table className="statsHeaderTable">
+                <tbody>
+                  <tr>
+                    <td className='arrowButtonCell'><button className='arrowButton' onClick={() => handleArrowKey('left')}>&#x2b05;</button></td>
+                    <td className='headerCell'><h2>{header + " " + data.season}</h2></td>
+                    <td className='arrowButtonCell'><button className='arrowButton' onClick={() => handleArrowKey('right')}>&#x27a1;</button></td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+
               <div>{description}</div>
               {!isImplemented ? (
                 <div className="notImplementedMessage">
@@ -76,7 +118,6 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
                 </div>
               ) : (
                 <div>
-                  {/* Display table of draft picks for the selected team */}
                   <table className="statsTable">
                     <thead>
                       <tr>

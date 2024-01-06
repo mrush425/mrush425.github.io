@@ -97,6 +97,11 @@
     {
         "methodName": "Charger",
         "displayName": "The Charger",
-        "description": "The Team with the most single digit losses throughout the season."
+        "description": "The Team with the most single digit losses throughout the season. (3pts for <1 diff, 2pts for <5 diff, 1pt for <10 diff)"
+    },
+    {
+        "methodName": "Viking",
+        "displayName": "The Viking",
+        "description": "The Team with the most single digit wins throughout the season. (3pts for <1 diff, 2pts for <5 diff, 1pt for <10 diff)"
     }
 ]

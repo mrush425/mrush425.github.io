@@ -53,6 +53,7 @@ const CustomNavbar: React.FC<NavbarProps> = ({ data }) => {
             show={isDropdownOpen}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            align="end"
           >
             {data.map((league) => (
               <NavDropdown.Item

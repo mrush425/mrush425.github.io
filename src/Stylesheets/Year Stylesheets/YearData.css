@@ -11,6 +11,27 @@
     border: 2px solid black; /* Border color and width for rows */
   }
 
-  .records-table tbody tr:nth-child(-n+6) {
+  .playoffs-team {
     background-color: lightgreen;
+  }
+
+  .sidebets-table{
+    margin: auto;
+    margin-top: 20px;
+  }
+
+  .sidebets-table tbody tr {
+    border: 2px solid black; /* Border color and width for rows */
+  }
+
+  .single-sidebet-table tbody tr {
+    border: 0px solid black; /* Border color and width for rows */
+  }
+
+  .single-sidebet-table tbody tr td {
+    min-width: 100px;
+  }
+
+  .single-sidebet-table {
+    width: 100%;
   }

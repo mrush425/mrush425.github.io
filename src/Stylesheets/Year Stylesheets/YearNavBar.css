@@ -1,24 +1,28 @@
 /* YearNavBar.css */
 .year-navbar-container {
-    display: flex;
-    gap: 8px; /* Adjust the gap as needed */
-  }
-  
-  .year-navbar-container .btn-custom {
-    background-color: rgb(212, 205, 243); /* Soft blue color */
-    color: #000000; /* Black text color */
-    /* Add more styles as needed */
-    transition: background-color 0.3s ease; /* Smooth transition effect */
-  }
-  
-  .year-navbar-container .btn-custom:hover {
-    background-color: rgb(187, 175, 240); /* Darker blue color on hover */
-    /* Add more styles for hover state as needed */
-  }
+  display: flex;
+  gap: 4px; /* Adjust the gap as needed */
+  overflow: auto;
+  border: 0px solid #3498db; /* Border color: Light Blue */
+  padding: 0px; /* Add padding for better appearance */
+  border-radius: 5px; /* Optional: Add border-radius for rounded corners */
+}
 
-  .year-navbar-container {
-    border: 1px solid #ccc; /* Add a border with a color of your choice */
-    padding: 10px; /* Add padding for better appearance */
-    border-radius: 5px; /* Optional: Add border-radius for rounded corners */
-  }
-  
+.year-navbar-container a {
+  text-decoration: none; /* Remove underline from links */
+}
+
+.year-navbar-container .btn-custom {
+  background-color: #3498db; /* Light Blue */
+  color: #ffffff; /* White text color */
+  padding: 8px 12px; /* Add padding for better button size */
+  border: 1px solid #2980b9; /* Border color on default state: Darker Blue */
+  border-radius: 4px; /* Optional: Add border-radius for rounded corners */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition effect */
+}
+
+.year-navbar-container .btn-custom:hover {
+  background-color: #2980b9; /* Darker Blue on hover */
+  color: #ffffff; /* White text color on hover */
+  /* Add more styles for hover state as needed */
+}
