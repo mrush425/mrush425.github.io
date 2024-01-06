@@ -68,7 +68,7 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
               </div>
             </td>
             <td className="statsColumn" key={"column2"} width={"100%"}>
-              <h2>{header}</h2>
+              <h2>{header + " " + data.season}</h2>
               <div>{description}</div>
               {!isImplemented ? (
                 <div className="notImplementedMessage">

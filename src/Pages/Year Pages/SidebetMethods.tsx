@@ -75,9 +75,17 @@ class SidebetMethods {
     return orderedSidebets;
   }
 
-  static Juggernaut(data: LeagueData): SidebetStat[] {
+  static BossWhenItCounts(data: LeagueData): SidebetStat[] {
+    return this.MostPointsInWeek(data,data.settings.playoff_week_start+2);
+  }
+
+  static ComingInHot(data: LeagueData): SidebetStat[] {
+    return this.MostPointsInWeek(data,1);
+  }
+
+  static MostPointsInWeek(data: LeagueData, week: number): SidebetStat[]{
     let orderedSidebets: SidebetStat[] = [];
-    data.matchupInfo[data.settings.playoff_week_start + 1].matchups.map((matchup: Matchup) => {
+    data.matchupInfo[week-1].matchups.map((matchup: Matchup) => {
       let sidebetStat: SidebetStat = new SidebetStat();
       sidebetStat.user = findUserByRosterId(matchup.roster_id, data);
       sidebetStat.stat_number = matchup.points;
@@ -101,16 +109,229 @@ class SidebetMethods {
 
       let sidebetStat: SidebetStat = new SidebetStat();
       sidebetStat.user = user;
-      sidebetStat.stats_record = {wins: winsSum, losses: lossesSum, ties: tiesSum};
+      sidebetStat.stats_record = { wins: winsSum, losses: lossesSum, ties: tiesSum };
       sidebetStat.stats_display = sidebetStat.DisplayRecord();
       orderedSidebets.push(sidebetStat);
     });
 
 
-    orderedSidebets.sort((a, b) => (a.stats_record && b.stats_record) ? a.stats_record.wins - b.stats_record.wins: 1000); //low to high
+    orderedSidebets.sort((a, b) => (a.stats_record && b.stats_record) ? a.stats_record.wins - b.stats_record.wins : 1000); //low to high
     return orderedSidebets;
   }
 
+  static BetterLuckyThanGood(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserBetterLuckyThanGood(data, user));
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? a.stat_number - b.stat_number : 100);
+    return orderedSidebets;
+  }
+
+  static UserBetterLuckyThanGood(data: LeagueData, user: SleeperUser): SidebetStat {
+    let betterLuckyThanGoodTotal: number = 200;
+    let points: number = 0;
+    let opponentPoints: number = 0;
+    let week: number = 0;
+    let opponent: string = "";
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points > opponentMatchup.points) {
+            if (matchup.points < betterLuckyThanGoodTotal) {
+              week = matchupInfo.week;
+              betterLuckyThanGoodTotal = matchup.points;
+              opponent = (findUserByRosterId(opponentMatchup.roster_id, data)?.metadata.team_name || "");
+              points = matchup.points;
+              opponentPoints = opponentMatchup.points;
+            }
+          }
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = betterLuckyThanGoodTotal;
+    sidebetStat.stats_display = betterLuckyThanGoodTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+
+    return sidebetStat;
+  }
+
+  static Juggernaut(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserJuggernaut(data, user));
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 0);
+    return orderedSidebets;
+  }
+
+  static UserJuggernaut(data: LeagueData, user: SleeperUser): SidebetStat {
+    let juggernautTotal: number = 0;
+    let points: number = 0;
+    let opponentPoints: number = 0;
+    let week: number = 0;
+    let opponent: string = "";
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points > juggernautTotal) {
+            week = matchupInfo.week;
+            juggernautTotal = matchup.points;
+            opponent = (findUserByRosterId(opponentMatchup.roster_id, data)?.metadata.team_name || "");
+            points = matchup.points;
+            opponentPoints = opponentMatchup.points;
+          }
+
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = juggernautTotal;
+    sidebetStat.stats_display = juggernautTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+
+    return sidebetStat;
+  }
+
+  static MaybeNextTime(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserMaybeNextTime(data, user));
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 0);
+    return orderedSidebets;
+  }
+
+  static UserMaybeNextTime(data: LeagueData, user: SleeperUser): SidebetStat {
+    let maybeNextTimeTotal: number = 0;
+    let points: number = 0;
+    let opponentPoints: number = 0;
+    let week: number = 0;
+    let opponent: string = "";
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points < opponentMatchup.points) {
+            if (matchup.points > maybeNextTimeTotal) {
+              week = matchupInfo.week;
+              maybeNextTimeTotal = matchup.points;
+              opponent = (findUserByRosterId(opponentMatchup.roster_id, data)?.metadata.team_name || "");
+              points = matchup.points;
+              opponentPoints = opponentMatchup.points;
+            }
+          }
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = maybeNextTimeTotal;
+    sidebetStat.stats_display = maybeNextTimeTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+
+    return sidebetStat;
+  }
+
+  static GetWreckd(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserGetWreckd(data, user));
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 0);
+    return orderedSidebets;
+  }
+
+  static UserGetWreckd(data: LeagueData, user: SleeperUser): SidebetStat {
+    let getWreckdTotal: number = 0;
+    let points: number = 0;
+    let opponentPoints: number = 0;
+    let week: number = 0;
+    let opponent: string = "";
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points < opponentMatchup.points) {
+            const difference = opponentMatchup.points - matchup.points;
+            if (difference > getWreckdTotal) {
+              week = matchupInfo.week;
+              getWreckdTotal = difference;
+              opponent = (findUserByRosterId(opponentMatchup.roster_id, data)?.metadata.team_name || "");
+              points = matchup.points;
+              opponentPoints = opponentMatchup.points;
+            }
+          }
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = getWreckdTotal;
+    sidebetStat.stats_display = getWreckdTotal.toFixed(2) + " during week " + week + " by " + opponent + ": " + points + " - " + opponentPoints;
+
+    return sidebetStat;
+  }
+
+  static Charger(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+    data.users.map((user) => {
+      orderedSidebets.push(this.UserCharger(data, user));
+    });
+    console.log(orderedSidebets);
+    orderedSidebets.sort((a, b) => (b.stat_number || 0) - (a.stat_number || 0));
+    return orderedSidebets;
+  }
+
+  static UserCharger(data: LeagueData, user: SleeperUser): SidebetStat {
+    let chargerTotal: number = 0;
+    let weeks: string = "";
+
+
+    const rosterId: number = (data.rosters.find(r => r.owner_id === user.user_id)?.roster_id || 0);
+    data.matchupInfo.map((matchupInfo: MatchupInfo) => {
+      if (matchupInfo.week < data.settings.playoff_week_start) {
+        let matchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
+        let opponentMatchup = matchupInfo.matchups.find(m => m.matchup_id === matchup?.matchup_id && m.roster_id !== rosterId);
+        if (matchup && opponentMatchup) {
+          if (matchup.points < opponentMatchup.points) {
+            const difference = opponentMatchup.points - matchup.points;
+            if (difference < 10) {
+              if(weeks!==""){
+                weeks+=", "
+              }
+              weeks += matchupInfo.week;
+              chargerTotal++;
+            }
+          }
+        }
+      }
+    });
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    sidebetStat.stat_number = chargerTotal;
+    sidebetStat.stats_display = chargerTotal.toFixed(0) + " during weeks " + weeks;
+
+    return sidebetStat;
+  }
 
   static NewStatTemplate(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];
