@@ -76,6 +76,8 @@ class SidebetMethods {
   }
 
   static BossWhenItCounts(data: LeagueData): SidebetStat[] {
+    console.log(data.settings.playoff_week_start+2);
+    console.log(data);
     return this.MostPointsInWeek(data,data.settings.playoff_week_start+2);
   }
 
@@ -296,7 +298,6 @@ class SidebetMethods {
     data.users.map((user) => {
       orderedSidebets.push(this.UserCharger(data, user));
     });
-    console.log(orderedSidebets);
     orderedSidebets.sort((a, b) => (b.stat_number || 0) - (a.stat_number || 0));
     return orderedSidebets;
   }

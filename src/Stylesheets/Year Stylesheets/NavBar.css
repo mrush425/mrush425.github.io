@@ -1,5 +1,5 @@
 /* YearNavBar.css */
-.year-navbar-container {
+.navbar-container {
   display: flex;
   gap: 4px; /* Adjust the gap as needed */
   overflow: auto;
@@ -8,11 +8,11 @@
   border-radius: 5px; /* Optional: Add border-radius for rounded corners */
 }
 
-.year-navbar-container a {
+.navbar-container a {
   text-decoration: none; /* Remove underline from links */
 }
 
-.year-navbar-container .btn-custom {
+.navbar-container .btn-custom {
   background-color: #3498db; /* Light Blue */
   color: #ffffff; /* White text color */
   padding: 8px 12px; /* Add padding for better button size */
@@ -21,7 +21,7 @@
   transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition effect */
 }
 
-.year-navbar-container .btn-custom:hover {
+.navbar-container .btn-custom:hover {
   background-color: #2980b9; /* Darker Blue on hover */
   color: #ffffff; /* White text color on hover */
   /* Add more styles for hover state as needed */

@@ -8,7 +8,7 @@ import yearSidebetsData from '../../Data/yearSidebets.json';
 import SidebetMethods, { Sidebet, YearSidebet } from './SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
-import { getUserPlace } from '../../Helper Files/HelperMethods';
+import { getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 
 
 interface YearDataProps {
@@ -104,7 +104,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
 
   return (
     <div>
-      <YearNavBar data={data} /> {/* Render the YearNavBar component */}
+      <YearNavBar data={data} /> 
 
       <h2>{`Season ${data.season}`}</h2>
       <table className="records-table">
@@ -149,7 +149,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             let recordInTop50: string = "";
             let className="";
 
-            if(user && getUserPlace(user.user_id,data)<6){
+            if(user && getUserSeasonPlace(user.user_id,data)<6){
               className="playoffs-team";
             }
 

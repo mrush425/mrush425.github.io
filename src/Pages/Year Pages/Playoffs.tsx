@@ -5,6 +5,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import playoffData from '../../Data/playoffs.json'; // Import your trollData.json
 import '../../Stylesheets/Year Stylesheets/Playoffs.css';
 import PlayoffData, { PlayoffMatchup } from '../../Interfaces/PlayoffData';
+import { getScoreStringForWeek } from '../../Helper Files/HelperMethods';
 
 
 interface PlayoffsProps {
@@ -24,7 +25,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
 
     if (matchup) {
       // Do something with the found matchup
-      const user = data.users.find(u => u.user_id === matchup.troll);
+      const user = data.users.find(u => u.user_id === matchup.user_id);
       if (user) {
         switch (matchupId) {
           //First round people and scores
@@ -40,7 +41,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
           case "10":
           case "11":
           case "12":
-            return user.metadata.team_name + " - " + getScoreForWeek(user, playoffStart);
+            return user.metadata.team_name + " - " + getScoreStringForWeek(user, playoffStart,data);
             break;
           //Second round people and scores
           case "13":
@@ -51,15 +52,15 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
           case "20":
           case "21":
           case "22":
-            return user.metadata.team_name + " - " + getScoreForWeek(user, playoffStart+1);
+            return user.metadata.team_name + " - " + getScoreStringForWeek(user, playoffStart+1,data);
             break;
           //Koozie Bowl and Butler Bowl combined scores
           case "17":
           case "18":
           case "23":
           case "24":
-            let combinedScore=getScoreForWeek(user, playoffStart+1);
-            combinedScore+=getScoreForWeek(user, playoffStart+2);
+            let combinedScore=getScoreStringForWeek(user, playoffStart+1,data);
+            combinedScore+=getScoreStringForWeek(user, playoffStart+2,data);
             return user.metadata.team_name + " - " + combinedScore;
             break;
 
@@ -72,7 +73,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
           case "32":
           case "33":
           case "34":
-            return user.metadata.team_name + " " + getScoreForWeek(user, playoffStart+2);
+            return user.metadata.team_name + " " + getScoreStringForWeek(user, playoffStart+2,data);
             break;
 
           //Pass to get the string for both weeks of the combined bowls
@@ -80,7 +81,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
           case "30":
           case "35":
           case "36":
-            return "W"+(playoffStart+1)+": "+getScoreForWeek(user, playoffStart+1) + " - W"+(playoffStart+2)+": "+getScoreForWeek(user, playoffStart+2);
+            return "W"+(playoffStart+1)+": "+getScoreStringForWeek(user, playoffStart+1,data) + " - W"+(playoffStart+2)+": "+getScoreStringForWeek(user, playoffStart+2,data);
             break;
         }
         return user.display_name;
@@ -94,15 +95,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
     }
   };
 
-  const getScoreForWeek = (user: SleeperUser, week: Number): string => {
-    const roster = data.rosters.find(r => r.owner_id === user.user_id);
-    if (!roster) return "0";
-    const weekMatchup = data.matchupInfo.find((matchup) => matchup.week === week);
-    if(!weekMatchup) return "0";
-    const matchup = weekMatchup.matchups.find(m => m.roster_id === roster.roster_id);
-    if(!matchup) return "0";
-    return matchup.points.toFixed(2);
-  };
+
   // Separate method to generate the table
   const generateTable = () => {
     if (!selectedSeasonData) {

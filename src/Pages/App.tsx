@@ -1,28 +1,34 @@
 // App.tsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import CustomNavbar from '../Navigation/Navbar';
+import WebsiteNavBar from '../Navigation/WebsiteNavbar';
 import Home from './home';
-import About from './About';
+
 import { getLeagueData } from '../SleeperApiMethods';
 import { Current_League_Id } from '../Helper Files/Constants';
 import LeagueData from "../Interfaces/LeagueData";
 import YearData from './Year Pages/YearData';
-import DraftHeatMap from './Year Pages/DraftHeatMap'; // Import the DraftHeatMap component
+import DraftHeatMap from './Year Pages/DraftHeatMap';
 import DraftReportCard from './Year Pages/DraftReportCard';
 import ScheduleComparison from './Year Pages/ScheduleComparison';
 import OvertimeComparison from './Year Pages/OvertimeComparison';
 import AllPlayoffPossibilities from './Year Pages/AllPlayoffPossibilities';
 import Playoffs from './Year Pages/Playoffs';
 import SidebetStats from './Year Pages/SidebetStats';
+import HallOfFame from './HallOfFamePages/HallOfFameHome';
+import HallOfFameHome from './HallOfFamePages/HallOfFameHome';
+import FootballPlayerChampions from './HallOfFamePages/FootballPlayerChampions';
+
+function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
+  const path = `/season/${league.season}${pathSuffix}`;
+  return <Route key={league.season} path={path} element={component} />;
+}
 
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
 
-
   useEffect(() => {
-    // Fetch league data when the component mounts
     const fetchLeagueData = async () => {
       try {
         const data = await getLeagueData(Current_League_Id);
@@ -34,80 +40,33 @@ function App() {
     };
 
     fetchLeagueData();
-  }, []); // Run this effect only once on mount
+  }, []);
 
   if (!dataFetched) {
-    // Render a loading indicator or placeholder while data is being fetched
     return <div>Loading...</div>;
   }
 
   return (
     <Router>
       <div className="App">
-        <CustomNavbar data={leagueData} />
+        <WebsiteNavBar data={leagueData} />
         {dataFetched && (
           <Routes>
-            <Route path="/about" element={<About />} />
             <Route path="/" element={<Home />} />
-            {/* Add a dynamic route for each season */}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}`}
-                element={<YearData data={league} />}
-              />
+            <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
+            <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
+            {leagueData.map((leagueYear) => (
+              <>
+                {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/schedule-comparison', <ScheduleComparison data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/overtime-comparison', <OvertimeComparison data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/draft-heatmap', <DraftHeatMap data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/draft-report-card', <DraftReportCard data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
+              </>
             ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/schedule-comparison`}
-                element={<ScheduleComparison data={league} />}
-              />
-            ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/overtime-comparison`}
-                element={<OvertimeComparison data={league} />}
-              />
-            ))}
-
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/draft-heatmap`}
-                element={<DraftHeatMap data={league} />}
-              />
-            ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/draft-report-card`}
-                element={<DraftReportCard data={league} />}
-              />
-            ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/all-playoff-possibilities`}
-                element={<AllPlayoffPossibilities data={league} />}
-              />
-            ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/playoffs`}
-                element={<Playoffs data={league} />}
-              />
-            ))}
-            {leagueData.map((league) => (
-              <Route
-                key={league.season}
-                path={`/season/${league.season}/sidebet-stats`}
-                element={<SidebetStats data={league} />}
-              />
-            ))}
-            {/* Add a catch-all route for unknown routes */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         )}

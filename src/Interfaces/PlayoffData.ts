@@ -6,7 +6,7 @@ interface PlayoffData {
 
 export interface PlayoffMatchup {
     week: number;
-    troll: string;
+    user_id: string;
     matchupId: string;
 }
 

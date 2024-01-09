@@ -1,0 +1,43 @@
+/* FootballPlayerChampions.css */
+
+/* Center the main table */
+.football-player-championships-table {
+    margin: auto;
+    border-collapse: collapse; /* Collapse borders between cells */
+}
+
+/* Add borders to all cells in the main table */
+.football-player-championships-table td {
+    border: 1px solid #ddd;
+    padding: 4px; /* Adjust padding as needed */
+    vertical-align: top;
+}
+
+/* Remove borders from inner tables */
+.football-player-championships-table table td {
+    border: none;
+}
+
+/* Align content in inner tables to the top */
+.football-player-championships-table table td {
+    vertical-align: top;
+}
+
+/* Set fixed width for inner tables */
+.football-player-championships-table table {
+    width: 100%; /* Adjust the width as needed */
+}
+
+/* Set fixed width for the first and second columns */
+.football-player-championships-table table td:nth-child(1) {
+    width: auto;
+}
+.football-player-championships-table table td:nth-child(2) {
+    width: 80px; /* Adjust the width as needed */
+}
+
+/* Condense the heights of inner tables */
+.football-player-championships-table table {
+    padding: 2px; /* Adjust padding as needed */
+    line-height: 1; /* Set line-height to 1 for condensed appearance */
+}

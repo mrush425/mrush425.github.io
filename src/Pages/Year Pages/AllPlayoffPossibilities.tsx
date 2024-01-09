@@ -6,7 +6,7 @@ import MatchupInfo from '../../Interfaces/MatchupInfo';
 
 import '../../Stylesheets/Year Stylesheets/AllPlayoffPossibilities.css';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId, getUserPlace } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
 
 interface AllPlayoffPossibilitiesProps {
@@ -272,7 +272,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
             return (
               <tr key={userId}>
                 <td>{teamName}</td>
-                <td>{getUserPlace(userId,data)}</td>
+                <td>{getUserSeasonPlace(userId,data)}</td>
                 <td>
                   {sumOfFirst6} ({roundedPercentageOfSum}%)
                 </td>

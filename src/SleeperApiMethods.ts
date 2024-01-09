@@ -44,7 +44,7 @@ export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInf
   const matchups: MatchupInfo[] = [];
   let maxWeek = 0;
 
-  if (leagueData.nflSeasonInfo.season > leagueData.season) {
+  if (leagueData.nflSeasonInfo.season > leagueData.season || leagueData.nflSeasonInfo.season_type==="post") {
     maxWeek = leagueData.settings.playoff_week_start + 2;
   } else {
     maxWeek = leagueData.nflSeasonInfo.week;
@@ -104,3 +104,5 @@ export async function fetchDraftData(draftId: string, leagueId: string, season: 
       throw error;
   }
 }
+
+

@@ -8,7 +8,7 @@ interface NavbarProps {
   data: LeagueData[]; // Use the LeagueData type for the data prop
 }
 
-const CustomNavbar: React.FC<NavbarProps> = ({ data }) => {
+const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const handleMouseEnter = () => {
@@ -42,8 +42,8 @@ const CustomNavbar: React.FC<NavbarProps> = ({ data }) => {
           <Nav.Link as={Link} to="/">
             Home
           </Nav.Link>
-          <Nav.Link as={Link} to="/about">
-            About
+          <Nav.Link as={Link} to="/hall-of-fame">
+            Hall of Fame
           </Nav.Link>
 
           {/* Display seasons in a dropdown */}
@@ -71,4 +71,4 @@ const CustomNavbar: React.FC<NavbarProps> = ({ data }) => {
   );
 };
 
-export default CustomNavbar;
+export default WebsiteNavBar;
