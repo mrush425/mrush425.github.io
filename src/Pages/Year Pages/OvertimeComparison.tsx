@@ -43,7 +43,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
 
     let relevantWeek: number;
 
-    if (data.nflSeasonInfo.season === data.season) {
+    if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type!=="post") {
       relevantWeek = Math.min(data.nflSeasonInfo.week, data.settings.playoff_week_start);
     } else {
       relevantWeek = data.settings.playoff_week_start;

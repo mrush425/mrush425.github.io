@@ -15,7 +15,6 @@ import OvertimeComparison from './Year Pages/OvertimeComparison';
 import AllPlayoffPossibilities from './Year Pages/AllPlayoffPossibilities';
 import Playoffs from './Year Pages/Playoffs';
 import SidebetStats from './Year Pages/SidebetStats';
-import HallOfFame from './HallOfFamePages/HallOfFameHome';
 import HallOfFameHome from './HallOfFamePages/HallOfFameHome';
 import FootballPlayerChampions from './HallOfFamePages/FootballPlayerChampions';
 

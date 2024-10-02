@@ -149,7 +149,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             let recordInTop50: string = "";
             let className="";
 
-            if(user && getUserSeasonPlace(user.user_id,data)<6){
+            if(user && getUserSeasonPlace(user.user_id,data)<=6){
               className="playoffs-team";
             }
 
