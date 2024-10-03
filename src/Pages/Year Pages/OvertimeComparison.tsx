@@ -4,9 +4,8 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import UserAsOfWeekStats from '../../Interfaces/UserAsOfWeekStats';
-
 import '../../Stylesheets/Year Stylesheets/OvertimeComparison.css';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'; // Import necessary components from recharts
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import AllUserWeekStats from '../../Interfaces/AllUserAsOfWeekStats';
 
 interface OvertimeComparisonProps {
@@ -15,19 +14,16 @@ interface OvertimeComparisonProps {
 
 const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
   const [graphData, setGraphData] = useState<AllUserWeekStats[]>([]);
+  const [activeTeam, setActiveTeam] = useState<string | null>(null); // State for active team
+  const [hoveredTeam, setHoveredTeam] = useState<string | null>(null); // State for hovered team
 
   useEffect(() => {
     const calculateAndSetGraphData = () => {
-
       const statsArray: AllUserWeekStats[] = [];
-
-
       statsArray.push(...getAllUserWeekStats());
-
       setGraphData(statsArray);
     };
     calculateAndSetGraphData();
-
   }, [data]);
 
 
@@ -178,22 +174,75 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
 
   // Function to convert a hash code to a hexadecimal color code
   const intToRGB = (i: number) => {
-    const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
-    return "00000".substring(0, 6 - c.length) + c;
+    // Convert input number (hash) to a hue value in the range [0, 360]
+    const hue = (i * 137) % 360; // Multiply by an arbitrary prime number to spread out the hues
+  
+    // Introduce variance in saturation and lightness
+    const saturation = 50 + (i % 50); // Randomize saturation between 50% and 100%
+    const lightness = 40 + (i % 40);  // Randomize lightness between 40% and 80%
+  
+    // Convert HSL to RGB
+    return hslToHex(hue, saturation, lightness);
+  };
+  
+  // Helper function to convert HSL to Hex
+  const hslToHex = (h: number, s: number, l: number) => {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0'); // Convert to hex and pad with zeros if necessary
+    };
+    return `${f(0)}${f(8)}${f(4)}`.toUpperCase(); // Return the hex color
+  };
+
+  const handleTeamClick = (teamName: string) => {
+    setActiveTeam(activeTeam === teamName ? null : teamName); // Toggle active team
+  };
+
+  const handleLegendHover = (teamName: string | null) => {
+    setHoveredTeam(teamName); // Set hovered team
+  };
+  
+
+  const renderLegend = () => {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px' }}>
+        {graphData.map((userData) => {
+          const lineColor = `#${intToRGB(hashCode(userData.user_id))}`;
+          return (
+            <div
+              key={userData.user_id}
+              onMouseEnter={() => handleLegendHover(userData.team_name)} // Handle hover
+              onMouseLeave={() => handleLegendHover(null)} // Reset hover
+              onClick={() => handleTeamClick(userData.team_name)}
+              style={{
+                cursor: 'pointer',
+                margin: '0 20px',
+                fontWeight: activeTeam === userData.team_name ? 'bold' : 'normal',
+                color: activeTeam === userData.team_name ? lineColor : lineColor,
+              }}
+            >
+              {userData.team_name}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
-
     <div>
       <YearNavBar data={data} />
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <LineChart
-          width={1200} // Adjust the width as per your requirement
-          height={720} // Adjust the height as per your requirement
+          width={1200}
+          height={720}
           margin={{ top: 40, right: 30, left: 20, bottom: 10 }}
         >
           <text
-            x={(1200) / 2}
+            x={1200 / 2}
             y={20}
             textAnchor="middle"
             dominantBaseline="middle"
@@ -210,20 +259,21 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
           />
           <YAxis type="number" reversed={true} domain={[1, graphData.length + 1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
           <Tooltip />
-          <Legend />
+          <Legend content={renderLegend()} /> {/* Custom legend */}
 
-          {graphData.map((userData, index) => (
+          {graphData.map((userData) => (
             <Line
-              key={index}
+              key={userData.user_id}
               type="linear"
               dataKey="rank"
               data={userData.user_week_stats}
               name={userData.team_name}
               stroke={`#${intToRGB(hashCode(userData.user_id))}`}
+              strokeWidth={2}
+              opacity={hoveredTeam && hoveredTeam !== userData.team_name ? 0.2 : 1} // Set opacity on hover
             />
           ))}
         </LineChart>
-        
       </div>
     </div>
   );

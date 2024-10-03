@@ -59,9 +59,9 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
           case "18":
           case "23":
           case "24":
-            let combinedScore=getScoreStringForWeek(user, playoffStart+1,data);
-            combinedScore+=getScoreStringForWeek(user, playoffStart+2,data);
-            return user.metadata.team_name + " - " + combinedScore;
+            let combinedScore:number =Number.parseFloat(getScoreStringForWeek(user, playoffStart+1,data));
+            combinedScore+=Number.parseFloat(getScoreStringForWeek(user, playoffStart+2,data));
+            return user.metadata.team_name + " - " + combinedScore.toFixed(2).toString();
             break;
 
           //Championship round people and scores
