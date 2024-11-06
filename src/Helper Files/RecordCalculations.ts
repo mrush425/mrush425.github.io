@@ -29,7 +29,7 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
         if (data.nflSeasonInfo.season === data.season) {
             relevantMatchups = data.matchupInfo.filter(
                 (matchup) =>
-                    matchup.week !== data.nflSeasonInfo.week &&
+                    matchup.week < data.nflSeasonInfo.week &&
                     matchup.week < data.settings.playoff_week_start &&
                     matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
                     matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
@@ -49,7 +49,6 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
             const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
             const scheduleMatchup = matchup.matchups.find((m) => m.roster_id === scheduleRosterId);
             const oppMatchup = matchup.matchups.find((m) => m.matchup_id === scheduleMatchup?.matchup_id && m.roster_id !== scheduleMatchup?.roster_id);
-
             if (teamMatchup && scheduleMatchup) {
                 if (scheduleMatchup.matchup_id === teamMatchup.matchup_id) {
                     // If schedule's opponent is the same as teamMatchup, compare directly to schedule

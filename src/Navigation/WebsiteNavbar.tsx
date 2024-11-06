@@ -1,5 +1,4 @@
-// Navbar.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
 import LeagueData from '../Interfaces/LeagueData';
@@ -10,13 +9,19 @@ interface NavbarProps {
 
 const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const closeDropdownTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
+    if (closeDropdownTimeout.current) {
+      clearTimeout(closeDropdownTimeout.current);
+    }
     setDropdownOpen(true);
   };
 
   const handleMouseLeave = () => {
-    setDropdownOpen(false);
+    closeDropdownTimeout.current = setTimeout(() => {
+      setDropdownOpen(false);
+    }, 200); // Adjust delay time (in milliseconds) to your preference
   };
 
   const logoImageUrl =

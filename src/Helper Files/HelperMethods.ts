@@ -68,3 +68,7 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
     if(!matchup) return "0";
     return matchup.points.toFixed(2);
   };
+
+  export function getScoreForWeek(user: SleeperUser, week: Number, data: LeagueData): Number{
+    return Number.parseFloat(getScoreStringForWeek(user,week,data));
+  }

@@ -6,8 +6,9 @@ import MatchupInfo from '../../Interfaces/MatchupInfo';
 
 import '../../Stylesheets/Year Stylesheets/AllPlayoffPossibilities.css';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
+import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
 
 interface AllPlayoffPossibilitiesProps {
   data: LeagueData;
@@ -23,9 +24,10 @@ interface Record {
 
 
 const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data }) => {
-  const maxCombinations = 50000;
-  const getAllPointsMap = (): Map<string, Map<number, number>> => {
-    let allPointsMap: Map<string, Map<number, number>> = new Map();
+  const maxCombinations = 500000;
+  
+  const getAveragePointsMap = (): Map<string, number> => {
+    let averagePointsMap: Map<string, number> = new Map();
 
     let relevantMatchups;
     
@@ -36,103 +38,80 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       if (data.nflSeasonInfo.season === data.season) {
         relevantMatchups = data.matchupInfo.filter(
           (matchup) =>
-            matchup.week !== data.nflSeasonInfo.week &&
+            matchup.week < data.nflSeasonInfo.week &&
             matchup.week < data.settings.playoff_week_start &&
             matchup.matchups.some((m) => m.roster_id === teamRosterId)
         );
       }
       else {
-        relevantMatchups = data.matchupInfo.filter(
+        relevantMatchups = data.matchupInfo.filter(  
           (matchup) =>
             matchup.week < data.settings.playoff_week_start &&
             matchup.matchups.some((m) => m.roster_id === teamRosterId)
         );
       }
-
-      let playerPointsMap: Map<number, number> = new Map();
+      let total:number = 0;
+      let count:number = 0;
       relevantMatchups.forEach((matchup) => {
         const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
         if (teamMatchup) {
-          playerPointsMap.set(matchup.week, teamMatchup.points);
+          total+=teamMatchup.points;
+          count++;
         }
       });
-      allPointsMap.set(team.user_id, playerPointsMap);
+      averagePointsMap.set(team.user_id, (total/count));
     });
-    return allPointsMap;
+    console.log(data);
+    return averagePointsMap;
   }
 
-  const getAllMatchupsMap = (): Map<number, Map<number, number>> => {
-    let allMatchupsMap: Map<number, Map<number, number>> = new Map();
+  // const getAllMatchupsMap = (): Map<number, Map<number, number>> => {
+  //   let allMatchupsMap: Map<number, Map<number, number>> = new Map();
 
-    let relevantMatchups: MatchupInfo[];
-    if (data.nflSeasonInfo.season === data.season) {
-      relevantMatchups = data.matchupInfo.filter(
-        (matchup) =>
-          matchup.week !== data.nflSeasonInfo.week &&
-          matchup.week < data.settings.playoff_week_start
-      );
-    }
-    else {
-      relevantMatchups = data.matchupInfo.filter(
-        (matchup) =>
-          matchup.week < data.settings.playoff_week_start
-      );
-    }
+  //   let relevantMatchups: MatchupInfo[];
+  //   if (data.nflSeasonInfo.season === data.season) {
+  //     relevantMatchups = data.matchupInfo.filter(
+  //       (matchup) =>
+  //         matchup.week !== data.nflSeasonInfo.week &&
+  //         matchup.week < data.settings.playoff_week_start
+  //     );
+  //   }
+  //   else {
+  //     relevantMatchups = data.matchupInfo.filter(
+  //       (matchup) =>
+  //         matchup.week < data.settings.playoff_week_start
+  //     );
+  //   }
 
-    relevantMatchups.forEach((matchupInfo) => {
-      let weekMatchups: Map<number, number> = new Map();
-      matchupInfo.matchups.forEach(matchup => {
-        let opponentMatchup = matchupInfo.matchups.find(
-          (m) =>
-            m.matchup_id === matchup.matchup_id &&
-            m.roster_id !== matchup.roster_id
-        );
-        if (opponentMatchup) {
-          weekMatchups.set(matchup.roster_id, opponentMatchup?.roster_id);
-        }
-      });
-      allMatchupsMap.set(matchupInfo.week, weekMatchups);
+  //   relevantMatchups.forEach((matchupInfo) => {
+  //     let weekMatchups: Map<number, number> = new Map();
+  //     matchupInfo.matchups.forEach(matchup => {
+  //       let opponentMatchup = matchupInfo.matchups.find(
+  //         (m) =>
+  //           m.matchup_id === matchup.matchup_id &&
+  //           m.roster_id !== matchup.roster_id
+  //       );
+  //       if (opponentMatchup) {
+  //         weekMatchups.set(matchup.roster_id, opponentMatchup?.roster_id);
+  //       }
+  //     });
+  //     allMatchupsMap.set(matchupInfo.week, weekMatchups);
+  //   });
+  //   return allMatchupsMap;
+    
+  // }
+
+  //const allMatchupsMap = getAllMatchupsMap();
+  const averagePointsMap = getAveragePointsMap();
+  const userWinsMap: Map<string, Map<number, number>> = new Map();
+
+    // Initialize userWinsMap for each user with 0 wins through 15
+    data.users.forEach((user) => {
+      const userWins = new Map<number, number>(
+        Array.from({ length: 16 }, (_, i) => [i, 0])
+      );
+      userWinsMap.set(user.user_id, userWins);
     });
-    return allMatchupsMap;
-  }
-
-  const allMatchupsMap = getAllMatchupsMap();
-  const allPointsMap = getAllPointsMap();
-
-  const calculateRecordWithUpdatedSchedule = (team: SleeperUser, updatedRosterIds: Map<string, number>): [wins: number, losses: number, ties: number] => {
-    let wins: number = 0;
-    let losses: number = 0;
-    let ties: number = 0;
-
-    for (let week of Array.from(allMatchupsMap.keys())) {
-      const playerPoints: number | undefined = allPointsMap.get(team.user_id)?.get(week);
-      const playerRosterId: number | undefined = updatedRosterIds.get(team.user_id);
-      let opponentRosterId: number | undefined;
-      if (playerRosterId) {
-        opponentRosterId = allMatchupsMap.get(week)?.get(playerRosterId);
-      }
-      let opponentUserId: string | undefined;
-      if (opponentRosterId) {
-        opponentUserId = Array.from(updatedRosterIds.keys()).find(
-          (userId) => updatedRosterIds.get(userId) === opponentRosterId
-        );
-      }
-      let opponentPoints: number | undefined;
-      if (opponentUserId) {
-        opponentPoints = allPointsMap.get(opponentUserId)?.get(week);
-      }
-      if (playerPoints && opponentPoints) {
-        if (playerPoints > opponentPoints) {
-          wins++;
-        } else if (playerPoints < opponentPoints) {
-          losses++;
-        } else {
-          ties++;
-        }
-      }
-    }
-    return [wins, losses, ties];
-  }
 
   const sortedData = data.users.slice().sort((a, b) => {
     const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
@@ -162,83 +141,98 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     });
   });
 
-  const fillPlacesForUpdatedSchedule = (updatedRosterIds: Map<string, number>) => {
+  const runSimulation = () => {
     let recordArray: Record[] = [];
-
+  
+    // Initialize records for each user
     data.users.forEach((user) => {
       const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
       let points = 0;
       if (roster) points = roster?.settings.fpts + roster.settings.fpts_decimal;
-
+  
+      let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(user, user, data);
+  
       let record: Record = {
         userId: user.user_id,
         pointsFor: points,
-        wins: 0,
-        losses: 0,
-        ties: 0
+        wins: currentWins,
+        losses: currentLosses,
+        ties: currentTies,
       };
-
-      [record.wins, record.losses, record.ties] = calculateRecordWithUpdatedSchedule(user, updatedRosterIds);
       recordArray.push(record);
     });
+  
+    // Simulate matchups for each week until the playoff week
+    for (let week = data.nflSeasonInfo.week - 1; week < data.settings.playoff_week_start - 1; week++) {
+      const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
+  
+      weeklyMatchups.forEach((matchup) => {
+        for (let i = 0; i < matchup.matchups.length / 2; i++) {
+          const team1RosterId=matchup.matchups[i].roster_id;
+          const team1 = findUserByRosterId(team1RosterId,data);
+          const team2RosterId=matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
+          const team2 = findUserByRosterId(team2RosterId,data);
+  
+          if(!team1 || !team2) continue;
 
+          const team1Average = averagePointsMap.get(team1.user_id) || 0;
+          const team2Average = averagePointsMap.get(team2.user_id) || 0;
+          const totalAverage = team1Average + team2Average;
+  
+          const team1Chance = (team1Average / totalAverage) * 100;
+          const randomResult = Math.random() * 100;
+  
+          const team1Record = recordArray.find((record) => record.userId === team1.user_id);
+          const team2Record = recordArray.find((record) => record.userId === team2.user_id);
+  
+          if (team1Record && team2Record) {
+            if (randomResult < team1Chance) {
+              team1Record.wins++;
+              team2Record.losses++;
+            } else if (randomResult > team1Chance) {
+              team2Record.wins++;
+              team1Record.losses++;
+            } else {
+              team1Record.ties++;
+              team2Record.ties++;
+            }
+          }
+        }
+      });
+    }
+  
+    // Track win counts for the new win distribution table
     recordArray.sort((a, b) => {
       // Primary sort by wins
       if (a.wins !== b.wins) {
         return b.wins - a.wins; // Sort in descending order by wins
       }
-
+  
       // Secondary sort by pointsFor if wins are equal
       return b.pointsFor - a.pointsFor; // Sort in descending order by pointsFor
     });
-
+  
     // Loop over the sorted recordArray
     recordArray.forEach((record, index) => {
       const userPlace = userPlaceMap.get(record.userId);
-      if(userPlace){
+      if (userPlace) {
         const timesAtPlace = (userPlace?.get(index + 1) ?? 0) as number;
-        userPlace.set(index+1,timesAtPlace+1);
+        userPlace.set(index + 1, timesAtPlace + 1);
+      }
+      const winsMap = userWinsMap.get(record.userId);
+      if (winsMap) {
+        const currentCount = winsMap.get(record.wins) || 0;
+        winsMap.set(record.wins, currentCount + 1);
       }
     });
-  }
-  let count=0;
+  };
+
   const fillUserPlaceMap = () => {
     const usersCount = data.users.length;
-    const rosterIds = Array.from({ length: usersCount }, (_, i) => i + 1);
-  
-    const generateRandomCombinations = (callback: Function) => {
-      
-      const combinations:Set<string> = new Set();
-  
-      while (combinations.size < maxCombinations) {
-        const currentRosterIds = new Map<string, number>();
-        for (let i = 0; i < usersCount; i++) {
-          const currentUser = data.users[i];
-          const randomRosterId = rosterIds[Math.floor(Math.random() * rosterIds.length)];
-  
-          currentRosterIds.set(currentUser.user_id, randomRosterId);
-        }
-  
-        combinations.add(Array.from(currentRosterIds.values()).toString());
-      }
-  
-      combinations.forEach((combination) => {
-        const updatedRosterIds = new Map<string, number>();
-        combination.split(',').forEach((value, index) => {
-          updatedRosterIds.set(data.users[index].user_id, parseInt(value));
-        });
-  
-        callback(updatedRosterIds);
-      });
-    };
-  
-    // Callback function to be invoked for each combination
-    const callbackForCombination = (updatedRosterIds: Map<string, number>) => {
-      fillPlacesForUpdatedSchedule(updatedRosterIds);
-    };
-  
-    // Start generating random combinations
-    generateRandomCombinations(callbackForCombination);
+    const rosterIds = Array.from({ length: usersCount }, (_, i) => i + 1);      
+    for(let i=0; i<maxCombinations; i++){
+      runSimulation();
+    }
   };
   
   // Call the fillUserPlaceMap method
@@ -246,7 +240,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
 
   const tableHeaders = ["Team Name", "Place in Season", "Times in the Playoffs",...Array.from({ length: 12 }, (_, index) => index + 1)];
 
-  const renderTable = () => {
+  const renderPlaceTable = () => {
   
     return (
       <table className="all-possibilities-table">
@@ -267,7 +261,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
               .reduce((sum, value) => sum + value, 0);
   
             const percentageOfSum = (sumOfFirst6 / maxCombinations) * 100;
-            const roundedPercentageOfSum = percentageOfSum.toFixed(1); // Round to 1 decimal point
+            const roundedPercentageOfSum = percentageOfSum.toFixed(2); // Round to 2 decimal point
   
             return (
               <tr key={userId}>
@@ -278,7 +272,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
                 </td>
                 {Array.from(userMap.values()).map((value, week) => {
                   const percentage = (value / maxCombinations) * 100;
-                  const roundedPercentage = percentage.toFixed(1); // Round to 1 decimal point
+                  const roundedPercentage = percentage === 0 ? "0" : percentage.toFixed(2);
                   return (
                     <td key={week}>
                       {value} ({roundedPercentage}%)
@@ -293,11 +287,50 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     );
   };
   
+  const renderWinDistributionTable = () => {
+    // Use sortedData to ensure the same sorting as the place table
+    return (
+      <table className="win-distribution-table">
+        <thead>
+          <tr>
+            <th>Team Name</th>
+            <th>Place in Season</th>
+            {Array.from({ length: 16 }, (_, i) => (
+              <th key={i}>{i}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedData.map((user) => {
+            const winsMap = userWinsMap.get(user.user_id);
+            const roster = data.rosters.find((r) => r.owner_id === user.user_id);
+            const teamName = user.metadata.team_name || "";
+            const seasonPlace = roster ? getUserSeasonPlace(user.user_id, data) : "";
+  
+            return (
+              <tr key={user.user_id}>
+                <td>{teamName}</td>
+                <td>{seasonPlace}</td>
+                {Array.from({ length: 16 }, (_, i) => (
+                  <td key={i}>{winsMap?.get(i) || 0}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+  };
+  
+  
+
   return (
     <div>
       <YearNavBar data={data} />
       <h2>{maxCombinations} Simulations</h2>
-      {renderTable()}
+      {renderPlaceTable()}
+      <h2 style={{ marginTop: '30px' }}>Win Distribution</h2>
+      {renderWinDistributionTable()}
     </div>
   );
 };

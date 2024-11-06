@@ -44,12 +44,12 @@ export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInf
   const matchups: MatchupInfo[] = [];
   let maxWeek = 0;
 
-  if (leagueData.nflSeasonInfo.season > leagueData.season || leagueData.nflSeasonInfo.season_type==="post") {
-    maxWeek = leagueData.settings.playoff_week_start + 2;
-  } else {
-    maxWeek = leagueData.nflSeasonInfo.week;
-  }
-
+  // if (leagueData.nflSeasonInfo.season > leagueData.season || leagueData.nflSeasonInfo.season_type==="post") {
+  //   maxWeek = leagueData.settings.playoff_week_start + 2;
+  // } else {
+  //   maxWeek = leagueData.nflSeasonInfo.week;
+  // }
+  maxWeek = leagueData.settings.playoff_week_start + 2;
   const apiUrl = 'https://api.sleeper.app/v1/league/' + leagueData.league_id + '/matchups/';
 
   const fetchMatchup = async (week: number): Promise<MatchupInfo> => {
