@@ -4,6 +4,7 @@ import SleeperRoster from "../Interfaces/SleeperRoster";
 import SleeperUser from "../Interfaces/SleeperUser";
 import playoffJsonData from '../Data/playoffs.json'; // Import your trollData.json
 import MatchupInfo from "../Interfaces/MatchupInfo";
+import Matchup from "../Interfaces/Matchup";
 
 
 export function findRosterByUserId(user_id: string, rosters: SleeperRoster[]): SleeperRoster | undefined {
@@ -71,4 +72,41 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
 
   export function getScoreForWeek(user: SleeperUser, week: Number, data: LeagueData): Number{
     return Number.parseFloat(getScoreStringForWeek(user,week,data));
+  }
+
+  export function getAveragePointsMap(data: LeagueData): Map<string,number>{
+    let averagePointsMap: Map<string, number> = new Map();
+    let relevantMatchups;
+    
+    data.users.forEach((team) => {
+      // Find the matchupInfo for the current team
+      let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+
+      if (data.nflSeasonInfo.season === data.season) {
+        relevantMatchups = data.matchupInfo.filter(
+          (matchup) =>
+            matchup.week < data.nflSeasonInfo.week &&
+            matchup.week < data.settings.playoff_week_start &&
+            matchup.matchups.some((m) => m.roster_id === teamRosterId)
+        );
+      }
+      else {
+        relevantMatchups = data.matchupInfo.filter(  
+          (matchup) =>
+            matchup.week < data.settings.playoff_week_start &&
+            matchup.matchups.some((m) => m.roster_id === teamRosterId)
+        );
+      }
+      let total:number = 0;
+      let count:number = 0;
+      relevantMatchups.forEach((matchup) => {
+        const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        if (teamMatchup) {
+          total+=teamMatchup.points;
+          count++;
+        }
+      });
+      averagePointsMap.set(team.user_id, (total/count));
+    });
+    return averagePointsMap;
   }

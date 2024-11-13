@@ -24,11 +24,10 @@ interface Record {
 
 
 const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data }) => {
-  const maxCombinations = 500000;
+  const maxCombinations = 200000;
   
   const getAveragePointsMap = (): Map<string, number> => {
     let averagePointsMap: Map<string, number> = new Map();
-
     let relevantMatchups;
     
     data.users.forEach((team) => {
@@ -61,45 +60,8 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       });
       averagePointsMap.set(team.user_id, (total/count));
     });
-    console.log(data);
     return averagePointsMap;
   }
-
-  // const getAllMatchupsMap = (): Map<number, Map<number, number>> => {
-  //   let allMatchupsMap: Map<number, Map<number, number>> = new Map();
-
-  //   let relevantMatchups: MatchupInfo[];
-  //   if (data.nflSeasonInfo.season === data.season) {
-  //     relevantMatchups = data.matchupInfo.filter(
-  //       (matchup) =>
-  //         matchup.week !== data.nflSeasonInfo.week &&
-  //         matchup.week < data.settings.playoff_week_start
-  //     );
-  //   }
-  //   else {
-  //     relevantMatchups = data.matchupInfo.filter(
-  //       (matchup) =>
-  //         matchup.week < data.settings.playoff_week_start
-  //     );
-  //   }
-
-  //   relevantMatchups.forEach((matchupInfo) => {
-  //     let weekMatchups: Map<number, number> = new Map();
-  //     matchupInfo.matchups.forEach(matchup => {
-  //       let opponentMatchup = matchupInfo.matchups.find(
-  //         (m) =>
-  //           m.matchup_id === matchup.matchup_id &&
-  //           m.roster_id !== matchup.roster_id
-  //       );
-  //       if (opponentMatchup) {
-  //         weekMatchups.set(matchup.roster_id, opponentMatchup?.roster_id);
-  //       }
-  //     });
-  //     allMatchupsMap.set(matchupInfo.week, weekMatchups);
-  //   });
-  //   return allMatchupsMap;
-    
-  // }
 
   //const allMatchupsMap = getAllMatchupsMap();
   const averagePointsMap = getAveragePointsMap();
@@ -141,14 +103,14 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     });
   });
 
-  const runSimulation = () => {
+  const calculateRecord = () => {
     let recordArray: Record[] = [];
   
     // Initialize records for each user
     data.users.forEach((user) => {
       const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
       let points = 0;
-      if (roster) points = roster?.settings.fpts + roster.settings.fpts_decimal;
+      if (roster) points = roster.settings.fpts + roster.settings.fpts_decimal;
   
       let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(user, user, data);
   
@@ -161,44 +123,71 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       };
       recordArray.push(record);
     });
-  
-    // Simulate matchups for each week until the playoff week
-    for (let week = data.nflSeasonInfo.week - 1; week < data.settings.playoff_week_start - 1; week++) {
-      const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
-  
-      weeklyMatchups.forEach((matchup) => {
-        for (let i = 0; i < matchup.matchups.length / 2; i++) {
-          const team1RosterId=matchup.matchups[i].roster_id;
-          const team1 = findUserByRosterId(team1RosterId,data);
-          const team2RosterId=matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
-          const team2 = findUserByRosterId(team2RosterId,data);
-  
-          if(!team1 || !team2) continue;
 
-          const team1Average = averagePointsMap.get(team1.user_id) || 0;
-          const team2Average = averagePointsMap.get(team2.user_id) || 0;
-          const totalAverage = team1Average + team2Average;
+    console.log(recordArray);
+  }
+  calculateRecord();
+
+  const runSimulation = () => {
+    let recordArray: Record[] = [];
   
-          const team1Chance = (team1Average / totalAverage) * 100;
-          const randomResult = Math.random() * 100;
+    // Initialize records for each user
+    data.users.forEach((user) => {
+      const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
+      let points: number = 0;
+      if (roster) points = roster.settings.fpts + (roster.settings.fpts_decimal*.01);
   
-          const team1Record = recordArray.find((record) => record.userId === team1.user_id);
-          const team2Record = recordArray.find((record) => record.userId === team2.user_id);
+      let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(user, user, data);
   
-          if (team1Record && team2Record) {
-            if (randomResult < team1Chance) {
-              team1Record.wins++;
-              team2Record.losses++;
-            } else if (randomResult > team1Chance) {
-              team2Record.wins++;
-              team1Record.losses++;
-            } else {
-              team1Record.ties++;
-              team2Record.ties++;
+      let record: Record = {
+        userId: user.user_id,
+        pointsFor: points,
+        wins: currentWins,
+        losses: currentLosses,
+        ties: currentTies,
+      };
+      recordArray.push(record);
+    });
+    
+    if (data.nflSeasonInfo.season === data.season){
+    // Simulate matchups for each week until the playoff week
+      for (let week = data.nflSeasonInfo.week - 1; week < data.settings.playoff_week_start - 1; week++) {
+        const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
+    
+        weeklyMatchups.forEach((matchup) => {
+          for (let i = 0; i < matchup.matchups.length / 2; i++) {
+            const team1RosterId=matchup.matchups[i].roster_id;
+            const team1 = findUserByRosterId(team1RosterId,data);
+            const team2RosterId=matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
+            const team2 = findUserByRosterId(team2RosterId,data);
+    
+            if(!team1 || !team2) continue;
+
+            const team1Average = averagePointsMap.get(team1.user_id) || 0;
+            const team2Average = averagePointsMap.get(team2.user_id) || 0;
+            const totalAverage = team1Average + team2Average;
+    
+            const team1Chance = (team1Average / totalAverage) * 100;
+            const randomResult = Math.random() * 100;
+    
+            const team1Record = recordArray.find((record) => record.userId === team1.user_id);
+            const team2Record = recordArray.find((record) => record.userId === team2.user_id);
+    
+            if (team1Record && team2Record) {
+              if (randomResult < team1Chance) {
+                team1Record.wins++;
+                team2Record.losses++;
+              } else if (randomResult > team1Chance) {
+                team2Record.wins++;
+                team1Record.losses++;
+              } else {
+                team1Record.ties++;
+                team2Record.ties++;
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
   
     // Track win counts for the new win distribution table
@@ -238,7 +227,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
   // Call the fillUserPlaceMap method
   fillUserPlaceMap();
 
-  const tableHeaders = ["Team Name", "Place in Season", "Times in the Playoffs",...Array.from({ length: 12 }, (_, index) => index + 1)];
+  const tableHeaders = ["Team Name", "Place in Season", "Current Record", "Times in the Playoffs",...Array.from({ length: 12 }, (_, index) => index + 1)];
 
   const renderPlaceTable = () => {
   
@@ -255,6 +244,8 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
           {Array.from(userPlaceMap.entries()).map(([userId, userMap]) => {
             const userData = data.users.find((user) => user.user_id === userId);
             const teamName = userData ? userData.metadata.team_name : ""; // Get the team name
+
+            if (!userData) return;
   
             const sumOfFirst6 = Array.from(userMap.values())
               .slice(0, 6)
@@ -262,11 +253,14 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
   
             const percentageOfSum = (sumOfFirst6 / maxCombinations) * 100;
             const roundedPercentageOfSum = percentageOfSum.toFixed(2); // Round to 2 decimal point
+
+            let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(userData, userData, data);
   
             return (
               <tr key={userId}>
                 <td>{teamName}</td>
                 <td>{getUserSeasonPlace(userId,data)}</td>
+                <td>{currentWins}-{currentLosses}-{currentTies}</td>
                 <td>
                   {sumOfFirst6} ({roundedPercentageOfSum}%)
                 </td>

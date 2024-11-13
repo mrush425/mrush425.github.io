@@ -17,6 +17,7 @@ import Playoffs from './Year Pages/Playoffs';
 import SidebetStats from './Year Pages/SidebetStats';
 import HallOfFameHome from './HallOfFamePages/HallOfFameHome';
 import FootballPlayerChampions from './HallOfFamePages/FootballPlayerChampions';
+import ScheduleViewer from './Year Pages/ScheduleViewer';
 
 function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
   const path = `/season/${league.season}${pathSuffix}`;
@@ -64,6 +65,7 @@ function App() {
                 {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
                 {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
                 {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
               </>
             ))}
             <Route path="*" element={<Navigate to="/" />} />

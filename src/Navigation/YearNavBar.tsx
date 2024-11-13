@@ -35,6 +35,9 @@ const YearNavBar: React.FC<YearNavBarProps> = ({ data }) => {
       <Link to={`/season/${data.season}/draft-report-card`} className="btn-custom btn btn-sm">
         Draft Report Card
       </Link>
+      <Link to={`/season/${data.season}/schedule-viewer`} className="btn-custom btn btn-sm">
+        Schedule Viewer
+      </Link>
     </div>
   );
 };
