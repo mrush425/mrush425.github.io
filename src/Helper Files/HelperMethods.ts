@@ -110,3 +110,46 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
     });
     return averagePointsMap;
   }
+
+  export function getLast3WeeksAveragePointsMap(data: LeagueData): Map<string, number> {
+    let averagePointsMap: Map<string, number> = new Map();
+    
+    // Determine the current week based on the season context
+    const currentWeek = data.nflSeasonInfo.season === data.season 
+      ? data.nflSeasonInfo.week - 1 
+      : 100;
+  
+    data.users.forEach((team) => {
+      // Find the roster ID for the current team
+      let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+  
+      // Calculate the range of weeks to include in the average (last 3 weeks)
+      const startWeek = Math.max(1, currentWeek - 2);
+      
+      // Filter matchups to get only those for the last 3 weeks and before playoffs
+      const relevantMatchups = data.matchupInfo.filter(
+        (matchup) =>
+          matchup.week >= startWeek &&
+          matchup.week <= currentWeek &&
+          matchup.week < data.settings.playoff_week_start &&
+          matchup.matchups.some((m) => m.roster_id === teamRosterId)
+      );
+  
+      // Calculate the average points for the last 3 weeks
+      let total = 0;
+      let count = 0;
+      relevantMatchups.forEach((matchup) => {
+        const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        if (teamMatchup) {
+          total += teamMatchup.points;
+          count++;
+        }
+      });
+  
+      // Set the average in the map; handle cases where count could be zero
+      averagePointsMap.set(team.user_id, count > 0 ? total / count : 0);
+    });
+  
+    return averagePointsMap;
+  }
+  

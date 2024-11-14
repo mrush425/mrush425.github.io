@@ -48,3 +48,19 @@
     margin-bottom: 10px;
   }
   
+  .schedule-table td.green {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+  }
+  
+  .schedule-table td.red {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+  }
+  
+  .schedule-table td.gray {
+    background-color: #f0f0f0; /* Light gray background for unplayed weeks */
+    color: #6c757d; /* Neutral text color */
+  }
+  
+  

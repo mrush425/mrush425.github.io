@@ -8,7 +8,7 @@ import yearSidebetsData from '../../Data/yearSidebets.json';
 import SidebetMethods, { Sidebet, YearSidebet } from './SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
-import { getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 
 
 interface YearDataProps {
@@ -16,12 +16,13 @@ interface YearDataProps {
 }
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
-  const [sortBy, setSortBy] = useState<'wins' | 'fpts' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'default'>('default');
+  const [sortBy, setSortBy] = useState<'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'default'>('default');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [sortedRosters, setSortedRosters] = useState(data.rosters); // Initial state with data.rosters
   const users = data.users;
+  const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
 
-  const handleSort = (column: 'wins' | 'fpts' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50') => {
+  const handleSort = (column: 'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50') => {
     setSortBy(column);
     setSortDirection(sortBy === column ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'desc');
   };
@@ -33,12 +34,22 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
       const userB = users.find((u) => u.user_id === b.owner_id);
       if (!userA || !userB) return 0;
 
-      if (sortBy === 'wins' || sortBy === 'default') {
+      if (sortBy === 'seasonPlace') {
+        const placeA = getUserSeasonPlace(userA.user_id, data);
+        const placeB = getUserSeasonPlace(userB.user_id, data);
+        return sortDirection === 'asc' ? placeA - placeB : placeB - placeA;
+      }
+      else if (sortBy === 'wins' || sortBy === 'default') {
         return sortDirection === 'asc' ? a.settings.wins - b.settings.wins || a.settings.fpts - b.settings.fpts : b.settings.wins - a.settings.wins || b.settings.fpts - a.settings.fpts;
       } else if (sortBy === 'fpts') {
         const fptsA = parseFloat(`${a.settings.fpts}.${a.settings.fpts_decimal}`);
         const fptsB = parseFloat(`${b.settings.fpts}.${b.settings.fpts_decimal}`);
         return sortDirection === 'asc' ? fptsA - fptsB : fptsB - fptsA;
+      }
+        else if (sortBy === 'last3Ave') {
+          const fptsA = parseFloat(last3AveragePointsMap.get(userA.user_id)?.toFixed(2) ?? "");
+          const fptsB = parseFloat(last3AveragePointsMap.get(userB.user_id)?.toFixed(2) ?? "");
+          return sortDirection === 'asc' ? fptsA - fptsB : fptsB - fptsA;
       } else if (sortBy === 'fptsAgainst') {
         const fptsA = parseFloat(`${a.settings.fpts_against}.${a.settings.fpts_against_decimal}`);
         const fptsB = parseFloat(`${b.settings.fpts_against}.${b.settings.fpts_against_decimal}`);
@@ -110,6 +121,10 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
       <table className="records-table">
         <thead>
           <tr>
+            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('seasonPlace')}>
+              Season Place
+              {sortBy === 'seasonPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+            </th>
             <th style={{ width: '150px' }}>
               Team
             </th>
@@ -120,6 +135,10 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fpts')}>
               Points
               {sortBy === 'fpts' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+            </th>
+            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('last3Ave')}>
+              Last 3 Average
+              {sortBy === 'last3Ave' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
             </th>
             <th style={{ cursor: 'pointer', width: '130px' }} onClick={() => handleSort('fptsAgainst')}>
               Points Against
@@ -142,12 +161,14 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
         <tbody>
           {sortedRosters.map((roster,index) => {
             const user = users.find((u) => u.user_id === roster.owner_id);
+            const seasonPlace = user ? getUserSeasonPlace(user.user_id, data) : null;
             let recordAgainstEveryone: string = "";
             let leagueRecordAtSchedule: string = "";
             let averageRecordAgainstEveryone: string = "";
             let averageLeagueRecordAtSchedule: string = "";
             let recordInTop50: string = "";
             let className="";
+            let last3Average="";
 
             if(user && getUserSeasonPlace(user.user_id,data)<=6){
               className="playoffs-team";
@@ -159,13 +180,16 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
               averageRecordAgainstEveryone = displayRecord(...getAverageRecordAgainstLeague(user, data));
               averageLeagueRecordAtSchedule = displayRecord(...getAverageLeagueRecordAtSchedule(user, data));
               recordInTop50 = displayRecord(...getRecordInTop50(user, data));
+              last3Average = last3AveragePointsMap.get(user.user_id)?.toFixed(2) ?? "";
             }
 
             return (
               <tr className={className} key={roster.roster_id}>
+                <td>{seasonPlace}</td>
                 <td>{user?.metadata.team_name}</td>
                 <td>{`${roster.settings.wins}-${roster.settings.losses}`}</td>
                 <td>{`${roster.settings.fpts}.${roster.settings.fpts_decimal}`}</td>
+                <td>{`${last3Average}`}</td>
                 <td>{`${roster.settings.fpts_against}.${roster.settings.fpts_against_decimal}`}</td>
                 <td>{`${recordAgainstEveryone} (${averageRecordAgainstEveryone})`}</td>
                 <td>{`${leagueRecordAtSchedule} (${averageLeagueRecordAtSchedule})`}</td>
