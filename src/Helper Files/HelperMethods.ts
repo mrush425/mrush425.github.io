@@ -111,6 +111,38 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
     return averagePointsMap;
   }
 
+  export function getAveragePointsMapAsOfWeek(data: LeagueData, asOfWeek: number): Map<string,number>{
+    let averagePointsMap: Map<string, number> = new Map();
+    let relevantMatchups;
+    
+    data.users.forEach((team) => {
+      // Find the matchupInfo for the current team
+      let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+
+
+      relevantMatchups = data.matchupInfo.filter(
+        (matchup) =>
+          matchup.week < data.nflSeasonInfo.week &&
+          matchup.week < asOfWeek &&
+          matchup.week < data.settings.playoff_week_start &&
+          matchup.matchups.some((m) => m.roster_id === teamRosterId)
+      );
+      
+
+      let total:number = 0;
+      let count:number = 0;
+      relevantMatchups.forEach((matchup) => {
+        const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        if (teamMatchup) {
+          total+=teamMatchup.points;
+          count++;
+        }
+      });
+      averagePointsMap.set(team.user_id, (total/count));
+    });
+    return averagePointsMap;
+  }
+
   export function getLast3WeeksAveragePointsMap(data: LeagueData): Map<string, number> {
     let averagePointsMap: Map<string, number> = new Map();
     

@@ -6,7 +6,7 @@ import MatchupInfo from '../../Interfaces/MatchupInfo';
 
 import '../../Stylesheets/Year Stylesheets/AllPlayoffPossibilities.css';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId, findUserByRosterId, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
 import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
 
@@ -24,56 +24,22 @@ interface Record {
 
 
 const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data }) => {
-  const maxCombinations = 200000;
-  
-  const getAveragePointsMap = (): Map<string, number> => {
-    let averagePointsMap: Map<string, number> = new Map();
-    let relevantMatchups;
-    
-    data.users.forEach((team) => {
-      // Find the matchupInfo for the current team
-      let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+  const maxCombinations = 500000;
 
-      if (data.nflSeasonInfo.season === data.season) {
-        relevantMatchups = data.matchupInfo.filter(
-          (matchup) =>
-            matchup.week < data.nflSeasonInfo.week &&
-            matchup.week < data.settings.playoff_week_start &&
-            matchup.matchups.some((m) => m.roster_id === teamRosterId)
-        );
-      }
-      else {
-        relevantMatchups = data.matchupInfo.filter(  
-          (matchup) =>
-            matchup.week < data.settings.playoff_week_start &&
-            matchup.matchups.some((m) => m.roster_id === teamRosterId)
-        );
-      }
-      let total:number = 0;
-      let count:number = 0;
-      relevantMatchups.forEach((matchup) => {
-        const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
-        if (teamMatchup) {
-          total+=teamMatchup.points;
-          count++;
-        }
-      });
-      averagePointsMap.set(team.user_id, (total/count));
-    });
-    return averagePointsMap;
-  }
+  // Define state to toggle between the two maps
+  const [useLast3Points, setUseLast3Points] = useState(false);
 
-  //const allMatchupsMap = getAllMatchupsMap();
-  const averagePointsMap = getAveragePointsMap();
+  // Fetch both maps
+  const averagePointsMap = getAveragePointsMap(data);
+  const averageLast3PointsMap = getLast3WeeksAveragePointsMap(data);
+
   const userWinsMap: Map<string, Map<number, number>> = new Map();
 
-    // Initialize userWinsMap for each user with 0 wins through 15
-    data.users.forEach((user) => {
-      const userWins = new Map<number, number>(
-        Array.from({ length: 16 }, (_, i) => [i, 0])
-      );
-      userWinsMap.set(user.user_id, userWins);
-    });
+  // Initialize userWinsMap for each user with 0 wins through 15
+  data.users.forEach((user) => {
+    const userWins = new Map<number, number>(Array.from({ length: 16 }, (_, i) => [i, 0]));
+    userWinsMap.set(user.user_id, userWins);
+  });
 
   const sortedData = data.users.slice().sort((a, b) => {
     const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
@@ -83,19 +49,12 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
   });
 
   const userMaps: Map<string, Map<number, number>>[] = sortedData.map((user) => {
-    // Instantiate a map with keys 1 through 12 and values initialized to 0
-    const userMap = new Map<number, number>(
-      Array.from({ length: 12 }, (_, index) => [index + 1, 0])
-    );
-
-    // Create a map with the user_id as the key and the initialized map as the value
+    const userMap = new Map<number, number>(Array.from({ length: 12 }, (_, index) => [index + 1, 0]));
     const mapForUser = new Map<string, Map<number, number>>();
     mapForUser.set(user.user_id, userMap);
-
     return mapForUser;
   });
 
-  // Combine the maps into a single map
   const userPlaceMap: Map<string, Map<number, number>> = new Map();
   userMaps.forEach((userMap) => {
     userMap.forEach((value, key) => {
@@ -105,15 +64,11 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
 
   const calculateRecord = () => {
     let recordArray: Record[] = [];
-  
-    // Initialize records for each user
     data.users.forEach((user) => {
       const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
       let points = 0;
       if (roster) points = roster.settings.fpts + roster.settings.fpts_decimal;
-  
       let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(user, user, data);
-  
       let record: Record = {
         userId: user.user_id,
         pointsFor: points,
@@ -123,22 +78,16 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       };
       recordArray.push(record);
     });
-
     console.log(recordArray);
-  }
-  calculateRecord();
+  };
 
   const runSimulation = () => {
     let recordArray: Record[] = [];
-  
-    // Initialize records for each user
     data.users.forEach((user) => {
       const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
       let points: number = 0;
-      if (roster) points = roster.settings.fpts + (roster.settings.fpts_decimal*.01);
-  
+      if (roster) points = roster.settings.fpts + (roster.settings.fpts_decimal * 0.01);
       let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(user, user, data);
-  
       let record: Record = {
         userId: user.user_id,
         pointsFor: points,
@@ -148,31 +97,31 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       };
       recordArray.push(record);
     });
-    
-    if (data.nflSeasonInfo.season === data.season){
-    // Simulate matchups for each week until the playoff week
+
+    // Use the correct points map based on the toggle state
+    const pointsMap = useLast3Points ? averageLast3PointsMap : averagePointsMap;
+
+    if (data.nflSeasonInfo.season === data.season) {
       for (let week = data.nflSeasonInfo.week - 1; week < data.settings.playoff_week_start - 1; week++) {
         const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
-    
         weeklyMatchups.forEach((matchup) => {
           for (let i = 0; i < matchup.matchups.length / 2; i++) {
-            const team1RosterId=matchup.matchups[i].roster_id;
-            const team1 = findUserByRosterId(team1RosterId,data);
-            const team2RosterId=matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
-            const team2 = findUserByRosterId(team2RosterId,data);
-    
-            if(!team1 || !team2) continue;
+            const team1RosterId = matchup.matchups[i].roster_id;
+            const team1 = findUserByRosterId(team1RosterId, data);
+            const team2RosterId = matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
+            const team2 = findUserByRosterId(team2RosterId, data);
+            if (!team1 || !team2) continue;
 
-            const team1Average = averagePointsMap.get(team1.user_id) || 0;
-            const team2Average = averagePointsMap.get(team2.user_id) || 0;
+            const team1Average = pointsMap.get(team1.user_id) || 0;
+            const team2Average = pointsMap.get(team2.user_id) || 0;
             const totalAverage = team1Average + team2Average;
-    
+
             const team1Chance = (team1Average / totalAverage) * 100;
             const randomResult = Math.random() * 100;
-    
+
             const team1Record = recordArray.find((record) => record.userId === team1.user_id);
             const team2Record = recordArray.find((record) => record.userId === team2.user_id);
-    
+
             if (team1Record && team2Record) {
               if (randomResult < team1Chance) {
                 team1Record.wins++;
@@ -189,19 +138,13 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
         });
       }
     }
-  
+
     // Track win counts for the new win distribution table
     recordArray.sort((a, b) => {
-      // Primary sort by wins
-      if (a.wins !== b.wins) {
-        return b.wins - a.wins; // Sort in descending order by wins
-      }
-  
-      // Secondary sort by pointsFor if wins are equal
-      return b.pointsFor - a.pointsFor; // Sort in descending order by pointsFor
+      if (a.wins !== b.wins) return b.wins - a.wins;
+      return b.pointsFor - a.pointsFor;
     });
-  
-    // Loop over the sorted recordArray
+
     recordArray.forEach((record, index) => {
       const userPlace = userPlaceMap.get(record.userId);
       if (userPlace) {
@@ -218,19 +161,18 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
 
   const fillUserPlaceMap = () => {
     const usersCount = data.users.length;
-    const rosterIds = Array.from({ length: usersCount }, (_, i) => i + 1);      
-    for(let i=0; i<maxCombinations; i++){
+    const rosterIds = Array.from({ length: usersCount }, (_, i) => i + 1);
+    for (let i = 0; i < maxCombinations; i++) {
       runSimulation();
     }
   };
-  
+
   // Call the fillUserPlaceMap method
   fillUserPlaceMap();
 
-  const tableHeaders = ["Team Name", "Place in Season", "Current Record", "Times in the Playoffs",...Array.from({ length: 12 }, (_, index) => index + 1)];
+  const tableHeaders = ["Team Name", "Place in Season", "Current Record", "Times in the Playoffs", ...Array.from({ length: 12 }, (_, index) => index + 1)];
 
   const renderPlaceTable = () => {
-  
     return (
       <table className="all-possibilities-table">
         <thead>
@@ -243,27 +185,20 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
         <tbody>
           {Array.from(userPlaceMap.entries()).map(([userId, userMap]) => {
             const userData = data.users.find((user) => user.user_id === userId);
-            const teamName = userData ? userData.metadata.team_name : ""; // Get the team name
-
+            const teamName = userData ? userData.metadata.team_name : "";
             if (!userData) return;
-  
-            const sumOfFirst6 = Array.from(userMap.values())
-              .slice(0, 6)
-              .reduce((sum, value) => sum + value, 0);
-  
+            const sumOfFirst6 = Array.from(userMap.values()).slice(0, 6).reduce((sum, value) => sum + value, 0);
             const percentageOfSum = (sumOfFirst6 / maxCombinations) * 100;
-            const roundedPercentageOfSum = percentageOfSum.toFixed(2); // Round to 2 decimal point
+            const roundedPercentageOfSum = percentageOfSum.toFixed(2);
 
             let [currentWins, currentLosses, currentTies] = calculateScheduleRecord(userData, userData, data);
-  
+
             return (
               <tr key={userId}>
                 <td>{teamName}</td>
-                <td>{getUserSeasonPlace(userId,data)}</td>
+                <td>{getUserSeasonPlace(userId, data)}</td>
                 <td>{currentWins}-{currentLosses}-{currentTies}</td>
-                <td>
-                  {sumOfFirst6} ({roundedPercentageOfSum}%)
-                </td>
+                <td>{sumOfFirst6} ({roundedPercentageOfSum}%)</td>
                 {Array.from(userMap.values()).map((value, week) => {
                   const percentage = (value / maxCombinations) * 100;
                   const roundedPercentage = percentage === 0 ? "0" : percentage.toFixed(2);
@@ -280,9 +215,8 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       </table>
     );
   };
-  
+
   const renderWinDistributionTable = () => {
-    // Use sortedData to ensure the same sorting as the place table
     return (
       <table className="win-distribution-table">
         <thead>
@@ -300,7 +234,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
             const roster = data.rosters.find((r) => r.owner_id === user.user_id);
             const teamName = user.metadata.team_name || "";
             const seasonPlace = roster ? getUserSeasonPlace(user.user_id, data) : "";
-  
+
             return (
               <tr key={user.user_id}>
                 <td>{teamName}</td>
@@ -315,13 +249,20 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       </table>
     );
   };
-  
-  
 
   return (
     <div>
       <YearNavBar data={data} />
-      <h2>{maxCombinations} Simulations</h2>
+      <h2>{maxCombinations} Simulations - {!useLast3Points ? "Average Points" : "Last 3 Game Average Points"}</h2>
+      {/* Toggle button to switch between average points and last 3 weeks average */}
+      <button onClick={() => {
+        setUseLast3Points(!useLast3Points); 
+        fillUserPlaceMap();  // Re-run the simulation with the new map
+      }}
+      className="button-margin">
+      
+      {useLast3Points ? "Run with Average Points" : "Run with Last 3 Game Average Points"}
+      </button>
       {renderPlaceTable()}
       <h2 style={{ marginTop: '30px' }}>Win Distribution</h2>
       {renderWinDistributionTable()}

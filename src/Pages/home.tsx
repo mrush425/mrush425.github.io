@@ -9,7 +9,7 @@ const user = {
 
 function Home() {
   return (
-    <div className="App">
+    <div >
       <h1>{user.name}</h1>
       <img
         className="avatar"
@@ -17,7 +17,8 @@ function Home() {
         alt={'Photo of ' + user.name}
         style={{
           width: user.imageSize,
-          height: user.imageSize
+          height: user.imageSize,
+          display: 'inline-block'
         }}
       />
     </div>

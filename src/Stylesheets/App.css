@@ -4,6 +4,7 @@
 
 .avatar {
     border-radius: 50%;
+    text-align: center;
 }
 
 .App-logo {
@@ -39,4 +40,23 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Make the container full height */
+}
+
+.WebsiteNavBar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000; /* Ensures the navbar stays above other elements */
+}
+
+.App-content {
+  margin-top: 5px; /* Adjust this margin based on the navbar height */
+  overflow-y: auto;
+  flex: 1; /* Fills remaining space */
 }
