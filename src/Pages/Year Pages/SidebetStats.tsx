@@ -19,33 +19,53 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
   const [activeButtonIndex, setActiveButtonIndex] = useState<number>(-1);
   const [isImplemented, setIsImplemented] = useState<boolean>(true);
 
-  const handleButtonClick = (sidebet: Sidebet, index: number) => {
-    const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
-
-    if (result !== undefined) {
-      setIsImplemented(true);
-      setSidebetStats(result);
-    } else {
-      console.log("Method name: " + sidebet.methodName);
-      setSidebetStats([]);
+  const handleButtonClick = async (sidebet: Sidebet, index: number) => {
+    try {
+      // Get the method dynamically and bind `this` to ensure proper context
+      const method = (SidebetMethods as any)[sidebet.methodName]?.bind(SidebetMethods);
+  
+      if (method) {
+        let result;
+  
+        if (sidebet.isAsync) {
+          // Await async methods
+          result = await method(data);
+        } else {
+          // Call sync methods
+          result = method(data);
+        }
+  
+        setIsImplemented(true);
+        setSidebetStats(result || []);
+      } else {
+        console.log("Method name: " + sidebet.methodName);
+        setSidebetStats([]);
+        setIsImplemented(false);
+      }
+    } catch (error) {
+      console.error(`Error executing method ${sidebet.methodName}:`, error);
       setIsImplemented(false);
+      setSidebetStats([]);
     }
+  
     setHeader(sidebet.displayName);
     setDescription(sidebet.description);
     setActiveButtonIndex(index);
   };
 
-  const handleArrowKey = (direction: 'left' | 'right') => {
+  const handleArrowKey = async (direction: 'left' | 'right') => {
+    // Compute the new index synchronously
     setActiveButtonIndex((prevIndex) => {
       const newIndex =
         direction === 'right'
           ? (prevIndex + 1) % SidebetMethods.Sidebets().length
           : (prevIndex - 1 + SidebetMethods.Sidebets().length) % SidebetMethods.Sidebets().length;
-
+  
+      // Call handleButtonClick asynchronously
       const selectedSidebet = SidebetMethods.Sidebets()[newIndex];
-      handleButtonClick(selectedSidebet, newIndex);
-
-      return newIndex;
+      handleButtonClick(selectedSidebet, newIndex); // Don't await here
+  
+      return newIndex; // Update state synchronously
     });
   };
 

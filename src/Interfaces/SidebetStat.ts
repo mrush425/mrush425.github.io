@@ -5,6 +5,7 @@ class SidebetStat {
     stat_number: number | undefined;
     stats_record: Record | undefined;
     stats_display: string | undefined;
+    year: number | undefined;
 
     constructor() {
 

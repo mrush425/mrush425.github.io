@@ -27,6 +27,8 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     setSortDirection(sortBy === column ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'desc');
   };
 
+  console.log(data);
+
   useEffect(() => {
     // Use useEffect to sort the data when it changes
     const sortedData = data.rosters.slice().sort((a, b) => {
@@ -74,41 +76,61 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
   }, [data.rosters, sortBy, sortDirection]); // Run the effect whenever data.rosters, sortBy, or sortDirection changes
 
   const sidebetsDisplay: SidebetDisplay[] = [];
+
   const getSidebetData = () => {
-    const yearSidebets: YearSidebet[] = yearSidebetsData.filter((yearSidebet) => yearSidebet.year === data.season);
-    yearSidebets.map((yearSidebet) => {
-      const sidebet: Sidebet | undefined = SidebetMethods.Sidebets().find(sidebet => sidebet.displayName === yearSidebet.sidebetName);
-      console.log(sidebet);
-      if (sidebet) {
-        const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
-        let sidebetDisplay: SidebetDisplay = {
-          sidebetName: sidebet.displayName,
-          winners: [],
-          statDisplays: []
-        };
-        if (result) {
-          sidebetDisplay.winners.push(result[0].user?.metadata.team_name || "something went wrong")
-          sidebetDisplay.statDisplays.push(result[0].stats_display || "something went wrong");
-          if (result[0].stat_number) {
-            for (let i = 1; i < result.length; i++) {
-              if (result[i].stat_number === result[0].stat_number) {
-                sidebetDisplay.statDisplays.push(result[i].stats_display || "something went wrong");
-              }
+    const yearData = yearSidebetsData.find((entry) => entry.year === Number.parseFloat(data.season));
+  
+    if (yearData) {
+      yearData.data.forEach((sidebetEntry) => {
+        const sidebet: Sidebet | undefined = SidebetMethods.Sidebets().find(
+          (sidebet) => sidebet.displayName === sidebetEntry.sidebetName
+        );
+  
+        if (sidebet) {
+          const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
+  
+          if (result && result.length > 0) {
+            let sidebetDisplay: SidebetDisplay = {
+              sidebetName: sidebet.displayName,
+              winners: [],
+              statDisplays: [],
+            };
+  
+            const firstResult = result[0];
+            sidebetDisplay.winners.push(firstResult?.user?.metadata?.team_name || "n/a");
+            sidebetDisplay.statDisplays.push(firstResult?.stats_display || "n/a");
+            
+            if (firstResult?.stat_number) {
+              result.slice(1).forEach((res) => { // Skip the first element
+                if (res.stat_number === firstResult.stat_number) {
+                  sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
+                  sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
+
+                }
+              });
+            } else if (firstResult?.stats_record) {
+              result.slice(1).forEach((res) => { // Skip the first element
+                if (
+                  res.stats_record?.wins === firstResult.stats_record?.wins &&
+                  res.stats_record?.losses === firstResult.stats_record?.losses
+                ) {
+                  sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
+                  sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
+                }
+              });
             }
+  
+            sidebetsDisplay.push(sidebetDisplay);
           } else {
-            for (let i = 1; i < result.length; i++) {
-              if (result[i].stats_record?.wins === result[0].stats_record?.wins && result[i].stats_record?.losses === result[0].stats_record?.losses) {
-                sidebetDisplay.statDisplays.push(result[i].stats_display || "something went wrong");
-              }
-            }
+            sidebetsDisplay.push({
+              sidebetName: sidebet.displayName,
+              winners: ["n/a"],
+              statDisplays: ["n/a"],
+            });
           }
-        } else {
-          sidebetDisplay.winners.push("n/a");
-          sidebetDisplay.statDisplays.push("n/a");
         }
-        sidebetsDisplay.push(sidebetDisplay);
-      }
-    });
+      });
+    }
   };
 
   getSidebetData();

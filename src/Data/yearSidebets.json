@@ -1,63 +1,248 @@
 [
-    {"year": "2019", "sidebetName": "Heartbreaker"},
-    {"year": "2019", "sidebetName": "FS Team"},
-    {"year": "2019", "sidebetName": "Helmet Master"},
-    {"year": "2019", "sidebetName": "Juggernaut"},
-    {"year": "2019", "sidebetName": "Waffle"},
-    {"year": "2019", "sidebetName": "Better Lucky Than Good"},
-    {"year": "2019", "sidebetName": "Being a Boss When it Counts"},
-    {"year": "2019", "sidebetName": "Maybe Next Time"},
-    {"year": "2019", "sidebetName": "The Jamarcus Russel"},
-    {"year": "2019", "sidebetName": "Participation Ribbon"},
-    {"year": "2019", "sidebetName": "Kicked in da Ballz"},
-    {"year": "2019", "sidebetName": "Da Fuk"},
-    {"year": "2020", "sidebetName": "Heartbreaker"},
-    {"year": "2020", "sidebetName": "FS Team"},
-    {"year": "2020", "sidebetName": "Helmet Master"},
-    {"year": "2020", "sidebetName": "Juggernaut"},
-    {"year": "2020", "sidebetName": "Waffle"},
-    {"year": "2020", "sidebetName": "Better Lucky Than Good"},
-    {"year": "2020", "sidebetName": "Being a Boss When it Counts"},
-    {"year": "2020", "sidebetName": "Maybe Next Time"},
-    {"year": "2020", "sidebetName": "The Jamarcus Russel"},
-    {"year": "2020", "sidebetName": "Participation Ribbon"},
-    {"year": "2020", "sidebetName": "Kicked in da Ballz"},
-    {"year": "2020", "sidebetName": "Da Fuk"},
-    {"year": "2021", "sidebetName": "Heartbreaker"},
-    {"year": "2021", "sidebetName": "Helmet Master"},
-    {"year": "2021", "sidebetName": "Juggernaut"},
-    {"year": "2021", "sidebetName": "Waffle"},
-    {"year": "2021", "sidebetName": "Better Lucky Than Good"},
-    {"year": "2021", "sidebetName": "Being a Boss When it Counts"},
-    {"year": "2021", "sidebetName": "Maybe Next Time"},
-    {"year": "2021", "sidebetName": "The Jamarcus Russel"},
-    {"year": "2021", "sidebetName": "Participation Ribbon"},
-    {"year": "2021", "sidebetName": "Blue Balls"},
-    {"year": "2021", "sidebetName": "Underperformer"},
-    {"year": "2021", "sidebetName": "At Least I Draft Well"},
-    {"year": "2022", "sidebetName": "Helmet Master"},
-    {"year": "2022", "sidebetName": "Juggernaut"},
-    {"year": "2022", "sidebetName": "Waffle"},
-    {"year": "2022", "sidebetName": "Better Lucky Than Good"},
-    {"year": "2022", "sidebetName": "Being a Boss When it Counts"},
-    {"year": "2022", "sidebetName": "Maybe Next Time"},
-    {"year": "2022", "sidebetName": "The Jamarcus Russel"},
-    {"year": "2022", "sidebetName": "Participation Ribbon"},
-    {"year": "2022", "sidebetName": "Blue Balls"},
-    {"year": "2022", "sidebetName": "Underperformer"},
-    {"year": "2022", "sidebetName": "At Least I Draft Well"},
-    {"year": "2022", "sidebetName": "Heartbreaker"},
-    {"year": "2023", "sidebetName": "Heartbreaker"},
-    {"year": "2023", "sidebetName": "Juggernaut"},
-    {"year": "2023", "sidebetName": "Waffle"},
-    {"year": "2023", "sidebetName": "Better Lucky Than Good"},
-    {"year": "2023", "sidebetName": "Being a Boss When it Counts"},
-    {"year": "2023", "sidebetName": "Maybe Next Time"},
-    {"year": "2023", "sidebetName": "The Jamarcus Russel"},
-    {"year": "2023", "sidebetName": "Blackjack"},
-    {"year": "2023", "sidebetName": "Helmet Master"},
-    {"year": "2023", "sidebetName": "At Least I Draft Well"},
-    {"year": "2023", "sidebetName": "Get Wreck'd"},
-    {"year": "2023", "sidebetName": "Participation Ribbon"}
-  ]
-  
+	{
+		"year": 2019,
+		"data": [
+			{
+				"sidebetName": "Heartbreaker"
+			},
+			{
+				"sidebetName": "FS Team"
+			},
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			},
+			{
+				"sidebetName": "Kicked in da Ballz"
+			},
+			{
+				"sidebetName": "Helmet Master 4th String"
+			}
+		]
+	},
+	{
+		"year": 2020,
+		"data": [
+			{
+				"sidebetName": "Heartbreaker"
+			},
+			{
+				"sidebetName": "FS Team"
+			},
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			},
+			{
+				"sidebetName": "Kicked in da Ballz"
+			},
+			{
+				"sidebetName": "Helmet Master 4th String"
+			}
+		]
+	},
+	{
+		"year": 2021,
+		"data": [
+			{
+				"sidebetName": "Heartbreaker"
+			},
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			},
+			{
+				"sidebetName": "Blue Balls"
+			},
+			{
+				"sidebetName": "Underperformer"
+			},
+			{
+				"sidebetName": "At Least I Draft Well"
+			}
+		]
+	},
+	{
+		"year": 2022,
+		"data": [
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			},
+			{
+				"sidebetName": "Blue Balls"
+			},
+			{
+				"sidebetName": "Underperformer"
+			},
+			{
+				"sidebetName": "At Least I Draft Well"
+			},
+			{
+				"sidebetName": "Heartbreaker"
+			}
+		]
+	},
+	{
+		"year": 2023,
+		"data": [
+			{
+				"sidebetName": "Heartbreaker"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "Blackjack"
+			},
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "At Least I Draft Well"
+			},
+			{
+				"sidebetName": "Get Wreck'd"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			}
+		]
+	},
+	{
+		"year": 2024,
+		"data": [
+			{
+				"sidebetName": "Heartbreaker"
+			},
+			{
+				"sidebetName": "Juggernaut"
+			},
+			{
+				"sidebetName": "Waffle"
+			},
+			{
+				"sidebetName": "Better Lucky Than Good"
+			},
+			{
+				"sidebetName": "Being a Boss When it Counts"
+			},
+			{
+				"sidebetName": "Maybe Next Time"
+			},
+			{
+				"sidebetName": "The Jamarcus Russel"
+			},
+			{
+				"sidebetName": "The Belt"
+			},
+			{
+				"sidebetName": "Helmet Master"
+			},
+			{
+				"sidebetName": "At Least I Draft Well"
+			},
+			{
+				"sidebetName": "The Charger"
+			},
+			{
+				"sidebetName": "Participation Ribbon"
+			}
+		]
+	}
+]

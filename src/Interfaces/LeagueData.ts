@@ -1,6 +1,8 @@
 import MatchupInfo from "./MatchupInfo";
+import NFLStandingEntry from "./NFLStandingEntry";
 import SleeperRoster from "./SleeperRoster";
 import SleeperUser from "./SleeperUser";
+
 
 interface ScoringSettings {
     st_ff: number;
@@ -145,8 +147,7 @@ interface ScoringSettings {
     rosters: SleeperRoster[];
     users: SleeperUser[];
     matchupInfo: MatchupInfo[];
+    nflStandings?: NFLStandingEntry[];
+
   }
-
-
-  
   export default LeagueData;

@@ -29,6 +29,7 @@ function generateYearRoute(league: LeagueData, pathSuffix: string, component: Re
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
+  
 
   useEffect(() => {
     const fetchLeagueData = async () => {
@@ -48,36 +49,39 @@ function App() {
     return <div>Loading...</div>;
   }
 
-  return (
-    <Router>
-      <div className="App">
-        <WebsiteNavBar data={leagueData} /> {/* Fixed at the top */}
-        <div className="App-content"> {/* Scrollable content */}
-          {dataFetched && (
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
-              <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
-              {leagueData.map((leagueYear) => (
-                <React.Fragment key={leagueYear.season}>
-                  {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/schedule-comparison', <ScheduleComparison data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/overtime-comparison', <OvertimeComparison data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/draft-heatmap', <DraftHeatMap data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/draft-report-card', <DraftReportCard data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
-                  {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
-                </React.Fragment>
-              ))}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          )}
-        </div>
+// App.tsx
+
+return (
+  <Router>
+    <div className="App">
+      <WebsiteNavBar data={leagueData} /> {/* Fixed at the top */}
+      <div className="App-content"> {/* Scrollable content */}
+        {dataFetched && (
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
+            <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
+            {leagueData.map((leagueYear) => (
+              <React.Fragment key={leagueYear.season}>
+                {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/schedule-comparison', <ScheduleComparison data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/overtime-comparison', <OvertimeComparison data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/draft-heatmap', <DraftHeatMap data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/draft-report-card', <DraftReportCard data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
+              </React.Fragment>
+            ))}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        )}
       </div>
-    </Router>
-  );
+    </div>
+  </Router>
+);
+
 }
 
 export default App;

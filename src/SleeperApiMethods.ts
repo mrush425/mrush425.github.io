@@ -2,13 +2,14 @@ import DraftInfo from "./Interfaces/DraftInfo";
 import DraftPick from "./Interfaces/DraftPick";
 import LeagueData from "./Interfaces/LeagueData";
 import MatchupInfo from "./Interfaces/MatchupInfo";
+import NFLStandingEntry from "./Interfaces/NFLStandingEntry";
 import PlayerYearStats from "./Interfaces/PlayerYearStats";
 import { populatePositionOrderedLists } from "./Pages/Year Pages/SharedDraftMethods";
 import trollData from './Data/trollData.json'; // Import your trollData.json
 
 
 export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
-  const data = new Array();
+  const data: LeagueData[] = [];
 
   while (leagueId !== null && leagueId !== undefined) {
     const leaguePromise = fetch('https://api.sleeper.app/v1/league/' + leagueId).then(response => response.json());
@@ -17,7 +18,24 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
     const userPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/users`).then(response => response.json());
 
     const [leagueJson, stateJson, rosterJson, userJson] = await Promise.all([leaguePromise, statePromise, rosterPromise, userPromise]);
-    
+
+    // Fetch standings using the season from leagueJson
+    const standingsPromise = fetch(`https://site.api.espn.com/apis/v2/sports/football/nfl/standings?season=${leagueJson.season}`).then(response => response.json());
+    const standingsJson = await standingsPromise;
+
+    // Map standings to the NFLStanding interface
+    const standings: NFLStandingEntry[] = standingsJson.children.flatMap((conference: any) =>
+      conference.standings.entries.map((entry: any): NFLStandingEntry => ({
+        id: entry.team.id,
+        name: entry.team.displayName,
+        abbreviation: entry.team.abbreviation,
+        wins: entry.stats.find((stat: any) => stat.name === "wins")?.value || 0,
+        losses: entry.stats.find((stat: any) => stat.name === "losses")?.value || 0,
+        ties: entry.stats.find((stat: any) => stat.name === "ties")?.value || 0,
+        winPercent: entry.stats.find((stat: any) => stat.name === "winPercent")?.value || 0,
+      }))
+    );
+
     for (const user of userJson) {
       const trollMatch = trollData.find(troll => troll['Sleeper ID'] === user.user_id);
       if (trollMatch) {
@@ -32,6 +50,9 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
     leagueJson.users = userJson;
     leagueJson.matchupInfo = await getMatchupData(leagueJson);
 
+    // Include standings data
+    leagueJson.nflStandings = standings;
+
     data.push(leagueJson);
 
     leagueId = leagueJson.previous_league_id;
@@ -39,6 +60,8 @@ export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
 
   return data;
 }
+
+
 
 export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInfo[]> {
   const matchups: MatchupInfo[] = [];
