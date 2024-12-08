@@ -12,7 +12,6 @@ interface PlayoffsProps {
   data: LeagueData;
 }
 
-
 const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
 
   const selectedSeasonData: PlayoffData | undefined = playoffData.find(d => d['year'] === data.season)

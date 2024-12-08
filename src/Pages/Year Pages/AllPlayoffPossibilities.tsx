@@ -102,14 +102,19 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     const pointsMap = useLast3Points ? averageLast3PointsMap : averagePointsMap;
 
     if (data.nflSeasonInfo.season === data.season) {
-      for (let week = data.nflSeasonInfo.week - 1; week < data.settings.playoff_week_start - 1; week++) {
+      for (let week = data.nflSeasonInfo.week; week < data.settings.playoff_week_start; week++) {
         const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
         weeklyMatchups.forEach((matchup) => {
-          for (let i = 0; i < matchup.matchups.length / 2; i++) {
-            const team1RosterId = matchup.matchups[i].roster_id;
-            const team1 = findUserByRosterId(team1RosterId, data);
-            const team2RosterId = matchup.matchups[matchup.matchups.length - 1 - i].roster_id;
-            const team2 = findUserByRosterId(team2RosterId, data);
+
+          for (let i = 1; i <= matchup.matchups.length / 2; i++) {
+            const team1RosterId = matchup.matchups.find(match => match.matchup_id === i)?.roster_id;
+            const team1 = team1RosterId ? findUserByRosterId(team1RosterId, data) : null;
+            
+            const team2RosterId = matchup.matchups
+              .filter(match => match.matchup_id === i && match.roster_id !== team1RosterId)
+              .map(match => match.roster_id)[0]; // Get the first match with a different roster_id
+            const team2 = team2RosterId ? findUserByRosterId(team2RosterId, data) : null;
+
             if (!team1 || !team2) continue;
 
             const team1Average = pointsMap.get(team1.user_id) || 0;
@@ -138,6 +143,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
         });
       }
     }
+    
 
     // Track win counts for the new win distribution table
     recordArray.sort((a, b) => {

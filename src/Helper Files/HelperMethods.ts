@@ -26,39 +26,69 @@ export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
     return sortedData.findIndex((user) => user.owner_id === user_id) + 1;
 }
 
-export function getLeagueWinner(data: LeagueData): SleeperUser|undefined {
-    const selectedSeasonData: PlayoffData | undefined = playoffJsonData.find(d => d['year'] === data.season)
+export function getBowlWinner(bowlName: string, data: LeagueData): [SleeperUser|undefined, SleeperUser|undefined, string]{
+  const selectedSeasonData: PlayoffData | undefined = playoffJsonData.find(d => d['year'] === data.season)
 
-    const playoffStart = data.settings.playoff_week_start;
-    const playoffMatchup1: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === "25");
-    const playoffMatchup2: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === "26");
+  // Initialize the variables with default values
+  let playoffMatchupId1: string = "";
+  let playoffMatchupId2: string = "";
 
-    if (playoffMatchup1 && playoffMatchup2) {
-        const user1: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup1.user_id);
-        const user2: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup2.user_id);
+  switch(bowlName){
+    case "Troll Bowl":
+      playoffMatchupId1="25";
+      playoffMatchupId2="26";
+    break;
+    case "Bengal Bowl":
+      playoffMatchupId1="27";
+      playoffMatchupId2="28";
+    break;
+    case "Koozie Bowl":
+      playoffMatchupId1="29";
+      playoffMatchupId2="30";
+    break;
+    case "Toilet Bowl":
+      playoffMatchupId1="31";
+      playoffMatchupId2="32";
+    break;
+    case "Diarrhea Bowl":
+      playoffMatchupId1="33";
+      playoffMatchupId2="34";
+    break;
+    case "Butler Bowl":
+      playoffMatchupId1="35";
+      playoffMatchupId2="36";
+    break;
+  }
 
-        if(data.season==="2023"){
-            console.log(user1?.metadata.team_name);
-            if(user1){
-                console.log(getScoreStringForWeek(user1, playoffStart+2,data));
-            }
-            console.log(user2?.metadata.team_name);
-            if(user2){
-                console.log(getScoreStringForWeek(user2, playoffStart+2,data));
-            }
-        }
-        
-        if(user1 && user2){
-            if(Number(getScoreStringForWeek(user1, playoffStart+2,data))>Number(getScoreStringForWeek(user2, playoffStart+2,data))){
-                return user1;
-            }
-            else{
-                return user2;
-            }
-        }
-    }
-    return undefined;
+  const playoffStart = data.settings.playoff_week_start;
+  const playoffMatchup1: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === playoffMatchupId1);
+  const playoffMatchup2: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === playoffMatchupId2);
+
+  if (playoffMatchup1 && playoffMatchup2) {
+      const user1: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup1.user_id);
+      const user2: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup2.user_id);
+      
+      if(user1 && user2){
+        const points1:number = Number(getScoreStringForWeek(user1, playoffStart+2,data));
+        const points2:number = Number(getScoreStringForWeek(user2, playoffStart+2,data))
+          if(points1>points2){
+              const winString=user1.metadata.team_name + " defeated " + user2.metadata.team_name + ": " + points1 + " - " + points2;
+              return [user1,user2,winString];
+          }
+          else{
+            const winString=user2.metadata.team_name + " defeated " + user1.metadata.team_name + ": " + points2 + " - " + points1;
+              return [user2,user1,winString];
+          }
+      }
+  }
+  return [undefined,undefined,"Season not finished"]; 
 }
+
+export function getLeagueWinner(data: LeagueData): SleeperUser|undefined {
+const [user1,user2,winnerString] = getBowlWinner("Troll Bowl", data);
+return user1;
+}
+
 
 export function getScoreStringForWeek(user: SleeperUser, week: Number, data: LeagueData): string {
     const roster = data.rosters.find(r => r.owner_id === user.user_id);

@@ -60,21 +60,9 @@
         "isAsync": false
     },
     {
-        "methodName": "KickedInDaBallz",
-        "displayName": "Kicked in da Ballz",
-        "description": "Most points against by kickers.",
-        "isAsync": true
-    },
-    {
         "methodName": "BestBadReceiver",
         "displayName": "Helmet Master 4th String",
         "description": "Most points from 4th string WR of Helmet Master team.",
-        "isAsync": true
-    },
-    {
-        "methodName": "BlueBalls",
-        "displayName": "Blue Balls",
-        "description": "Most points against by defenses.",
         "isAsync": true
     },
     {
@@ -108,12 +96,6 @@
         "isAsync": true
     },
     {
-        "methodName": "ConnarEffect",
-        "displayName": "The Connar Effect",
-        "description": "Most points against by quarterbacks in the regular season.",
-        "isAsync": true
-    },
-    {
         "methodName": "Charger",
         "displayName": "The Charger",
         "description": "The Team with the most single digit losses throughout the season. (3pts for <1 diff, 2pts for <5 diff, 1pt for <10 diff)",
@@ -130,5 +112,41 @@
         "displayName": "The Belt",
         "description": "The belt stars with the winner from the prior year (first year its the championship winner). The matchup with the belt, the belt is on the line. Whoever ends with the belt at the end of the regular season wins",
         "isAsync": false  
+    },
+    {
+        "methodName": "ConnarEffect",
+        "displayName": "The Connar Effect",
+        "description": "Most points against by quarterbacks in the regular season.",
+        "isAsync": false
+    },
+    {
+        "methodName": "GetRunOver",
+        "displayName": "Get Run Over",
+        "description": "Most points against by running backs in the regular season.",
+        "isAsync": false
+    },
+    {
+        "methodName": "ReceivingLosses",
+        "displayName": "Receiving Losses",
+        "description": "Most points against by wide receivers in the regular season.",
+        "isAsync": false
+    },
+    {
+        "methodName": "KilledByATightEnd",
+        "displayName": "Killed by a Tight End",
+        "description": "Most points against by tight ends in the regular season.",
+        "isAsync": false
+    },
+    {
+        "methodName": "BlueBalls",
+        "displayName": "Blue Balls",
+        "description": "Most points against by defenses.",
+        "isAsync": false
+    },
+    {
+        "methodName": "KickedInDaBallz",
+        "displayName": "Kicked in da Ballz",
+        "description": "Most points against by kickers.",
+        "isAsync": false
     }
 ]

@@ -1,4 +1,3 @@
-// YearData.tsx
 import React, { useState, useEffect } from 'react'; // Import useEffect
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar'; // Import the YearNavBar component
@@ -10,7 +9,6 @@ import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
 import { getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 
-
 interface YearDataProps {
   data: LeagueData;
 }
@@ -19,6 +17,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
   const [sortBy, setSortBy] = useState<'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'default'>('default');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [sortedRosters, setSortedRosters] = useState(data.rosters); // Initial state with data.rosters
+  const [sidebetsDisplay, setSidebetsDisplay] = useState<SidebetDisplay[]>([]); // State to store sidebets data
   const users = data.users;
   const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
 
@@ -27,10 +26,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     setSortDirection(sortBy === column ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'desc');
   };
 
-  console.log(data);
-
   useEffect(() => {
-    // Use useEffect to sort the data when it changes
     const sortedData = data.rosters.slice().sort((a, b) => {
       const userA = users.find((u) => u.user_id === a.owner_id);
       const userB = users.find((u) => u.user_id === b.owner_id);
@@ -73,71 +69,86 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
       }
     });
     setSortedRosters(sortedData);
-  }, [data.rosters, sortBy, sortDirection]); // Run the effect whenever data.rosters, sortBy, or sortDirection changes
+  }, [data.rosters, sortBy, sortDirection]);
 
-  const sidebetsDisplay: SidebetDisplay[] = [];
-
-  const getSidebetData = () => {
-    const yearData = yearSidebetsData.find((entry) => entry.year === Number.parseFloat(data.season));
+  useEffect(() => {
+    const fetchSidebetData = async () => {
+      const yearData = yearSidebetsData.find((entry) => entry.year === Number.parseFloat(data.season));
   
-    if (yearData) {
-      yearData.data.forEach((sidebetEntry) => {
-        const sidebet: Sidebet | undefined = SidebetMethods.Sidebets().find(
-          (sidebet) => sidebet.displayName === sidebetEntry.sidebetName
-        );
+      const sidebets: SidebetDisplay[] = [];
   
-        if (sidebet) {
-          const result: SidebetStat[] | undefined = (SidebetMethods as any)[sidebet.methodName]?.(data);
+      if (yearData) {
+        for (const sidebetEntry of yearData.data) {
+          const sidebet: Sidebet | undefined = SidebetMethods.Sidebets().find(
+            (sidebet) => sidebet.displayName === sidebetEntry.sidebetName
+          );
   
-          if (result && result.length > 0) {
-            let sidebetDisplay: SidebetDisplay = {
-              sidebetName: sidebet.displayName,
-              winners: [],
-              statDisplays: [],
-            };
+          if (sidebet) {
+            let result: SidebetStat[] | undefined;
+            try {
+              const method = (SidebetMethods as any)[sidebet.methodName]?.bind(SidebetMethods);
   
-            const firstResult = result[0];
-            sidebetDisplay.winners.push(firstResult?.user?.metadata?.team_name || "n/a");
-            sidebetDisplay.statDisplays.push(firstResult?.stats_display || "n/a");
-            
-            if (firstResult?.stat_number) {
-              result.slice(1).forEach((res) => { // Skip the first element
-                if (res.stat_number === firstResult.stat_number) {
-                  sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
-                  sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
-
+              if (method) {
+                if (sidebet.isAsync) {
+                  result = await method(data);
+                } else {
+                  result = method(data);
                 }
-              });
-            } else if (firstResult?.stats_record) {
-              result.slice(1).forEach((res) => { // Skip the first element
-                if (
-                  res.stats_record?.wins === firstResult.stats_record?.wins &&
-                  res.stats_record?.losses === firstResult.stats_record?.losses
-                ) {
-                  sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
-                  sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
-                }
-              });
+              }
+            } catch (error) {
+              console.error(`Error executing method ${sidebet.methodName}:`, error);
             }
   
-            sidebetsDisplay.push(sidebetDisplay);
-          } else {
-            sidebetsDisplay.push({
-              sidebetName: sidebet.displayName,
-              winners: ["n/a"],
-              statDisplays: ["n/a"],
-            });
+            if (result && result.length > 0) {
+              let sidebetDisplay: SidebetDisplay = {
+                sidebetName: sidebet.displayName,
+                winners: [],
+                statDisplays: [],
+              };
+  
+              const firstResult = result[0];
+              sidebetDisplay.winners.push(firstResult?.user?.metadata?.team_name || "n/a");
+              sidebetDisplay.statDisplays.push(firstResult?.stats_display || "n/a");
+  
+              if (firstResult?.stat_number) {
+                result.slice(1).forEach((res) => {
+                  if (res.stat_number === firstResult.stat_number) {
+                    sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
+                    sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
+                  }
+                });
+              } else if (firstResult?.stats_record) {
+                result.slice(1).forEach((res) => {
+                  if (
+                    res.stats_record?.wins === firstResult.stats_record?.wins &&
+                    res.stats_record?.losses === firstResult.stats_record?.losses
+                  ) {
+                    sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
+                    sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
+                  }
+                });
+              }
+  
+              sidebets.push(sidebetDisplay);
+            } else {
+              sidebets.push({
+                sidebetName: sidebet.displayName,
+                winners: ["n/a"],
+                statDisplays: ["n/a"],
+              });
+            }
           }
         }
-      });
-    }
-  };
-
-  getSidebetData();
+      }
+      setSidebetsDisplay(sidebets);
+    };
+  
+    fetchSidebetData();
+  }, [data]);
 
   return (
     <div>
-      <YearNavBar data={data} /> 
+      <YearNavBar data={data} />
 
       <h2>{`Season ${data.season}`}</h2>
       <table className="records-table">
@@ -222,50 +233,31 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
         </tbody>
       </table>
 
-      <h3 style={{ marginTop: "30px" }}>Sidebets</h3>
+      <div>
+      <h3 style={{ marginTop: '20px' }}>Sidebets</h3>
       <table className="sidebets-table">
-        <thead>
-          <tr>
-            <th>Sidebet</th>
-            <th>Winner</th>
-            <th>Stat</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sidebetsDisplay.map((sidebetDisplay) => {
-            return (
-              <tr>
-                <td>{sidebetDisplay.sidebetName}</td>
-                <td>
-                  {sidebetDisplay.winners.map((winner, index) => (
-                    <table className='single-sidebet-table' key={index}>
-                      <tbody>
-                        <tr>
-                          <td>{winner}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  ))}
-                </td>
-                <td>
-                  {sidebetDisplay.statDisplays.map((statDisplay, index) => (
-                    <table className='single-sidebet-table' key={index}>
-                      <tbody>
-                        <tr>
-                          <td>{statDisplay}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  ))}
-                </td>
+          <thead>
+            <tr>
+              <th>Sidebet</th>
+              <th>Winners</th>
+              <th>Stats</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sidebetsDisplay.map((sidebet, index) => (
+              <tr key={index}>
+                <td>{sidebet.sidebetName}</td>
+                <td>{sidebet.winners.join(", ")}</td>
+                <td>{sidebet.statDisplays.join(", ")}</td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
+
 
 interface SidebetDisplay {
   sidebetName: string | undefined,

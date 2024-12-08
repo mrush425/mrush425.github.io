@@ -3,13 +3,15 @@ import LeagueData from '../../Interfaces/LeagueData';
 import SidebetStat from '../../Interfaces/SidebetStat';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findUserByRosterId } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, getBowlWinner } from '../../Helper Files/HelperMethods';
 import sidebetsData from '../../Data/sidebets.json';
 import yearTrollData from '../../Data/yearTrollData.json';
 import SleeperRoster from '../../Interfaces/SleeperRoster';
 import Matchup from '../../Interfaces/Matchup';
 import { getLeagueRecordAtSchedule } from '../../Helper Files/RecordCalculations';
 import NFLStandingEntry from '../../Interfaces/NFLStandingEntry';
+import playerData from '../../Data/players.json';
+import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 
 class SidebetMethods {
   static Sidebets(): Sidebet[] {
@@ -19,7 +21,6 @@ class SidebetMethods {
   }
 
   static Heartbreaker(data: LeagueData): SidebetStat[] {
-    console.log(this);
     let orderedSidebets: SidebetStat[] = [];
     data.users.map((user) => {
       orderedSidebets.push(this.UserHeartbreaker(data, user));
@@ -171,9 +172,6 @@ class SidebetMethods {
     return sidebetStat;
   }
   
-  
-  
-
   static MostPointsAgainst(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];
 
@@ -545,7 +543,6 @@ class SidebetMethods {
 
   static async JamarcusRussel(data: LeagueData): Promise<SidebetStat[]> {
     // Fetch stats for each user and await all API calls
-    console.log("here");
     const jamarcusStats = await Promise.all(
       data.users.map((user) => this.JamarcusRusselUser(data, user))
     );
@@ -564,10 +561,7 @@ class SidebetMethods {
     return validStats;
   }
   
-  static async JamarcusRusselUser(
-    data: LeagueData,
-    user: SleeperUser
-  ): Promise<SidebetStat | undefined> {
+  static async JamarcusRusselUser(data: LeagueData,user: SleeperUser): Promise<SidebetStat | undefined> {
     const season = data.season;
     const userSleeperId = user.user_id;
   
@@ -642,7 +636,175 @@ class SidebetMethods {
       return undefined;
     }
   }
+
+  static ParticipationRibbon(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+
+    const [user1,user2,winnerString] = getBowlWinner("Toilet Bowl",data);
+    let sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user=user1;
+    sidebetStat.stat_number=7;
+    sidebetStat.stats_display=winnerString;
+    orderedSidebets.push(sidebetStat);
+
+    return orderedSidebets;
+  }
+
+  static UserPointsAgainstByPosition(position: string, user: SleeperUser, data: LeagueData): number {
+    let pointsAgainstByPosition: number = 0;
+    let teamRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
+    let relevantMatchups;
+      if (data.nflSeasonInfo.season === data.season) {
+          relevantMatchups = data.matchupInfo.filter(
+              (matchup) =>
+                  matchup.week < data.nflSeasonInfo.week &&
+                  matchup.week < data.settings.playoff_week_start
+          );
+      }
+      else {
+          relevantMatchups = data.matchupInfo.filter(
+              (matchup) =>
+                  matchup.week < data.settings.playoff_week_start 
+          );
+      }
+
+      relevantMatchups.forEach((matchup) => {
+        const teamMatchup: Matchup|undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        const oppMatchup: Matchup|undefined = matchup.matchups.find((m) => m.matchup_id === teamMatchup?.matchup_id && m.roster_id !== teamMatchup?.roster_id);
+
+        if (teamMatchup && oppMatchup) {
+          for (let i = 0; i < oppMatchup.starters.length; i++) {
+              const playerId = oppMatchup.starters[i];
+
+              // Check if playerId exists in playerData
+              if (playerId in playerData) {
+                const player = (playerData as Record<string, any>)[playerId];
+                const fantasyPositions: string[] = player.fantasy_positions || [];
+                  if (fantasyPositions.includes(position)) {
+                      pointsAgainstByPosition += oppMatchup.starters_points[i];
+                  }
+              }
+          }
+      }
+    });
+    return pointsAgainstByPosition;
+  }
+
+  static SortedPointsAgainstByPosition(position: string, data: LeagueData): SidebetStat[]{
+    let orderedSidebets: SidebetStat[] = [];
+
+    data.rosters.map((roster: SleeperRoster) => {
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = data.users.find(u => u.user_id === roster.owner_id);
+      if(sidebetStat.user){
+        sidebetStat.stat_number = this.UserPointsAgainstByPosition(position,sidebetStat.user,data);
+        sidebetStat.stats_display = (sidebetStat.stat_number).toFixed(2);
+        orderedSidebets.push(sidebetStat);
+      }
+    });
+
+    orderedSidebets.sort((a, b) => (a.stat_number && b.stat_number) ? b.stat_number - a.stat_number : 100);
+    return orderedSidebets;
+  }
+
+  static ConnarEffect(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("QB", data);
+  }
+
+  static GetRunOver(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("RB", data);
+  }
+
+  static ReceivingLosses(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("WR", data);
+  }
+
+  static KilledByATightEnd(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("TE", data);
+  }
+
+  static KickedInDaBallz(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("K", data);
+  }
+
+  static BlueBalls(data: LeagueData): SidebetStat[] {
+    return this.SortedPointsAgainstByPosition("DEF", data);
+  }
+
+  static async BestBadReceiver(data: LeagueData): Promise<SidebetStat[]> {
+    // Fetch stats for each user and await all API calls
+    const badReceiverStats = await Promise.all(
+      data.users.map((user) => this.UserBestBadReceiver(data, user))
+    );
   
+    // Filter out undefined entries and sort by stat_number ascending
+    const validStats = badReceiverStats.filter(
+      (stat): stat is SidebetStat => stat !== undefined
+    );
+  
+    validStats.sort((a, b) =>
+      a.stat_number !== undefined && b.stat_number !== undefined
+        ? b.stat_number - a.stat_number
+        : 0
+    );
+  
+    return validStats;
+  }
+
+  static async UserBestBadReceiver(data: LeagueData, user: SleeperUser): Promise<SidebetStat | undefined> {
+    const currentSeason = data.season;
+    const userSleeperId = user.user_id;
+  
+    // Find the yearData matching the current season
+    const yearData = yearTrollData.find(
+      (yd) => yd.year === Number.parseFloat(currentSeason)
+    );
+  
+    if (!yearData) {
+      console.warn(
+        `No yearTrollData found for season ${currentSeason}.`
+      );
+      return undefined;
+    }
+  
+    // Find the player's data
+    const playerData = yearData.data.find(
+      (pd: any) => pd.sleeper_id === userSleeperId
+    );
+  
+    if (!playerData) {
+      console.warn(
+        `No helmet master data found for user ${user.user_id} in season ${currentSeason}.`
+      );
+      return undefined;
+    }
+  
+    const receiverId: string = playerData.HM_4th_string_sleeper_id.toString();
+    if (receiverId === "") return undefined;
+  
+    // Fetch the player's stats from the Sleeper API
+    const apiUrl = `https://api.sleeper.com/stats/nfl/player/${receiverId}?season_type=regular&season=${currentSeason}`;
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        console.error(`Failed to fetch player stats: ${response.statusText}`);
+        return undefined;
+      }
+  
+      const playerYearStats: PlayerYearStats = await response.json();
+      const points = playerYearStats.stats.pts_half_ppr;
+  
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = user;
+      sidebetStat.stat_number = points || 0; // Default to 0 if points are undefined
+      sidebetStat.stats_display = `${playerYearStats.player.first_name} ${playerYearStats.player.last_name} with ${points} half-PPR points`;
+  
+      return sidebetStat;
+    } catch (error) {
+      console.error("Error fetching player stats");
+      return undefined;
+    }
+  }
 
   static NewStatTemplate(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];
