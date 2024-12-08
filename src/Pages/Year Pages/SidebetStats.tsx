@@ -38,7 +38,7 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
         setIsImplemented(true);
         setSidebetStats(result || []);
       } else {
-        console.log("Method name: " + sidebet.methodName);
+        //console.log("Method name: " + sidebet.methodName);
         setSidebetStats([]);
         setIsImplemented(false);
       }

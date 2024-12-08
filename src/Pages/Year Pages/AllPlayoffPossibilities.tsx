@@ -78,7 +78,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       };
       recordArray.push(record);
     });
-    console.log(recordArray);
+    //console.log(recordArray);
   };
 
   const runSimulation = () => {

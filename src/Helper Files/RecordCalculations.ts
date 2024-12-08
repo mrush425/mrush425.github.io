@@ -45,7 +45,6 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
                     //^Pretty sure this can be deleted but saving just in case.
             );
         }
-        console.log(relevantMatchups);
         relevantMatchups.forEach((matchup) => {
 
             const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);

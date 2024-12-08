@@ -12,6 +12,8 @@ import { getLeagueRecordAtSchedule } from '../../Helper Files/RecordCalculations
 import NFLStandingEntry from '../../Interfaces/NFLStandingEntry';
 import playerData from '../../Data/players.json';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
+import yearData from '../../Data/yearData.json';
+
 
 class SidebetMethods {
   static Sidebets(): Sidebet[] {
@@ -478,7 +480,7 @@ class SidebetMethods {
     data.users.map((user) => {
       orderedSidebets.push(this.UserViking(data, user));
     });
-    console.log(orderedSidebets);
+    //console.log(orderedSidebets);
     orderedSidebets.sort((a, b) => (b.stat_number || 0) - (a.stat_number || 0));
     return orderedSidebets;
   }
@@ -636,6 +638,50 @@ class SidebetMethods {
       return undefined;
     }
   }
+
+  static SetAndForgetWinner(data: LeagueData): SidebetStat[] {
+    let orderedSidebets: SidebetStat[] = [];
+
+    let sidebetStat: SidebetStat = new SidebetStat();
+    let winner_user: SleeperUser|undefined; 
+    let loser_user: SleeperUser|undefined;
+
+    // Find the data for the current year
+    const currentYearData = yearData.find(d => d.year.toString() === data.season);
+    if (currentYearData) {
+      const leagueData = currentYearData.data[0]; // assuming only one entry per year
+
+      // Get the winner and loser IDs from the json
+      const winnerId = leagueData.set_and_forget_winner_id;
+      const loserId = leagueData.set_and_forget_loser_id;
+
+      // Find the winner_user and loser_user based on the IDs
+      winner_user = data.users.find(user => user.user_id === winnerId);
+      loser_user = data.users.find(user => user.user_id === loserId);
+
+      // Set the winner and loser for the sidebet stat
+      if(winner_user && loser_user){
+      sidebetStat.user = winner_user;
+      const winnerPoints = (leagueData.set_and_forget_winner_points === "" || leagueData.set_and_forget_winner_points === undefined)
+      ? 0 : Number(leagueData.set_and_forget_winner_points);
+      const loserPoints = (leagueData.set_and_forget_loser_points === "" || leagueData.set_and_forget_loser_points === undefined)
+      ? 0 : Number(leagueData.set_and_forget_loser_points);
+      sidebetStat.stat_number = winnerPoints;
+        sidebetStat.stats_display = `${winner_user.metadata.team_name} defeated ${loser_user.metadata.team_name}: 
+        ${winnerPoints} - ${loserPoints}`;
+      orderedSidebets.push(sidebetStat);
+      }     
+  }
+    return orderedSidebets;
+  }
+
+      // data.users[1].user
+    // if(winner_user){
+    //   sidebetStat.user = winner_user;
+    //   sidebetStat.stat_number = //set_and_forget_winner_points
+    //   sidebetStat.stats_display = //
+    //   orderedSidebets.push(sidebetStat);
+    // }
 
   static ParticipationRibbon(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];

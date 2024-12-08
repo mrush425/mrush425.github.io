@@ -159,7 +159,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
       lastRegularSeasonWeek = data.settings.playoff_week_start-1;
     }
 
-    console.log(lastRegularSeasonWeek);
+    //console.log(lastRegularSeasonWeek);
     return lastRegularSeasonWeek;
   };
 

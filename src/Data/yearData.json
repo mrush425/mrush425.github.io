@@ -1,0 +1,92 @@
+[
+	{
+		"year": 2019,
+		"data": [
+			{
+				"year": 2019,
+				"sleeper_id": "473933553562808320",
+				"buy_in": 30,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "",
+				"set_and_forget_winner_points": "",
+				"set_and_forget_loser_id": "",
+				"set_and_forget_loser_points": ""
+			}
+		]
+	},
+	{
+		"year": 2020,
+		"data": [
+			{
+				"year": 2020,
+				"sleeper_id": "608138707970629632",
+				"buy_in": 30,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "",
+				"set_and_forget_winner_points": "",
+				"set_and_forget_loser_id": "",
+				"set_and_forget_loser_points": ""
+			}
+		]
+	},
+	{
+		"year": 2021,
+		"data": [
+			{
+				"year": 2021,
+				"sleeper_id": "726147295728504832",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "438826516663496704",
+				"set_and_forget_winner_points": 104.9,
+				"set_and_forget_loser_id": "473933216856666112",
+				"set_and_forget_loser_points": 66.5
+			}
+		]
+	},
+	{
+		"year": 2022,
+		"data": [
+			{
+				"year": 2022,
+				"sleeper_id": "863893979563995136",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "473932553733009408",
+				"set_and_forget_winner_points": 130.02,
+				"set_and_forget_loser_id": "473933216856666112",
+				"set_and_forget_loser_points": 110.02
+			}
+		]
+	},
+	{
+		"year": 2023,
+		"data": [
+			{
+				"year": 2023,
+				"sleeper_id": "996974024729169920",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "438826516663496704",
+				"set_and_forget_winner_points": 101.92,
+				"set_and_forget_loser_id": "473932355996741632",
+				"set_and_forget_loser_points": 76.9
+			}
+		]
+	},
+	{
+		"year": 2024,
+		"data": [
+			{
+				"year": 2024,
+				"sleeper_id": "1048263432329396224",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "",
+				"set_and_forget_winner_points": "",
+				"set_and_forget_loser_id": "",
+				"set_and_forget_loser_points": ""
+			}
+		]
+	}
+]
