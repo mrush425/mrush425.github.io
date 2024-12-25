@@ -1,170 +1,122 @@
 import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
-import { getMatchupData } from '../../SleeperApiMethods';
-import MatchupInfo from '../../Interfaces/MatchupInfo';
+import SidebetMethods, { Sidebet } from './SidebetMethods';
+import SidebetStat from '../../Interfaces/SidebetStat';
 
 import '../../Stylesheets/Year Stylesheets/SidebetStats.css';
-import SidebetStat from '../../Interfaces/SidebetStat';
-import SidebetMethods, { Sidebet } from './SidebetMethods';
 
 interface SidebetStatsProps {
   data: LeagueData;
 }
 
 const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
+  const sidebets = SidebetMethods.Sidebets(); // Assume this provides the list of sidebets
+
+  // Start with the first sidebet preselected
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [sidebetStats, setSidebetStats] = useState<SidebetStat[]>([]);
-  const [header, setHeader] = useState<string>('Select a Sidebet');
-  const [description, setDescription] = useState<string>('');
-  const [activeButtonIndex, setActiveButtonIndex] = useState<number>(-1);
+  const [header, setHeader] = useState<string>(sidebets[0]?.displayName || '');
+  const [description, setDescription] = useState<string>(sidebets[0]?.description || '');
   const [isImplemented, setIsImplemented] = useState<boolean>(true);
 
-  const handleButtonClick = async (sidebet: Sidebet, index: number) => {
+  // Fetch stats for the initial sidebet
+  useEffect(() => {
+    const loadInitialSidebet = async () => {
+      const initialSidebet = sidebets[0];
+      if (initialSidebet) {
+        await handleSidebetChange(0); // Load the first sidebet's stats
+      }
+    };
+    loadInitialSidebet();
+  }, []);
+
+  const handleSidebetChange = async (index: number) => {
+    const sidebet = sidebets[index];
     try {
-      // Get the method dynamically and bind `this` to ensure proper context
       const method = (SidebetMethods as any)[sidebet.methodName]?.bind(SidebetMethods);
-  
+
       if (method) {
-        let result;
-  
-        if (sidebet.isAsync) {
-          // Await async methods
-          result = await method(data);
-        } else {
-          // Call sync methods
-          result = method(data);
-        }
-  
-        setIsImplemented(true);
+        const result = sidebet.isAsync ? await method(data) : method(data);
         setSidebetStats(result || []);
+        setIsImplemented(true);
       } else {
-        //console.log("Method name: " + sidebet.methodName);
         setSidebetStats([]);
         setIsImplemented(false);
       }
     } catch (error) {
       console.error(`Error executing method ${sidebet.methodName}:`, error);
-      setIsImplemented(false);
       setSidebetStats([]);
+      setIsImplemented(false);
     }
-  
+
     setHeader(sidebet.displayName);
     setDescription(sidebet.description);
-    setActiveButtonIndex(index);
+    setActiveIndex(index);
   };
 
-  const handleArrowKey = async (direction: 'left' | 'right') => {
-    // Compute the new index synchronously
-    setActiveButtonIndex((prevIndex) => {
-      const newIndex =
-        direction === 'right'
-          ? (prevIndex + 1) % SidebetMethods.Sidebets().length
-          : (prevIndex - 1 + SidebetMethods.Sidebets().length) % SidebetMethods.Sidebets().length;
-  
-      // Call handleButtonClick asynchronously
-      const selectedSidebet = SidebetMethods.Sidebets()[newIndex];
-      handleButtonClick(selectedSidebet, newIndex); // Don't await here
-  
-      return newIndex; // Update state synchronously
-    });
-  };
+return (
+  <div>
+    <YearNavBar data={data} />
+    <div className="sidebetPicker">
+      <button
+        className="arrowButton"
+        onClick={() => {
+          const newIndex = (activeIndex - 1 + sidebets.length) % sidebets.length;
+          setActiveIndex(newIndex);
+          handleSidebetChange(newIndex);
+        }}
+      >
+        &#x2b05;
+      </button>
+      <select
+        className="sidebetDropdown"
+        value={activeIndex}
+        onChange={(e) => handleSidebetChange(Number(e.target.value))}
+      >
+        {sidebets.map((sidebet, index) => (
+          <option key={sidebet.methodName} value={index}>
+            {sidebet.displayName}
+          </option>
+        ))}
+      </select>
+      <button
+        className="arrowButton"
+        onClick={() => {
+          const newIndex = (activeIndex + 1) % sidebets.length;
+          setActiveIndex(newIndex);
+          handleSidebetChange(newIndex);
+        }}
+      >
+        &#x27a1;
+      </button>
+    </div>
 
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowRight') {
-        handleArrowKey('right');
-      } else if (event.key === 'ArrowLeft') {
-        handleArrowKey('left');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  }, []);
-
-  return (
-    <div>
-      <YearNavBar data={data} />
-
-      <table className='fullTable'>
-        <tbody>
+    <h2>{header + " " + data.season}</h2>
+    <div>{description}</div>
+    {!isImplemented ? (
+      <div className="notImplementedMessage">Stat not implemented</div>
+    ) : (
+      <table className="statsTable">
+        <thead>
           <tr>
-            <td className="statMenu" key={"column1"}>
-              <div className="statMenuDiv">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Stats</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SidebetMethods.Sidebets().map((sidebet: Sidebet, index: number) => (
-                      <tr key={sidebet.methodName}>
-                        <td>
-                          <button
-                            className={`statButton ${activeButtonIndex === index ? 'active' : ''}`}
-                            onClick={() => handleButtonClick(sidebet, index)}
-                          >
-                            {sidebet.displayName}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </td>
-            <td className="statsColumn" key={"column2"} width={"100%"}>
-
-              <div style={{width:"100%"}}>
-              <table className="statsHeaderTable">
-                <tbody>
-                  <tr>
-                    <td className='arrowButtonCell'><button className='arrowButton' onClick={() => handleArrowKey('left')}>&#x2b05;</button></td>
-                    <td className='headerCell'><h2>{header + " " + data.season}</h2></td>
-                    <td className='arrowButtonCell'><button className='arrowButton' onClick={() => handleArrowKey('right')}>&#x27a1;</button></td>
-                  </tr>
-                </tbody>
-              </table>
-              </div>
-
-              <div>{description}</div>
-              {!isImplemented ? (
-                <div className="notImplementedMessage">
-                  Stat not implemented
-                </div>
-              ) : (
-                <div>
-                  <table className="statsTable">
-                    <thead>
-                      <tr>
-                        <th>User</th>
-                        <th>Stat</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Array.isArray(sidebetStats) &&
-                        sidebetStats.map((sidebetStat, index) => {
-                          return (
-                            <tr key={sidebetStat.user?.user_id}>
-                              <td>{sidebetStat.user?.metadata.team_name}</td>
-                              <td>{sidebetStat.stats_display}</td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </td>
+            <th>User</th>
+            <th>Stat</th>
           </tr>
+        </thead>
+        <tbody>
+          {sidebetStats.map((sidebetStat) => (
+            <tr key={sidebetStat.user?.user_id}>
+              <td>{sidebetStat.user?.metadata.team_name}</td>
+              <td>{sidebetStat.stats_display}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
-    </div>
-  );
+    )}
+  </div>
+);
+
 };
 
 export default SidebetStats;

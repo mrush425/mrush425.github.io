@@ -5,6 +5,8 @@ import SleeperUser from "../Interfaces/SleeperUser";
 import playoffJsonData from '../Data/playoffs.json'; // Import your trollData.json
 import MatchupInfo from "../Interfaces/MatchupInfo";
 import Matchup from "../Interfaces/Matchup";
+import PlayerYearStats from "../Interfaces/PlayerYearStats";
+import { match } from "assert";
 
 
 export function findRosterByUserId(user_id: string, rosters: SleeperRoster[]): SleeperRoster | undefined {
@@ -27,7 +29,7 @@ export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
 }
 
 export function getBowlWinner(bowlName: string, data: LeagueData): [SleeperUser|undefined, SleeperUser|undefined, string]{
-  const selectedSeasonData: PlayoffData | undefined = playoffJsonData.find(d => d['year'] === data.season)
+  const selectedSeasonData: PlayoffData | undefined = playoffJsonData.find(d => d['year'].toString() === data.season)
 
   // Initialize the variables with default values
   let playoffMatchupId1: string = "";
@@ -61,8 +63,8 @@ export function getBowlWinner(bowlName: string, data: LeagueData): [SleeperUser|
   }
 
   const playoffStart = data.settings.playoff_week_start;
-  const playoffMatchup1: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === playoffMatchupId1);
-  const playoffMatchup2: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find((matchup) => matchup.matchupId === playoffMatchupId2);
+  const playoffMatchup1: PlayoffMatchup | undefined = selectedSeasonData?.data.find((matchup) => matchup.matchupId.toString() === playoffMatchupId1);
+  const playoffMatchup2: PlayoffMatchup | undefined = selectedSeasonData?.data.find((matchup) => matchup.matchupId.toString() === playoffMatchupId2);
 
   if (playoffMatchup1 && playoffMatchup2) {
       const user1: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup1.user_id);
@@ -214,4 +216,54 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
   
     return averagePointsMap;
   }
+
+  export async function projectedPointsInWeek(user: SleeperUser, week: number, data: LeagueData): Promise<number>{
+    let projectedPoints: number = 0;
+    const rosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
+    if(!rosterId) return 0;
+
+        // Efficiently find the matchup for the given roster ID:
+    const matchup = data.matchupInfo[week - 1].matchups.find(
+      (matchup: Matchup) => matchup.roster_id === rosterId
+    );
+
+    if (!matchup) return 0;
+
+    // Efficiently calculate projected points for all starters using Promise.all
+    const starterPromises = matchup.starters.map(async (playerId) => {
+      return await projectedPointsInWeekForPlayer(playerId, week, data);
+    });
   
+    // Wait for all starter projections to resolve before summing
+    const starterPoints = await Promise.all(starterPromises);
+  
+    projectedPoints = starterPoints.reduce((sum, points) => sum + points, 0);
+  
+    return projectedPoints;
+  }
+
+  export async function projectedPointsInWeekForPlayer(playerId: string,week: number,data: LeagueData): Promise<number> {
+    let projectedPoints: number = 0;
+    const apiUrl = `https://api.sleeper.com/projections/nfl/player/${playerId}?season_type=regular&season=${data.season}&week=${week}`;
+  
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        console.error(`Failed to fetch player stats: ${response.statusText}`);
+        return 0;
+      }
+  
+      const playerYearStats: PlayerYearStats = await response.json();
+  
+      for (const stat of Object.keys(playerYearStats.stats) as Array<keyof typeof playerYearStats.stats>) {
+        const value = playerYearStats.stats[stat];
+        if (stat in data.scoring_settings) {
+          projectedPoints += value * (data.scoring_settings[stat] || 0);
+        }
+      }
+      return projectedPoints;
+    } catch (error) {
+        console.error(`Error fetching player projections: ${apiUrl}`);
+      return 0;
+    }
+  }

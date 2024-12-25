@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import SidebetStat from '../../Interfaces/SidebetStat';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId, findUserByRosterId, getBowlWinner } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, getBowlWinner, projectedPointsInWeek } from '../../Helper Files/HelperMethods';
 import sidebetsData from '../../Data/sidebets.json';
 import yearTrollData from '../../Data/yearTrollData.json';
 import SleeperRoster from '../../Interfaces/SleeperRoster';
@@ -639,6 +639,84 @@ class SidebetMethods {
     }
   }
 
+  static async Underperformer(data: LeagueData): Promise<SidebetStat[]> {
+        // Fetch stats for each user and await all API calls
+        const underperformerStats = await Promise.all(
+          data.users.map((user) => this.UserUnderperformer(data, user))
+        );
+      
+        // Filter out undefined entries and sort by stat_number ascending
+        const validStats = underperformerStats.filter(
+          (stat): stat is SidebetStat => stat !== undefined
+        );
+      
+        validStats.sort((a, b) =>
+          a.stat_number !== undefined && b.stat_number !== undefined
+            ? a.stat_number - b.stat_number
+            : 0
+        );
+      
+        return validStats;
+  }
+
+  static async UserUnderperformer(data: LeagueData, user: SleeperUser): Promise<SidebetStat | undefined> {
+    let relevantMatchups: MatchupInfo[];
+    let currentDifference: number = 0; // Initialize with a default value
+    let matchupFound: boolean = false;
+    const teamRosterId: number = findRosterByUserId(user.user_id, data.rosters)?.roster_id ?? 0;
+    
+    if (data.season === data.nflSeasonInfo.season) {
+        relevantMatchups = data.matchupInfo.filter(
+            (matchup) =>
+                matchup.week < data.nflSeasonInfo.week &&
+                matchup.week < data.settings.playoff_week_start &&
+                matchup.matchups.some((m) => m.roster_id === teamRosterId)
+        );
+    } else {
+        relevantMatchups = data.matchupInfo.filter(
+            (matchup) =>
+                matchup.week < data.settings.playoff_week_start &&
+                matchup.matchups.some((m) => m.roster_id === teamRosterId)
+        );
+    }
+
+    for (const matchup of relevantMatchups) {
+        const teamMatchup: Matchup | undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        if (teamMatchup) {
+            matchupFound=true;
+            const projectedPoints = await projectedPointsInWeek(user, matchup.week, data);
+            currentDifference += teamMatchup.points - projectedPoints;
+            if(user.metadata.team_name==="Walrus"){
+              console.log(`Week: ${matchup.week}: ${teamMatchup.points} - ${projectedPoints}`);
+            }
+        }
+    }
+    
+    const sidebetStat: SidebetStat = new SidebetStat();
+    sidebetStat.user = user;
+    if(matchupFound){
+      currentDifference=parseFloat((currentDifference).toFixed(2))
+      if (currentDifference !== 0) {
+        sidebetStat.stat_number = currentDifference;
+        if (currentDifference > 0) {
+            sidebetStat.stats_display = `${user.metadata.team_name} was above projection by ${currentDifference}`;  
+        } else {
+            currentDifference = currentDifference * -1;
+            sidebetStat.stats_display = `${user.metadata.team_name} was below projection by ${currentDifference}`;  
+        }
+      } else {
+        sidebetStat.stats_display = `Somehow ${user.metadata.team_name} exactly met their projection`;  
+      }
+    }
+    else{
+      sidebetStat.stat_number = 0;
+      sidebetStat.stats_display = "Something went wrong";
+    }
+
+
+    return sidebetStat;
+}
+
   static SetAndForgetWinner(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];
 
@@ -674,14 +752,6 @@ class SidebetMethods {
   }
     return orderedSidebets;
   }
-
-      // data.users[1].user
-    // if(winner_user){
-    //   sidebetStat.user = winner_user;
-    //   sidebetStat.stat_number = //set_and_forget_winner_points
-    //   sidebetStat.stats_display = //
-    //   orderedSidebets.push(sidebetStat);
-    // }
 
   static ParticipationRibbon(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];

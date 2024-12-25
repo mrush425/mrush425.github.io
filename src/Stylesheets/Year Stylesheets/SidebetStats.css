@@ -1,7 +1,7 @@
 .statsTable {
     margin: auto;
     margin-top: 20px;
-  }
+}
 
 .statsTable th {
     min-width: 100px;
@@ -13,13 +13,7 @@
 }
 
 .statMenu {
-    min-width: 250px;
-    vertical-align: top;
-}
-
-.statMenuDiv{
-    max-height: 600px;
-    overflow: auto;
+    display: none; /* Sidebar menu removed, replaced by dropdown */
 }
 
 .statsColumn {
@@ -35,54 +29,83 @@
 }
 
 .arrowButton {
-    margin-right:"10px";
-    border:"0px"
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
 }
 
-.statsHeaderTable{
+.statsHeaderTable {
     margin: auto;
 }
 
-.arrowButtonCell{
-    width: 100px;
+.arrowButtonCell {
+    width: 50px;
     vertical-align: top;
+    text-align: center;
 }
 
-.headerCell{
-    width: 500px;
+.headerCell {
+    width: 100%;
+    text-align: center;
+}
+
+.sidebetContainer {
+    padding: 1rem;
+    text-align: center;
+}
+
+.sidebetPicker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.sidebetDropdown {
+    margin: 0 1rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: auto;
+    max-width: 100%;
+}
+
+.sidebetDetails {
+    margin-top: 10px;
+    text-align: center;
 }
 
 @media (max-width: 768px) {
-    .statMenu {
-      display: none; /* Hide statMenuDiv on mobile */
-    }
-
-    .fullTable {
-        margin-top: 20px;
+    .statsHeaderTable {
         width: 100%;
     }
 
-    .statsColumn h2 {
-        width: 100%;
-        position: relative;
-    }
-
-    .statsHeaderTable{
-        width: 100%;
-    }
-
-    .arrowButtonCell{
+    .arrowButtonCell {
         width: 50px;
-        vertical-align: top;
     }
 
-    .headerCell{
+    .headerCell {
         width: 100%;
+    }
+
+    .sidebetDropdown {
+        width: 100%;
+        font-size: 1rem;
     }
 
     .statsTable {
-        margin: auto;
+        width: 100%;
         margin-top: 20px;
     }
-}
 
+    .sidebetPicker {
+        flex-direction: column; /* Stack dropdown and arrows on smaller screens */
+    }
+
+    .arrowButton {
+        margin: 5px 0;
+    }
+}

@@ -1,13 +1,14 @@
 //PlayoffData.ts
 interface PlayoffData {
-    year: string;
-    playoffMatchups: PlayoffMatchup[];
+    year: number;
+    data: PlayoffMatchup[];
 }
 
 export interface PlayoffMatchup {
+    year: number;
     week: number;
     user_id: string;
-    matchupId: string;
+    matchupId: number;
 }
 
 export default PlayoffData;

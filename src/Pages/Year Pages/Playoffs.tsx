@@ -14,12 +14,12 @@ interface PlayoffsProps {
 
 const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
 
-  const selectedSeasonData: PlayoffData | undefined = playoffData.find(d => d['year'] === data.season)
+  const selectedSeasonData: PlayoffData | undefined = playoffData.find(d => d['year'].toString() === data.season)
 
   const getPlayerInfoForId = (matchupId: string) => {
     const playoffStart = data.settings.playoff_week_start;
-    const matchup: PlayoffMatchup | undefined = selectedSeasonData?.playoffMatchups.find(
-      (matchup) => matchup.matchupId === matchupId
+    const matchup: PlayoffMatchup | undefined = selectedSeasonData?.data.find(
+      (matchup) => matchup.matchupId.toString() === matchupId
     );
 
     if (matchup) {

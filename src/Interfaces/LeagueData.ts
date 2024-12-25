@@ -5,6 +5,7 @@ import SleeperUser from "./SleeperUser";
 
 
 interface ScoringSettings {
+    [key: string]: number; // Allow dynamic string keys
     st_ff: number;
     pts_allow_7_13: number;
     def_st_ff: number;
