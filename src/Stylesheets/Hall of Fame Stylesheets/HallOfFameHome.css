@@ -1,0 +1,38 @@
+.hall-of-fame-table {
+    margin: 0 auto;
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  
+  .hall-of-fame-table th,
+  .hall-of-fame-table td {
+    border: 1px solid black;
+    padding: 10px;
+    vertical-align: middle;
+  }
+  
+  .hall-of-fame-table th {
+    font-weight: bold;
+  }
+  
+  .header-column {
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font */
+    color: #ff4500; /* Bright orange color */
+    font-size: 1.5rem; /* Bigger font size */
+    background-color: #f0f0f0; /* Optional light gray background */
+  }
+  
+  .year-column {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #ff4500;
+    font-size: 1.5rem;
+    text-align: left;
+  }
+  
+  .champion-image,
+  .butler-image {
+    height: 350px;
+    object-fit: cover;
+  }
+  
