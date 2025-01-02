@@ -105,12 +105,12 @@ return (
           </tr>
         </thead>
         <tbody>
-          {sidebetStats.map((sidebetStat) => (
-            <tr key={sidebetStat.user?.user_id}>
-              <td>{sidebetStat.user?.metadata.team_name}</td>
-              <td>{sidebetStat.stats_display}</td>
-            </tr>
-          ))}
+        {sidebetStats.map((sidebetStat) => (
+      <tr key={sidebetStat.user?.user_id}>
+        <td>{sidebetStat.user?.metadata.team_name}</td>
+        <td dangerouslySetInnerHTML={{ __html: sidebetStat.stats_display ?? "" }}></td>
+      </tr>
+    ))}
         </tbody>
       </table>
     )}

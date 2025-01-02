@@ -10,7 +10,8 @@
 				"set_and_forget_winner_id": "",
 				"set_and_forget_winner_points": "",
 				"set_and_forget_loser_id": "",
-				"set_and_forget_loser_points": ""
+				"set_and_forget_loser_points": "",
+				"belt_starter_id": ""
 			}
 		]
 	},
@@ -25,7 +26,8 @@
 				"set_and_forget_winner_id": "",
 				"set_and_forget_winner_points": "",
 				"set_and_forget_loser_id": "",
-				"set_and_forget_loser_points": ""
+				"set_and_forget_loser_points": "",
+				"belt_starter_id": ""
 			}
 		]
 	},
@@ -40,7 +42,8 @@
 				"set_and_forget_winner_id": "438826516663496704",
 				"set_and_forget_winner_points": 104.9,
 				"set_and_forget_loser_id": "473933216856666112",
-				"set_and_forget_loser_points": 66.5
+				"set_and_forget_loser_points": 66.5,
+				"belt_starter_id": ""
 			}
 		]
 	},
@@ -55,7 +58,8 @@
 				"set_and_forget_winner_id": "473932553733009408",
 				"set_and_forget_winner_points": 130.02,
 				"set_and_forget_loser_id": "473933216856666112",
-				"set_and_forget_loser_points": 110.02
+				"set_and_forget_loser_points": 110.02,
+				"belt_starter_id": ""
 			}
 		]
 	},
@@ -70,7 +74,8 @@
 				"set_and_forget_winner_id": "438826516663496704",
 				"set_and_forget_winner_points": 101.92,
 				"set_and_forget_loser_id": "473932355996741632",
-				"set_and_forget_loser_points": 76.9
+				"set_and_forget_loser_points": 76.9,
+				"belt_starter_id": ""
 			}
 		]
 	},
@@ -82,10 +87,11 @@
 				"sleeper_id": "1048263432329396224",
 				"buy_in": 50,
 				"side_bet_buy_in": 10,
-				"set_and_forget_winner_id": "",
-				"set_and_forget_winner_points": "",
-				"set_and_forget_loser_id": "",
-				"set_and_forget_loser_points": ""
+				"set_and_forget_winner_id": "473932355996741632",
+				"set_and_forget_winner_points": 114.22,
+				"set_and_forget_loser_id": "473932553733009408",
+				"set_and_forget_loser_points": 86.98,
+				"belt_starter_id": "473933216856666112"
 			}
 		]
 	}

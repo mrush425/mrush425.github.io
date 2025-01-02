@@ -753,6 +753,50 @@ class SidebetMethods {
     return orderedSidebets;
   }
 
+  static Belt(data: LeagueData): SidebetStat[]{
+    let orderedSidebets: SidebetStat[] = [];
+    let statDisplay: string = "";
+
+    let lastWeek=0;
+    if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type!=="post") {
+      lastWeek = Math.min(data.nflSeasonInfo.week, data.settings.playoff_week_start);
+    } else {
+      lastWeek = data.settings.playoff_week_start;
+    }
+
+    // Find the data for the current year
+    const currentYearData = yearData.find(d => d.year.toString() === data.season);
+    if (currentYearData) {
+      const leagueData = currentYearData.data[0]; // assuming only one entry per year
+      let currentBeltOwnerId = leagueData.belt_starter_id;
+      let currentBeltOwner:SleeperUser|undefined = data.users.find((user) => user.user_id === currentBeltOwnerId);
+
+      for(let week=1; week<lastWeek; week++){
+        let matchup: MatchupInfo | null = data.matchupInfo.find(
+          (matchup) => matchup.week === week) ?? null;
+        if(!matchup) continue;
+        let teamRosterId = findRosterByUserId(currentBeltOwnerId, data.rosters)?.roster_id;
+        const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+        const oppMatchup = matchup.matchups.find((m) => m.matchup_id === teamMatchup?.matchup_id && m.roster_id !== teamMatchup?.roster_id);
+        if (teamMatchup && oppMatchup) {
+          if(week!=1) statDisplay+="<br>";
+          let oppUser = findUserByRosterId(oppMatchup.roster_id, data);
+          statDisplay+=`Week ${week}: ${currentBeltOwner?.metadata.team_name} ${teamMatchup.points} - 
+            ${oppUser?.metadata.team_name} ${oppMatchup.points}`;
+          if(teamMatchup.points < oppMatchup.points){
+            currentBeltOwnerId=oppUser?.user_id ?? currentBeltOwnerId;
+            currentBeltOwner = oppUser;
+          }
+        }
+      }
+      let sidebetStat: SidebetStat = new SidebetStat();
+      sidebetStat.user = currentBeltOwner;
+      sidebetStat.stats_display = statDisplay;
+      orderedSidebets.push(sidebetStat);
+    }  
+    return orderedSidebets;
+  }
+
   static ParticipationRibbon(data: LeagueData): SidebetStat[] {
     let orderedSidebets: SidebetStat[] = [];
 

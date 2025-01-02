@@ -248,7 +248,9 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
               <tr key={index}>
                 <td>{sidebet.sidebetName}</td>
                 <td>{sidebet.winners.join(", ")}</td>
-                <td>{sidebet.statDisplays.join(", ")}</td>
+                <td dangerouslySetInnerHTML={{__html: sidebet.statDisplays.join("<br>"),
+            }}
+    ></td>
               </tr>
             ))}
           </tbody>
