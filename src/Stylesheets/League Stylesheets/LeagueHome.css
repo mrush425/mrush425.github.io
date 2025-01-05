@@ -1,0 +1,16 @@
+.league-stats-table {
+    width: 70%;
+    margin: 0 auto; /* Centers the table horizontally */
+    border-collapse: collapse;
+  }
+  
+  .league-stats-table th, .league-stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .league-stats-table th {
+    background-color: #f2f2f2;
+  }
+  
