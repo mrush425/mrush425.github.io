@@ -47,10 +47,12 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
           <Nav.Link as={Link} to="/">
             Home
           </Nav.Link>
+          <Nav.Link as={Link} to="/league-stats">
+            League Stats
+          </Nav.Link>
           <Nav.Link as={Link} to="/hall-of-fame">
             Hall of Fame
           </Nav.Link>
-
           {/* Display seasons in a dropdown */}
           <NavDropdown
             title="Seasons"

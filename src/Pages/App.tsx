@@ -15,9 +15,10 @@ import OvertimeComparison from './Year Pages/OvertimeComparison';
 import AllPlayoffPossibilities from './Year Pages/AllPlayoffPossibilities';
 import Playoffs from './Year Pages/Playoffs';
 import SidebetStats from './Year Pages/SidebetStats';
-import HallOfFameHome from './HallOfFamePages/HallOfFameHome';
-import FootballPlayerChampions from './HallOfFamePages/FootballPlayerChampions';
+import HallOfFameHome from './Hall of Fame Pages/HallOfFameHome';
+import FootballPlayerChampions from './Hall of Fame Pages/FootballPlayerChampions';
 import ScheduleViewer from './Year Pages/ScheduleViewer';
+import LeagueHome from './League Pages/LeagueHome';
 
 function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
   const path = `/season/${league.season}${pathSuffix}`;
@@ -59,8 +60,12 @@ return (
         {dataFetched && (
           <Routes>
             <Route path="/" element={<Home />} />
+            {/*Overall League Data*/}
+            <Route path="/league-stats" element={<LeagueHome data={leagueData} />} />
+            {/*Hall of Fame Pages*/}
             <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
             <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
+            {/*Year Pages*/}
             {leagueData.map((leagueYear) => (
               <React.Fragment key={leagueYear.season}>
                 {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
