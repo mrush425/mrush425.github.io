@@ -1,0 +1,29 @@
+.matchup-display-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid black;
+  }
+  
+  .col-10 {
+    width: 10%;
+  }
+  
+  .col-28 {
+    width: 28%;
+  }
+  
+  .col-4 {
+    width: 4%;
+  }
+
+  .matchup-display-table td {
+    border: 1px solid black; /* Border for each cell */
+  }
+
+  .player-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+  }
+  

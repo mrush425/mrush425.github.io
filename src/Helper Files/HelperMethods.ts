@@ -71,8 +71,14 @@ export function getBowlWinner(bowlName: string, data: LeagueData): [SleeperUser|
       const user2: SleeperUser|undefined = data.users.find(u => u.user_id === playoffMatchup2.user_id);
       
       if(user1 && user2){
-        const points1:number = Number(getScoreStringForWeek(user1, playoffStart+2,data));
-        const points2:number = Number(getScoreStringForWeek(user2, playoffStart+2,data))
+        let points1:number = Number(getScoreStringForWeek(user1, playoffStart+2,data));
+        let points2:number = Number(getScoreStringForWeek(user2, playoffStart+2,data))
+
+        if(bowlName==="Butler Bowl" || bowlName==="Koozie Bowl"){
+          points1+=Number(getScoreStringForWeek(user1, playoffStart+1,data));
+          points2+=Number(getScoreStringForWeek(user2, playoffStart+1,data));
+        }
+
           if(points1>points2){
               const winString=user1.metadata.team_name + " defeated " + user2.metadata.team_name + ": " + points1 + " - " + points2;
               return [user1,user2,winString];
@@ -91,18 +97,22 @@ const [user1,user2,winnerString] = getBowlWinner("Troll Bowl", data);
 return user1;
 }
 
+export function getMatchupForWeek(user: SleeperUser, week: Number, data: LeagueData): Matchup|undefined{
+  const roster = data.rosters.find(r => r.owner_id === user.user_id);
+  if (!roster) return undefined;
+  const weekMatchup = data.matchupInfo.find((matchup) => matchup.week === week);
+  if(!weekMatchup) return undefined;
+  return weekMatchup.matchups.find(m => m.roster_id === roster.roster_id);
+}
+
 
 export function getScoreStringForWeek(user: SleeperUser, week: Number, data: LeagueData): string {
-    const roster = data.rosters.find(r => r.owner_id === user.user_id);
-    if (!roster) return "0";
-    const weekMatchup = data.matchupInfo.find((matchup) => matchup.week === week);
-    if(!weekMatchup) return "0";
-    const matchup = weekMatchup.matchups.find(m => m.roster_id === roster.roster_id);
+    const matchup = getMatchupForWeek(user,week,data);
     if(!matchup) return "0";
     return matchup.points.toFixed(2);
   };
 
-  export function getScoreForWeek(user: SleeperUser, week: Number, data: LeagueData): Number{
+  export function getScoreForWeek(user: SleeperUser, week: Number, data: LeagueData): number{
     return Number.parseFloat(getScoreStringForWeek(user,week,data));
   }
 
