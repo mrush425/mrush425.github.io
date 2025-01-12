@@ -1,8 +1,8 @@
 .matchup-display-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate; /* Keep separate borders for cells */
+    border-spacing: 0; /* Removes spacing between cells */
     text-align: center;
-    border: 1px solid black;
   }
   
   .col-10 {
@@ -16,14 +16,99 @@
   .col-4 {
     width: 4%;
   }
-
-  .matchup-display-table td {
-    border: 1px solid black; /* Border for each cell */
+  
+  .matchup-display-table tr {
+    border: none; /* No border on the rows */
   }
-
-  .player-image {
+  
+  .matchup-display-table th,
+  .matchup-display-table td {
+    padding: 8px;
+    border-top: 1px solid black; /* Top border for all cells */
+    border-bottom: 1px solid black; /* Bottom border for all cells */
+  }
+  
+  /* Add left border for the first and fifth columns */
+  .matchup-display-table tr td:first-child,
+  .matchup-display-table tr th:first-child,
+  .matchup-display-table tr td:nth-child(5),
+  .matchup-display-table tr th:nth-child(5) {
+    border-left: 1px solid black;
+  }
+  
+  /* Add right border for the third and seventh columns */
+  .matchup-display-table tr td:nth-child(3),
+  .matchup-display-table tr th:nth-child(3),
+  .matchup-display-table tr td:nth-child(7),
+  .matchup-display-table tr th:nth-child(7) {
+    border-right: 1px solid black;
+  }
+  
+  /* Apply rounding to the first column (first child) */
+  .matchup-display-table tr td:first-child,
+  .matchup-display-table tr th:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  
+  /* Apply rounding to the last column (last child) */
+  .matchup-display-table tr td:last-child,
+  .matchup-display-table tr th:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  /* Remove border for empty rows */
+  .empty-row {
+    border: none !important;
+  }
+  
+  .empty-row td {
+    border: none !important; /* Prevent borders for empty row cells */
+    height: 10px;
+  }
+  
+  .player-image,
+  .team-avatar {
     width: 60px;
     height: 60px;
-    object-fit: cover;
+    border-radius: 50%; /* Make them circular */
+    border: 2px solid #000000; /* Black border around the circle */
+    object-fit: cover; /* Ensure the image covers the circle without distortion */
+    position: relative;
+    display: inline-block; /* Align the image in the circle */
+  }
+  
+  .player-image img,
+  .team-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; /* Ensure the image is also circular */
+    object-fit: cover; /* Ensure the image maintains its aspect ratio within the circle */
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .second-week-header {
+    border: none !important;
+  }
+  
+  .second-week-header td {
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .matchup-header th {
+    font-size: 18px;
+  }
+  
+  .total-points-row {
+    border: none !important;
+    font-weight: bold;
+  }
+  
+  .total-points-row td {
+    border: none !important;
   }
   

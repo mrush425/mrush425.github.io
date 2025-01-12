@@ -13,12 +13,14 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
     week: number;
     secondWeek: number | null;
     leagueData: LeagueData | null; // Update the type to use LeagueData
+    bowl: string | null;
   }>({
     winner: null,
     loser: null,
     week: 1,
     secondWeek: null,
     leagueData: null,
+    bowl: null
   });
 
   const bowlNames = [
@@ -43,6 +45,7 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
         week: leagueData.settings.playoff_week_start+1,
         secondWeek: leagueData.settings.playoff_week_start+2,
         leagueData,
+        bowl
       });
     } else {
       setMatchupData({
@@ -51,6 +54,7 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
         week: leagueData.settings.playoff_week_start+2,
         secondWeek: null,
         leagueData,
+        bowl
       });
     }
   };
@@ -103,6 +107,7 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
             data={matchupData.leagueData}
             week={matchupData.week}
             secondWeek={matchupData.secondWeek ?? undefined} // Handle null-to-undefined conversion
+            title={`${matchupData.bowl} ${matchupData.leagueData?.season}`}
           />
         </div>
       </div>

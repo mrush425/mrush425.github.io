@@ -4,6 +4,7 @@ interface SleeperUser {
       team_name: string;
       mention_pn: string;
       allow_pn: string;
+      avatar: string;
     };
     league_id: string;
     is_owner: boolean;
