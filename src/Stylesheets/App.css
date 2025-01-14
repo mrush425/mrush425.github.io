@@ -55,6 +55,11 @@
   z-index: 1000; /* Ensures the navbar stays above other elements */
 }
 
+.Offcanvas {
+  width: 250px; /* Customize the sidebar width */
+}
+
+
 .App-content {
   margin-top: 5px; /* Adjust this margin based on the navbar height */
   overflow-y: auto;
