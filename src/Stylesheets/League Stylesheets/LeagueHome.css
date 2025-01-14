@@ -44,7 +44,6 @@
   border-right: 2px solid #ccc;
 }
 
-/* Mobile-specific styles */
 @media (max-width: 768px) {
   .league-home-container {
     flex-direction: column;
@@ -61,6 +60,52 @@
     display: block;
   }
 
+  .league-stats-section {
+    border-right: none; /* Remove the right border in mobile view */
+    overflow-x: auto; /* Enable horizontal scrolling only if necessary */
+    padding: 8px; /* Reduce padding */
+  }
+
+  .league-stats-table {
+    width: 100%; /* Ensure the table takes up the full width of the container */
+    table-layout: fixed; /* Distribute column widths evenly */
+    font-size: 0.9rem; /* Reduce font size for better fit */
+    border-collapse: collapse;
+  }
+
+  .league-stats-table th,
+  .league-stats-table td {
+    padding: 6px; /* Reduce padding for smaller screens */
+    text-align: left;
+    word-wrap: break-word; /* Allow breaking long text onto multiple lines */
+    overflow: hidden; /* Prevent text overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    white-space: nowrap; /* Prevent wrapping for consistent ellipsis effect */
+  }
+
+  .league-stats-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    font-size: 1rem; /* Slightly smaller font for headers */
+  }
+
+  .league-stats-table td {
+    font-size: 0.9rem; /* Smaller font for table content */
+  }
+
+  /* Ensure the first column gets more space */
+  .league-stats-table td:nth-child(1),
+  .league-stats-table th:nth-child(1) {
+    width: 20%; /* First column takes up 20% of the width */
+  }
+
+  /* Make the second column share space with the rest dynamically */
+  .league-stats-table td:nth-child(n+2),
+  .league-stats-table th:nth-child(n+2) {
+    width: auto; /* Distribute remaining space dynamically */
+  }
+
+  /* Adjust button styling for mobile */
   .back-button {
     display: block;
     margin-bottom: 16px;

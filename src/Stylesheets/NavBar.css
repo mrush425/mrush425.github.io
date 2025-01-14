@@ -16,7 +16,6 @@
   background-color: var(--primary-blue); /* Light Blue */
   color: var(--text-light); /* White text color */
   padding: 8px 12px; /* Add padding for better button size */
-  border: 1px solid var(--dark-blue); /* Border color on default state: Darker Blue */
   border-radius: 4px; /* Optional: Add border-radius for rounded corners */
   transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition effect */
 }
