@@ -1,86 +1,172 @@
+/* Define Color Variables */
+:root {
+    --primary-blue: #5fa1cc; /* Primary blue for headers */
+    --secondary-blue: #e6f7ff; /* Light blue for rows */
+    --circle-border-blue: #005b96; /* Deep blue for circle borders */
+    --text-light: #f4f9fc; /* Light text color for contrast */
+    --circle-background: #ffffff; /* Circle background color */
+}
+
+/* General Table Styles */
 .matchup-display-table {
     width: 100%;
     border-collapse: separate; /* Keep separate borders for cells */
     border-spacing: 0; /* Removes spacing between cells */
     text-align: center;
-  }
-  
-  .col-10 {
+}
+
+/* Column Widths */
+.col-10 {
     width: 10%;
-  }
-  
-  .col-28 {
+}
+
+.col-28 {
     width: 28%;
-  }
-  
-  .col-4 {
+}
+
+.col-4 {
     width: 4%;
-  }
-  
-  .matchup-display-table tr {
+}
+
+/* Row and Cell Borders */
+.matchup-display-table tr {
     border: none; /* No border on the rows */
-  }
-  
-  .matchup-display-table th,
-  .matchup-display-table td {
-    padding: 8px;
+}
+
+.matchup-display-table th,
+.matchup-display-table td {
+    padding: 6px;
     border-top: 1px solid black; /* Top border for all cells */
     border-bottom: 1px solid black; /* Bottom border for all cells */
-  }
-  
-  /* Add left border for the first and fifth columns */
-  .matchup-display-table tr td:first-child,
-  .matchup-display-table tr th:first-child,
-  .matchup-display-table tr td:nth-child(5),
-  .matchup-display-table tr th:nth-child(5) {
-    border-left: 1px solid black;
-  }
-  
-  /* Add right border for the third and seventh columns */
-  .matchup-display-table tr td:nth-child(3),
-  .matchup-display-table tr th:nth-child(3),
-  .matchup-display-table tr td:nth-child(7),
-  .matchup-display-table tr th:nth-child(7) {
-    border-right: 1px solid black;
-  }
-  
-  /* Apply rounding to the first column (first child) */
-  .matchup-display-table tr td:first-child,
-  .matchup-display-table tr th:first-child {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  
-  /* Apply rounding to the last column (last child) */
-  .matchup-display-table tr td:last-child,
-  .matchup-display-table tr th:last-child {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  
-  /* Remove border for empty rows */
-  .empty-row {
+}
+
+/* Header Row Styles */
+.header-row th:nth-child(-n+3),
+.header-row th:nth-child(n+5):nth-child(-n+7) {
+    background-color: var(--primary-blue); /* Use variable for header background */
+    color: var(--text-light); /* Use variable for text color */
+    font-weight: bold; /* Emphasize the header text */
+}
+
+/* Second Week Header Row */
+.second-week-header td {
+    background-color: var(--primary-blue) !important; /* Use variable for header background */
+    color: var(--text-light); /* Use variable for text color */
+    font-weight: bold; /* Bold text for emphasis */
+    text-align: center; /* Center-align text */
+    padding: 6px; /* Match padding with header row */
+}
+
+/* Alternating Row Colors */
+.matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(-n+3),
+.matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(n+5):nth-child(-n+7) {
+    background-color: var(--secondary-blue); /* Use variable for light blue */
+}
+
+/* Empty Row Styles */
+.empty-row {
     border: none !important;
-  }
-  
-  .empty-row td {
+}
+
+.empty-row td {
     border: none !important; /* Prevent borders for empty row cells */
     height: 10px;
-  }
-  
-  .player-image,
-  .team-avatar {
-    width: 60px;
+}
+
+/* Total Points Row */
+.total-points-row {
+    border: none !important;
+    font-weight: bold;
+}
+
+.total-points-row td {
+    border: none !important;
+}
+
+/* Remove Circles in Column 4 for Total Points Row */
+.total-points-row td:nth-child(4)::before {
+    content: none !important; /* Prevent the circle from being rendered */
+}
+
+/* Special Column Styles */
+.matchup-display-table th:nth-child(4),
+.matchup-display-table td:nth-child(4) {
+    border: none !important; /* Remove borders for the 4th column */
+    position: relative; /* Ensure positioning for pseudo-element */
+    text-align: center; /* Center the text inside the circle */
+    z-index: 1; /* Ensure the text stays above the circle */
+}
+
+.matchup-display-table th:nth-child(4)::before,
+.matchup-display-table td:nth-child(4)::before {
+    content: ''; /* Empty content for the circle */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; /* Adjust circle size */
     height: 60px;
+    border: 2px solid var(--circle-border-blue); /* Use variable for circle border */
+    border-radius: 50%; /* Makes the element a circle */
+    z-index: -1; /* Ensures it appears behind the text */
+    background-color: var(--circle-background); /* Use variable for circle background */
+}
+
+/* Borders for Specific Columns */
+.matchup-display-table tr td:first-child,
+.matchup-display-table tr th:first-child,
+.matchup-display-table tr td:nth-child(5),
+.matchup-display-table tr th:nth-child(5) {
+    border-left: 1px solid black;
+}
+
+.matchup-display-table tr td:nth-child(3),
+.matchup-display-table tr th:nth-child(3),
+.matchup-display-table tr td:nth-child(7),
+.matchup-display-table tr th:nth-child(7) {
+    border-right: 1px solid black;
+}
+
+/* Rounded Borders */
+.matchup-display-table tr td:first-child,
+.matchup-display-table tr th:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.matchup-display-table tr td:nth-child(3),
+.matchup-display-table tr th:nth-child(3) {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.matchup-display-table tr td:nth-child(5),
+.matchup-display-table tr th:nth-child(5) {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.matchup-display-table tr td:last-child,
+.matchup-display-table tr th:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* Player and Team Avatar Styles */
+.player-image,
+.team-avatar {
+    width: 50px;
+    height: 50px;
     border-radius: 50%; /* Make them circular */
-    border: 2px solid #000000; /* Black border around the circle */
+    border: 2px solid var(--circle-border-blue); /* Use variable for circle border */
+    background-color: var(--circle-background); /* Use variable for circle background */
     object-fit: cover; /* Ensure the image covers the circle without distortion */
     position: relative;
     display: inline-block; /* Align the image in the circle */
-  }
-  
-  .player-image img,
-  .team-avatar img {
+}
+
+.player-image img,
+.team-avatar img {
     width: 100%;
     height: 100%;
     border-radius: 50%; /* Ensure the image is also circular */
@@ -88,27 +174,9 @@
     position: absolute;
     top: 0;
     left: 0;
-  }
-  
-  .second-week-header {
-    border: none !important;
-  }
-  
-  .second-week-header td {
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .matchup-header th {
+}
+
+/* Header Font Size */
+.matchup-header th {
     font-size: 18px;
-  }
-  
-  .total-points-row {
-    border: none !important;
-    font-weight: bold;
-  }
-  
-  .total-points-row td {
-    border: none !important;
-  }
-  
+}
