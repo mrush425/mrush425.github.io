@@ -19,14 +19,13 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
             ties = roster.settings.ties;
         }
     }
-
     else {
         // Find the matchupInfo for the current team and schedule
         let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
         let scheduleRosterId = findRosterByUserId(schedule.user_id, data.rosters)?.roster_id;
 
         let relevantMatchups;
-        if (data.nflSeasonInfo.season === data.season) {
+        if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type!=="post") {
             relevantMatchups = data.matchupInfo.filter(
                 (matchup) =>
                     matchup.week < data.nflSeasonInfo.week &&
@@ -198,8 +197,8 @@ export const getRecordInTop50 = (user: SleeperUser, data: LeagueData): [wins: nu
 
     //loop over each matcupInfo object from data.matchupInfo
     data.matchupInfo.forEach((matchupInfo) => {
-        if ((data.nflSeasonInfo.season === data.season && matchupInfo.week < data.nflSeasonInfo.week && matchupInfo.week < data.settings.playoff_week_start) ||
-            (data.nflSeasonInfo.season !== data.season && matchupInfo.week < data.settings.playoff_week_start)){
+        if ((data.nflSeasonInfo.season === data.season && matchupInfo.week < data.nflSeasonInfo.week && matchupInfo.week < data.settings.playoff_week_start ) ||
+            ((data.nflSeasonInfo.season !== data.season || data.nflSeasonInfo.season_type==="post") && matchupInfo.week < data.settings.playoff_week_start)){
                 const sortedMatchups = matchupInfo.matchups.sort((a, b) => b.points - a.points);
                 const userIndex = sortedMatchups.findIndex(
                     (matchup) => matchup.roster_id === data.rosters.find((roster) => roster.owner_id === user.user_id)?.roster_id

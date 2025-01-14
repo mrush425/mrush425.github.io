@@ -103,8 +103,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px; /* Reduce circle size */
-    height: 40px;
+    width: 55px; /* Reduce circle size */
+    height: 55px;
     border: 1px solid var(--dark-blue);
     border-radius: 50%; /* Makes the element a circle */
     z-index: -1; /* Ensures it appears behind the text */

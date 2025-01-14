@@ -198,13 +198,13 @@ export function getScoreStringForWeek(user: SleeperUser, week: Number, data: Lea
       let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
   
       // Calculate the range of weeks to include in the average (last 3 weeks)
-      const startWeek = Math.max(1, currentWeek - 2);
-      
+      const startWeek = data.nflSeasonInfo.season_type!=="post" ? Math.max(1, currentWeek - 2) : data.settings.playoff_week_start-3;
+      console.log("start week" + startWeek);
       // Filter matchups to get only those for the last 3 weeks and before playoffs
       const relevantMatchups = data.matchupInfo.filter(
         (matchup) =>
           matchup.week >= startWeek &&
-          matchup.week <= currentWeek &&
+          (matchup.week <= currentWeek || data.nflSeasonInfo.season_type==="post") &&
           matchup.week < data.settings.playoff_week_start &&
           matchup.matchups.some((m) => m.roster_id === teamRosterId)
       );

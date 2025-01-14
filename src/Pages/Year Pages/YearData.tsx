@@ -145,7 +145,6 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
   
     fetchSidebetData();
   }, [data]);
-  console.log(data);
   return (
     <div>
       <YearNavBar data={data} />
