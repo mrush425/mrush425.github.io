@@ -1,9 +1,7 @@
+@import '../../Stylesheets/StandardStyles.css';
+
 /* Define Color Variables */
 :root {
-    --primary-blue: #5fa1cc; /* Primary blue for headers */
-    --secondary-blue: #e6f7ff; /* Light blue for rows */
-    --circle-border-blue: #005b96; /* Deep blue for circle borders */
-    --text-light: #f4f9fc; /* Light text color for contrast */
     --circle-background: #ffffff; /* Circle background color */
 }
 
@@ -61,7 +59,7 @@
 /* Alternating Row Colors */
 .matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(-n+3),
 .matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(n+5):nth-child(-n+7) {
-    background-color: var(--secondary-blue); /* Use variable for light blue */
+    background-color: var(--light-blue); /* Use variable for light blue */
 }
 
 /* Empty Row Styles */
@@ -107,7 +105,7 @@
     transform: translate(-50%, -50%);
     width: 40px; /* Reduce circle size */
     height: 40px;
-    border: 1px solid var(--circle-border-blue);
+    border: 1px solid var(--dark-blue);
     border-radius: 50%; /* Makes the element a circle */
     z-index: -1; /* Ensures it appears behind the text */
     background-color: var(--circle-background); /* Use variable for circle background */
@@ -159,7 +157,7 @@
     width: 40px; /* Reduce size */
     height: 40px;
     border-radius: 50%; /* Keep circular shape */
-    border: 1px solid var(--circle-border-blue); /* Adjust border size */
+    border: 1px solid var(--dark-blue); /* Adjust border size */
     background-color: var(--circle-background); /* Keep consistent background */
     object-fit: cover; /* Ensure the image covers the circle without distortion */
 }
@@ -202,6 +200,6 @@
     .matchup-display-table td:nth-child(4)::before {
         width: 30px; /* Reduce circle size further */
         height: 30px;
-        border: 1px solid var(--circle-border-blue);
+        border: 1px solid var(--dark-blue);
     }
 }

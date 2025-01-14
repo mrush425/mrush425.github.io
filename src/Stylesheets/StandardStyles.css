@@ -1,0 +1,8 @@
+/* Define Color Variables */
+:root {
+    --primary-blue: #5fa1cc; /* Primary blue for headers */
+    --light-blue: #e6f7ff; /* Light blue for rows */
+    --dark-blue: #005b96; /* Deep blue for circle borders */
+    --text-light: #f4f9fc; /* Light text color for contrast */
+
+}

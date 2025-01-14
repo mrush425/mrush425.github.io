@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LeagueData from '../Interfaces/LeagueData';
-import '../Stylesheets/Year Stylesheets/NavBar.css'; // Create a CSS file for styling
+import '../Stylesheets/NavBar.css'; // Create a CSS file for styling
 
 interface HallOfFameNavBar {
   data: LeagueData[];
