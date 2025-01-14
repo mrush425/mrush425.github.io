@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Container, Nav, NavDropdown, Offcanvas, Button } from 'react-bootstrap';
+import { Navbar, Container, Nav, Offcanvas, Button, NavDropdown } from 'react-bootstrap';
 import LeagueData from '../Interfaces/LeagueData';
 
 interface NavbarProps {
@@ -9,11 +9,15 @@ interface NavbarProps {
 
 const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const [sidebarView, setSidebarView] = useState<'main' | 'seasons'>('main'); // Tracks the sidebar view
   const closeDropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const handleShowSidebar = () => setShowSidebar(true);
-  const handleCloseSidebar = () => setShowSidebar(false);
+  const handleCloseSidebar = () => {
+    setShowSidebar(false);
+    setSidebarView('main'); // Reset to the main menu when closing
+  };
 
   const handleMouseEnter = () => {
     if (closeDropdownTimeout.current) {
@@ -33,56 +37,74 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
 
   return (
     <>
-{/* Top Navbar for Mobile */}
-<Navbar bg="dark" variant="dark" expand="lg" className="d-lg-none">
-  <Container className="d-flex justify-content-between align-items-center">
-    <div className="d-flex align-items-center">
-      <Button variant="outline-light" onClick={handleShowSidebar} className="me-2">
-        ☰
-      </Button>
-      <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-        <img
-          className="avatar me-2"
-          src={logoImageUrl}
-          alt="Photo of Walrus"
-          style={{ width: 50, height: 50 }}
-        />
-        <span className="text-white">League of the Trolls</span>
-      </Navbar.Brand>
-    </div>
-  </Container>
-</Navbar>
-
+      {/* Top Navbar for Mobile */}
+      <Navbar bg="dark" variant="dark" expand="lg" className="d-lg-none">
+        <Container className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <Button variant="outline-light" onClick={handleShowSidebar} className="me-2">
+              ☰
+            </Button>
+            <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+              <img
+                className="avatar me-2"
+                src={logoImageUrl}
+                alt="Photo of Walrus"
+                style={{ width: 50, height: 50 }}
+              />
+              <span className="text-white">League of the Trolls</span>
+            </Navbar.Brand>
+          </div>
+        </Container>
+      </Navbar>
 
       {/* Sidebar for Mobile */}
       <Offcanvas show={showSidebar} onHide={handleCloseSidebar} placement="start" className="bg-dark text-white">
         <Offcanvas.Header closeButton closeVariant="white">
-          <Offcanvas.Title>League of the Trolls</Offcanvas.Title>
+          <Offcanvas.Title>
+            {sidebarView === 'main' ? 'League of the Trolls' : 'Seasons'}
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <Nav className="flex-column">
-            <Nav.Link as={Link} to="/" onClick={handleCloseSidebar}>
-              Home
-            </Nav.Link>
-            <Nav.Link as={Link} to="/league-stats" onClick={handleCloseSidebar}>
-              League Stats
-            </Nav.Link>
-            <Nav.Link as={Link} to="/hall-of-fame" onClick={handleCloseSidebar}>
-              Hall of Fame
-            </Nav.Link>
-            <NavDropdown title="Seasons" id="sidebar-seasons" className="text-white">
+          {/* Main Menu */}
+          {sidebarView === 'main' && (
+            <Nav className="flex-column fs-4"> {/* fs-4 increases font size */}
+              <Nav.Link as={Link} to="/" onClick={handleCloseSidebar}>
+                Home
+              </Nav.Link>
+              <Nav.Link as={Link} to="/league-stats" onClick={handleCloseSidebar}>
+                League Stats
+              </Nav.Link>
+              <Nav.Link as={Link} to="/hall-of-fame" onClick={handleCloseSidebar}>
+                Hall of Fame
+              </Nav.Link>
+              {/* Seasons Menu with Indicator */}
+              <Nav.Link
+                onClick={() => setSidebarView('seasons')}
+                className="d-flex justify-content-between align-items-center cursor-pointer"
+              >
+                Seasons
+                <span>&gt;</span> {/* Simple text indicator */}
+              </Nav.Link>
+            </Nav>
+          )}
+          {/* Seasons Submenu */}
+          {sidebarView === 'seasons' && (
+            <Nav className="flex-column fs-4"> {/* fs-4 applies here too */}
+              <Nav.Link onClick={() => setSidebarView('main')} className="cursor-pointer">
+                ← Back
+              </Nav.Link>
               {data.map((league) => (
-                <NavDropdown.Item
+                <Nav.Link
                   key={league.league_id}
                   as={Link}
                   to={`/season/${league.season}`}
                   onClick={handleCloseSidebar}
                 >
                   Season {league.season}
-                </NavDropdown.Item>
+                </Nav.Link>
               ))}
-            </NavDropdown>
-          </Nav>
+            </Nav>
+          )}
         </Offcanvas.Body>
       </Offcanvas>
 
