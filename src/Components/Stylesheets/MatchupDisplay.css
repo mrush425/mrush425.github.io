@@ -13,19 +13,20 @@
     border-collapse: separate; /* Keep separate borders for cells */
     border-spacing: 0; /* Removes spacing between cells */
     text-align: center;
+    font-size: 14px; /* Reduce font size for compact display */
 }
 
 /* Column Widths */
-.col-10 {
-    width: 10%;
+.matchup-col-10 {
+    width: 8%; /* Reduce width */
 }
 
-.col-28 {
-    width: 28%;
+.matchup-col-28 {
+    width: 20%; /* Reduce width */
 }
 
-.col-4 {
-    width: 4%;
+.matchup-col-4 {
+    width: 3%; /* Reduce width */
 }
 
 /* Row and Cell Borders */
@@ -35,7 +36,7 @@
 
 .matchup-display-table th,
 .matchup-display-table td {
-    padding: 6px;
+    padding: 4px; /* Reduce padding */
     border-top: 1px solid black; /* Top border for all cells */
     border-bottom: 1px solid black; /* Bottom border for all cells */
 }
@@ -104,9 +105,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 60px; /* Adjust circle size */
-    height: 60px;
-    border: 2px solid var(--circle-border-blue); /* Use variable for circle border */
+    width: 40px; /* Reduce circle size */
+    height: 40px;
+    border: 1px solid var(--circle-border-blue);
     border-radius: 50%; /* Makes the element a circle */
     z-index: -1; /* Ensures it appears behind the text */
     background-color: var(--circle-background); /* Use variable for circle background */
@@ -155,28 +156,52 @@
 /* Player and Team Avatar Styles */
 .player-image,
 .team-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%; /* Make them circular */
-    border: 2px solid var(--circle-border-blue); /* Use variable for circle border */
-    background-color: var(--circle-background); /* Use variable for circle background */
+    width: 40px; /* Reduce size */
+    height: 40px;
+    border-radius: 50%; /* Keep circular shape */
+    border: 1px solid var(--circle-border-blue); /* Adjust border size */
+    background-color: var(--circle-background); /* Keep consistent background */
     object-fit: cover; /* Ensure the image covers the circle without distortion */
-    position: relative;
-    display: inline-block; /* Align the image in the circle */
-}
-
-.player-image img,
-.team-avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%; /* Ensure the image is also circular */
-    object-fit: cover; /* Ensure the image maintains its aspect ratio within the circle */
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 /* Header Font Size */
 .matchup-header th {
-    font-size: 18px;
+    font-size: 16px; /* Reduce font size */
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    .matchup-display-table {
+        font-size: 12px; /* Further reduce font size */
+    }
+
+    .matchup-display-table th,
+    .matchup-display-table td {
+        padding: 2px; /* Reduce padding on smaller screens */
+    }
+
+    .player-image,
+    .team-avatar {
+        width: 30px; /* Further reduce avatar size */
+        height: 30px;
+    }
+
+    .matchup-col-10 {
+        width: 10%; /* Adjust column proportions */
+    }
+
+    .matchup-col-28 {
+        width: 25%;
+    }
+
+    .matchup-col-4 {
+        width: 5%;
+    }
+
+    .matchup-display-table th:nth-child(4)::before,
+    .matchup-display-table td:nth-child(4)::before {
+        width: 30px; /* Reduce circle size further */
+        height: 30px;
+        border: 1px solid var(--circle-border-blue);
+    }
 }
