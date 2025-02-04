@@ -162,6 +162,9 @@ const MatchupDisplay: React.FC<MatchupDisplayProps> = ({
               <tr className="second-week-header">
                 <td colSpan={7}>Second Week Matchup</td>
               </tr>
+              <tr className="empty-row">
+                <td colSpan={7}></td>
+              </tr>
               {renderMatchupRows(user1matchup2, user2matchup2, maxStartersCount)}
               {renderTotalPointsRow(user1matchup2, user2matchup2)}
             </>

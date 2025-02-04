@@ -190,7 +190,7 @@ class SidebetMethods {
   }
 
   static BossWhenItCounts(data: LeagueData): SidebetStat[] {
-    if(data.season===data.nflSeasonInfo.season && data.nflSeasonInfo.week<data.settings.playoff_week_start+2){
+    if(data.nflSeasonInfo.season_type!=="post" && data.season===data.nflSeasonInfo.season && data.nflSeasonInfo.week<data.settings.playoff_week_start+2){
       return [new SidebetStat()];
     }
     return this.MostPointsInWeek(data,data.settings.playoff_week_start+2);
