@@ -466,12 +466,6 @@
 		"data": [
 			{
 				"year": 2025,
-				"sidebetName": "The Belt",
-				"sponsor": "Jorge Dosdos",
-				"sponsorId": "473734861195046912"
-			},
-			{
-				"year": 2025,
 				"sidebetName": "Maybe Next Time",
 				"sponsor": "Matt Nockerts",
 				"sponsorId": "452666519613075456"
@@ -535,6 +529,12 @@
 				"sidebetName": "Being a Boss When it Counts",
 				"sponsor": "De'Vonne Jackson",
 				"sponsorId": "438826516663496704"
+			},
+			{
+				"year": 2025,
+				"sidebetName": "The Belt",
+				"sponsor": "Jorge Dosdos",
+				"sponsorId": "473734861195046912"
 			}
 		]
 	}
