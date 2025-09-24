@@ -94,5 +94,21 @@
 				"belt_starter_id": "473933216856666112"
 			}
 		]
+	},
+	{
+		"year": 2025,
+		"data": [
+			{
+				"year": 2025,
+				"sleeper_id": "1254074915754098688",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "",
+				"set_and_forget_winner_points": "",
+				"set_and_forget_loser_id": "",
+				"set_and_forget_loser_points": "",
+				"belt_starter_id": "473734861195046912"
+			}
+		]
 	}
 ]

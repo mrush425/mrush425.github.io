@@ -1,62 +1,72 @@
 [
-    {
-      "Troll Name": "Alex Dosdos",
-      "Nickname": "Alex",
-      "Sleeper ID": "473933216856666112"
-    },
-    {
-      "Troll Name": "Beau Zachowski",
-      "Nickname": "Beau",
-      "Sleeper ID": "473932571693019136"
-    },
-    {
-      "Troll Name": "Brandyn Kerscher",
-      "Nickname": "Dyno",
-      "Sleeper ID": "473932495448961024"
-    },
-    {
-      "Troll Name": "Chris Rosenthal",
-      "Nickname": "Dirty Dawg",
-      "Sleeper ID": "473933351699345408"
-    },
-    {
-      "Troll Name": "Connar Bodoh",
-      "Nickname": "Connar",
-      "Sleeper ID": "473932605763350528"
-    },
-    {
-      "Troll Name": "De'Vonne Jackson",
-      "Nickname": "De'",
-      "Sleeper ID": "438826516663496704"
-    },
-    {
-      "Troll Name": "John Rush",
-      "Nickname": "John",
-      "Sleeper ID": "473933377913745408"
-    },
-    {
-      "Troll Name": "Jorge Dosdos",
-      "Nickname": "Jorge",
-      "Sleeper ID": "473734861195046912"
-    },
-    {
-      "Troll Name": "Justin Leman",
-      "Nickname": "Winslow",
-      "Sleeper ID": "473932355996741632"
-    },
-    {
-      "Troll Name": "Justin Sowers",
-      "Nickname": "Sowers",
-      "Sleeper ID": "473932553733009408"
-    },
-    {
-      "Troll Name": "Matt Nockerts",
-      "Nickname": "Nockerts",
-      "Sleeper ID": "452666519613075456"
-    },
-    {
-      "Troll Name": "Matt Rush",
-      "Nickname": "Walrus",
-      "Sleeper ID": "473933594708930560"
-    }
-  ]
+  {
+    "Troll Name": "Alex Dosdos",
+    "Nickname": "Alex",
+    "Sleeper ID": "473933216856666112"
+  },
+  {
+    "Troll Name": "Beau Zachowski",
+    "Nickname": "Beau",
+    "Sleeper ID": "473932571693019136"
+  },
+  {
+    "Troll Name": "Brandyn Kerscher",
+    "Nickname": "Dyno",
+    "Sleeper ID": "473932495448961024"
+  },
+  {
+    "Troll Name": "Chris Rosenthal",
+    "Nickname": "Dirty Dawg",
+    "Sleeper ID": "473933351699345408"
+  },
+  {
+    "Troll Name": "Connar Bodoh",
+    "Nickname": "Connar",
+    "Sleeper ID": "473932605763350528"
+  },
+  {
+    "Troll Name": "Derrick Allen",
+    "Nickname": "Derrick",
+    "Sleeper ID": "1254075684570013696"
+  },
+  {
+    "Troll Name": "De'Vonne Jackson",
+    "Nickname": "De'",
+    "Sleeper ID": "438826516663496704"
+  },
+  {
+    "Troll Name": "John Rush",
+    "Nickname": "John",
+    "Sleeper ID": "473933377913745408"
+  },
+  {
+    "Troll Name": "Jorge Dosdos",
+    "Nickname": "Jorge",
+    "Sleeper ID": "473734861195046912"
+  },
+  {
+    "Troll Name": "Justin Leman",
+    "Nickname": "Winslow",
+    "Sleeper ID": "473932355996741632"
+  },
+  {
+    "Troll Name": "Justin Schwartz",
+    "Nickname": "Schwartz",
+    "Sleeper ID": "999520196761153536"
+  },
+  {
+    "Troll Name": "Justin Sowers",
+    "Nickname": "Sowers",
+    "Sleeper ID": "473932553733009408"
+  },
+  {
+    "Troll Name": "Matt Nockerts",
+    "Nickname": "Nockerts",
+    "Sleeper ID": "452666519613075456"
+  },
+  {
+    "Troll Name": "Matt Rush",
+    "Nickname": "Walrus",
+    "Sleeper ID": "473933594708930560"
+  }
+]
