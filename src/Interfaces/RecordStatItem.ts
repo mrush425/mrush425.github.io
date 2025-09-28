@@ -1,0 +1,20 @@
+// Define this in a separate file (e.g., RecordsTypes.ts) and import it,
+// or keep it near the top of RecordsStats.tsx.
+
+import { ComponentType } from 'react';
+import LeagueData from './LeagueData';
+// Assuming LeagueData is imported from '../../Interfaces/LeagueData'
+
+// This is the interface for the props passed to the *nested* components (e.g., AllTimeWins)
+export interface RecordComponentProps {
+    data: LeagueData[];
+    // ADD THIS LINE
+    minYears?: number; // Optional filter for minimum years played
+}
+
+// Define the structure for an item in your dropdown list
+export interface RecordStatItem {
+    displayName: string; // The name shown in the dropdown
+    // ComponentType now uses the correct RecordComponentProps interface
+    Component: ComponentType<RecordComponentProps>;
+}

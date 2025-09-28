@@ -214,6 +214,73 @@ export const getRecordInTop50 = (user: SleeperUser, data: LeagueData): [wins: nu
     return [wins, losses, ties];
 };
 
+export const recordAgainstWinningTeams = (user: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+
+    if (!data.matchupInfo || !data.rosters) {
+        return [0, 0, 0];
+    }
+
+    // 1. Identify User IDs belonging to teams with a winning record (Wins > Losses)
+    // This defines who qualifies as a "Winning Team" opponent.
+    const winningRosterIds = data.rosters
+        .filter(roster => roster.settings.wins > roster.settings.losses)
+        .map(roster => roster.roster_id);
+
+    // 2. Get the target user's Roster ID
+    const targetRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
+
+    if (!targetRosterId) {
+        return [0, 0, 0];
+    }
+    
+    // 3. Filter for relevant regular season matchups (based on existing logic)
+    let relevantMatchups = data.matchupInfo.filter(
+        (matchup) => matchup.week < data.settings.playoff_week_start
+    );
+
+    // If it's the current season, only count completed weeks
+    if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type !== "post") {
+        relevantMatchups = relevantMatchups.filter(
+            (matchup) => matchup.week < data.nflSeasonInfo.week
+        );
+    }
+    
+    // 4. Iterate through each matchup the user played
+    relevantMatchups.forEach((matchup) => {
+        const teamMatchup = matchup.matchups.find((m) => m.roster_id === targetRosterId);
+        
+        // Ensure the target user played this week
+        if (teamMatchup) {
+            const opponentMatchup = matchup.matchups.find(
+                (m) => m.matchup_id === teamMatchup.matchup_id && m.roster_id !== targetRosterId
+            );
+
+            // Ensure there was a head-to-head opponent
+            if (opponentMatchup) {
+                const opponentRosterId = opponentMatchup.roster_id;
+                
+                // 5. Check if the opponent finished with a winning record
+                if (winningRosterIds.includes(opponentRosterId)) {
+                    
+                    // 6. Tally the result of the game
+                    if (teamMatchup.points > opponentMatchup.points) {
+                        winsSum++;
+                    } else if (teamMatchup.points < opponentMatchup.points) {
+                        lossesSum++;
+                    } else {
+                        tiesSum++;
+                    }
+                }
+            }
+        }
+    });
+
+    return [winsSum, lossesSum, tiesSum];
+};
+
 
 export const displayRecord = (wins: number, losses: number, ties: number): string => {
     return wins + "-" + losses + "-" + ties;

@@ -19,6 +19,7 @@ import HallOfFameHome from './Hall of Fame Pages/HallOfFameHome';
 import FootballPlayerChampions from './Hall of Fame Pages/FootballPlayerChampions';
 import ScheduleViewer from './Year Pages/ScheduleViewer';
 import LeagueHome from './League Pages/LeagueHome';
+import RecordsStats from './League Pages/RecordsStats';
 
 function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
   const path = `/season/${league.season}${pathSuffix}`;
@@ -62,6 +63,7 @@ return (
             <Route path="/" element={<Home />} />
             {/*Overall League Data*/}
             <Route path="/league-stats" element={<LeagueHome data={leagueData} />} />
+            <Route path="/league-stats/league-records" element={<RecordsStats data={leagueData} />} />
             {/*Hall of Fame Pages*/}
             <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
             <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
