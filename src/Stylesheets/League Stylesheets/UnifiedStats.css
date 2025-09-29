@@ -1,0 +1,114 @@
+/* Stats.css
+ * Unified styling for RecordsStats and PointsStats components.
+ * Standardizes the desktop two-pane layout to 66% (main table) / 34% (detail pane).
+ */
+
+/* --- Highlighting Styles --- */
+.highlight-best {
+    /* Soft green */
+    background-color: #d4edda; 
+    font-weight: bold;
+}
+
+.highlight-worst {
+    /* Soft red */
+    background-color: #f8d7da; 
+    font-weight: bold;
+}
+
+/* --- Table Styles --- */
+.statsTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.statsTable th {
+    padding: 8px 10px; 
+}
+
+.team-name-cell {
+    text-align: left !important; /* Keep team names left-aligned */
+    font-weight: 500;
+}
+
+/* Selectable Table Row Styles */
+.selectable-table tr {
+    cursor: pointer; /* Indicate rows are clickable */
+}
+
+.selectable-table tr.selected-row,
+.selectable-table tr.active {
+    background-color: #e6f7ff; /* Light blue background for selected row */
+}
+
+/* --- Component Spacing and Layout --- */
+
+/* 1. recordsHeader: Controls the overall top spacing and side padding */
+.recordsHeader {
+    /* Set a minimal top margin as requested to move content closer to the NavBar */
+    margin-top: 10px; 
+    padding: 0 15px; /* Added back side padding for clean edges */
+}
+
+/* 2. recordsStatsPicker: Controls the component selector area */
+.recordsStatsPicker.picker-spacing {
+    /* Increased margin-bottom slightly to separate the picker from the header (h3) */
+    margin-bottom: 5px; 
+}
+
+/* 4. h3 Header: Controls the spacing of the main component title */
+.recordsHeader h3 {
+    /* Keep minimal gap above h3 (from picker) */
+    margin-top: 5px; 
+    /* Reduced margin-bottom to pull the filter closer */
+    margin-bottom: 0px; 
+}
+
+/* 3. recordsFilter: Controls the filter checkbox styling and spacing */
+.recordsFilter.filter-style {
+    /* Slightly larger font for the filter text */
+    font-size: 1.1em; 
+    /* Minimal top margin */
+    margin-top: 5px; 
+    /* CHANGED: Reduced margin-bottom to minimize gap above tables */
+    margin-bottom: 5px; 
+}
+
+/* --- New Layout Styles for Two-Pane Display (Mobile First) --- */
+
+.two-pane-layout {
+    display: flex;
+    flex-direction: column; /* Stack vertically by default (mobile) */
+    gap: 20px; /* Spacing between panes */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.main-table-pane, .detail-pane-wrapper {
+    width: 100%; /* Full width on mobile */
+    display: flex; 
+    flex-direction: column;
+}
+
+/* Desktop/Tablet Layout (768px and up) - Standardized to 66% / 34% */
+@media (min-width: 769px) {
+    .two-pane-layout {
+        flex-direction: row; /* Side-by-side on desktop */
+        align-items: flex-start; /* Align both tables at the very top */
+    }
+    .main-table-pane {
+        width: 66%; /* Standardized main content width */
+        margin-top: 0 !important; 
+    }
+    .detail-pane-wrapper {
+        width: 34%; /* Standardized detail pane width */
+        margin-top: 0 !important;
+    }
+    .statsTable.regular-season-table {
+        width: 100%; /* Ensure table fills the 66% pane */
+    }
+    .statsTable.detail-table {
+        width: 100%;
+    }
+}

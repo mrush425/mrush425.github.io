@@ -1,32 +1,53 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import '../../Stylesheets/League Stylesheets/UnifiedStats.css';
+import React, { useState, useEffect, useMemo, ComponentType } from 'react';
+import '../../Stylesheets/League Stylesheets/UnifiedStats.css'; 
 import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
-import { RecordStatItem } from '../../Interfaces/RecordStatItem'; 
-import RegularSeasonRecords from './Records Stats/RegularSeasonRecords';
+// 1. IMPORT THE NEW COMPONENT
+import RegularSeasonPoints from './Points Stats/RegularSeasonPoints'; 
 
 
-// Placeholder for your statistical components
-const STAT_COMPONENTS: RecordStatItem[] = [
-    { displayName: 'Regular Season Records', Component: RegularSeasonRecords },
-    // { displayName: 'All-Time Wins', Component: AllTimeWins }, // Example of future components
+// =========================================================================
+// TYPE DEFINITIONS: Re-defining PointStatItem and PointComponentProps locally
+// =========================================================================
+
+// Interface for the props passed to the nested components
+export interface PointComponentProps {
+    data: LeagueData[];
+    minYears?: number; // Optional filter for minimum years played
+}
+
+// Define the structure for an item in your dropdown list
+export interface PointStatItem {
+    displayName: string; // The name shown in the dropdown
+    Component: ComponentType<PointComponentProps>;
+}
+
+// =========================================================================
+// STAT COMPONENT REGISTRY: Adding RegularSeasonPoints to the list
+// =========================================================================
+
+// Populate the list with the available components.
+const POINT_COMPONENTS: PointStatItem[] = [ 
+    { displayName: 'Average Points Per Game (APG)', Component: RegularSeasonPoints }, 
 ];
 
 
-const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
+const PointsStats: React.FC<LeagueProps> = ({ data }) => { 
     
     // UI State
     const [isMobile, setIsMobile] = useState(false); 
+    // The viewMode state seems unused in the final JSX, but we keep it
     const [viewMode, setViewMode] = useState<'table' | 'matchup'>('table'); 
     
     // Navigation State
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
-    // NEW FILTER STATE: Default to 3 years
+    // FILTER STATE: Default to 3 years
     const [minYears, setMinYears] = useState<number>(3); 
 
-    const items = useMemo(() => STAT_COMPONENTS, []);
+    // Use POINT_COMPONENTS directly
+    const items = useMemo(() => POINT_COMPONENTS, []); 
 
     // Screen resize logic
     useEffect(() => {
@@ -58,18 +79,20 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
 
     // Filter Change Handler
     const handleFilterChange = (isChecked: boolean) => {
+        // Sets minYears to 3 if checked, and 0 if unchecked (meaning 1 or more years)
         setMinYears(isChecked ? 3 : 0);
     };
 
 
     const selectedItem = items[activeIndex];
-    const header = selectedItem?.displayName || 'Records & Stats';
+    const header = selectedItem?.displayName || 'Points & Stats'; // Renamed header text
     
+    // Default component when nothing is loaded
     const SelectedComponent = selectedItem 
         ? selectedItem.Component 
         : () => (
             <div className="notImplementedMessage">
-                No records available. Please add components to the STAT_COMPONENTS list.
+                No points stats available. Please add components to the POINT_COMPONENTS list.
             </div>
         );
 
@@ -78,9 +101,9 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
         <div>
             <LeagueNavBar data={data} />
             
-            <div className="recordsHeader"> 
+            <div className="pointsHeader"> 
                 {/* 1. COMPONENT SELECTOR (First element) */}
-                <div className="recordsStatsPicker picker-spacing">
+                <div className="pointsStatsPicker picker-spacing"> 
                     <button
                         className="arrowButton"
                         onClick={() => changeViewByDelta(-1)}
@@ -90,7 +113,7 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
                     </button>
                     
                     <select
-                        className="recordsDropdown"
+                        className="pointsDropdown" 
                         value={activeIndex}
                         onChange={(e) => handleViewChange(Number(e.target.value))}
                         disabled={items.length === 0}
@@ -119,7 +142,7 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
                 <h3>{header}</h3>
                 
                 {/* 3. FILTER CHECKBOX (NEW POSITION: Third element) */}
-                <div className="recordsFilter filter-style">
+                <div className="pointsFilter filter-style"> 
                     <label>
                         <input
                             type="checkbox"
@@ -133,11 +156,12 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
                 
             </div>
             
-            <div className="recordsContainer">
+            <div className="pointsContainer"> 
+                {/* The selected component receives the league data and the minYears filter */}
                 <SelectedComponent data={data} minYears={minYears} />
             </div>
         </div>
     );
 };
 
-export default RecordsStats;
+export default PointsStats;

@@ -1,0 +1,408 @@
+import React, { useMemo, useState, useEffect } from 'react';
+import { RecordComponentProps } from '../../../Interfaces/RecordStatItem'; 
+import LeagueData from '../../../Interfaces/LeagueData';
+import SleeperUser from '../../../Interfaces/SleeperUser';
+import { calculateYearPoints, calculateYearPointsAgainst } from '../../../Helper Files/PointCalculations';
+
+
+// =========================================================================
+// TYPE DEFINITIONS
+// =========================================================================
+
+interface TeamRegularSeasonPoints {
+    userId: string;
+    teamName: string;
+    yearsPlayed: number;
+    totalPoints: number;
+    totalGamesPlayed: number;
+    // Points Scored
+    avgPointsPerGameValue: number;
+    avgPointsPerGameDisplay: string;
+    // Points Against
+    totalPointsAgainst: number;
+    avgPointsAgainstPerGameValue: number;
+    avgPointsAgainstPerGameDisplay: string;
+}
+
+interface YearlyTeamPoints {
+    year: number;
+    points: number;
+    games: number;
+    avgPoints: number;
+    avgPointsDisplay: string;
+    // Points Against
+    pointsAgainst: number;
+    avgPointsAgainst: number;
+    avgPointsAgainstDisplay: string;
+}
+
+type SortKey = keyof TeamRegularSeasonPoints; 
+interface SortConfig {
+    key: SortKey | null;
+    direction: 'ascending' | 'descending';
+}
+
+interface MaxMinPointsStats {
+    yearsPlayed: { max: number; min: number };
+    avgPointsPerGameValue: { max: number; min: number };
+    avgPointsAgainstPerGameValue: { max: number; min: number };
+}
+
+// =========================================================================
+// CORE LOGIC: Aggregation and Calculation
+// =========================================================================
+
+const aggregateRegularSeasonPoints = (data: LeagueData[]): TeamRegularSeasonPoints[] => {
+    const allUserIDs = new Set<string>();
+    data.forEach(league => {
+        league.users.forEach(user => allUserIDs.add(user.user_id));
+    });
+
+    const results: { [userId: string]: Partial<TeamRegularSeasonPoints> & { yearsPlayed: number, totalPoints: number, totalGamesPlayed: number, totalPointsAgainst: number, teamName: string } } = {};
+
+    Array.from(allUserIDs).forEach(userId => {
+        let totalPoints = 0;
+        let totalPointsAgainst = 0;
+        let totalGamesPlayed = 0;
+        let yearsPlayed = 0; 
+        let teamName = '';
+
+        data.forEach(league => {
+            const userInLeague = league.users.find(u => u.user_id === userId);
+
+            if (userInLeague) {
+                yearsPlayed++; 
+                teamName = userInLeague.metadata.team_name || `User ${userId.substring(0, 4)}`;
+
+                const roster = league.rosters.find(r => r.owner_id === userId);
+                if (roster) {
+                    const user = userInLeague as SleeperUser; 
+                    
+                    const yearPoints = calculateYearPoints(user, league); 
+                    totalPoints += yearPoints;
+
+                    const yearPointsAgainst = calculateYearPointsAgainst(user, league);
+                    totalPointsAgainst += yearPointsAgainst;
+
+                    const games = roster.settings.wins + roster.settings.losses + roster.settings.ties;
+                    totalGamesPlayed += games;
+                }
+            }
+        });
+
+        if (teamName && yearsPlayed > 0) {
+            const avgPoints = totalGamesPlayed > 0 ? totalPoints / totalGamesPlayed : 0;
+            const avgPointsRounded = Math.round(avgPoints * 100) / 100;
+            
+            const avgPointsAgainst = totalGamesPlayed > 0 ? totalPointsAgainst / totalGamesPlayed : 0;
+            const avgPointsAgainstRounded = Math.round(avgPointsAgainst * 100) / 100;
+
+            results[userId] = {
+                userId: userId,
+                teamName: teamName,
+                yearsPlayed: yearsPlayed, 
+                totalPoints: Math.round(totalPoints * 100) / 100, 
+                totalGamesPlayed: totalGamesPlayed,
+                avgPointsPerGameValue: avgPointsRounded,
+                avgPointsPerGameDisplay: avgPointsRounded.toFixed(2),
+                
+                totalPointsAgainst: Math.round(totalPointsAgainst * 100) / 100,
+                avgPointsAgainstPerGameValue: avgPointsAgainstRounded,
+                avgPointsAgainstPerGameDisplay: avgPointsAgainstRounded.toFixed(2),
+            };
+        }
+    });
+
+    return Object.values(results) as TeamRegularSeasonPoints[];
+};
+
+/**
+ * Calculates a year-by-year breakdown for a single team.
+ */
+const getYearlyPointsBreakdown = (data: LeagueData[], userId: string): YearlyTeamPoints[] => {
+    const yearlyData: YearlyTeamPoints[] = [];
+
+    data.forEach(league => {
+        const userInLeague = league.users.find(u => u.user_id === userId);
+        const roster = league.rosters.find(r => r.owner_id === userId);
+
+        if (userInLeague && roster) {
+            const year = Number.parseInt(league.season); 
+            
+            const yearPoints = calculateYearPoints(userInLeague as SleeperUser, league);
+            const games = roster.settings.wins + roster.settings.losses + roster.settings.ties;
+            const avgPoints = games > 0 ? yearPoints / games : 0;
+            const avgPointsRounded = Math.round(avgPoints * 100) / 100;
+
+            const yearPointsAgainst = calculateYearPointsAgainst(userInLeague as SleeperUser, league);
+            const avgPointsAgainst = games > 0 ? yearPointsAgainst / games : 0;
+            const avgPointsAgainstRounded = Math.round(avgPointsAgainst * 100) / 100;
+
+            yearlyData.push({
+                year: year,
+                points: Math.round(yearPoints * 100) / 100,
+                games: games,
+                avgPoints: avgPointsRounded,
+                avgPointsDisplay: avgPointsRounded.toFixed(2),
+
+                pointsAgainst: Math.round(yearPointsAgainst * 100) / 100,
+                avgPointsAgainst: avgPointsAgainstRounded,
+                avgPointsAgainstDisplay: avgPointsAgainstRounded.toFixed(2)
+            });
+        }
+    });
+
+    return yearlyData.sort((a, b) => b.year - a.year);
+};
+
+
+// =========================================================================
+// YEARLY BREAKDOWN SUB-COMPONENT (RIGHT PANE)
+// =========================================================================
+
+interface YearlyPointsBreakdownProps {
+    data: LeagueData[];
+    selectedTeam: TeamRegularSeasonPoints;
+}
+
+const YearlyPointsBreakdown: React.FC<YearlyPointsBreakdownProps> = ({ data, selectedTeam }) => {
+    
+    const yearlyStats = useMemo(() => {
+        return getYearlyPointsBreakdown(data, selectedTeam.userId);
+    }, [data, selectedTeam.userId]);
+
+    return (
+        <div className="detail-pane">
+            <table className="statsTable detail-table w-full">
+                <thead>
+                    <tr>
+                        <th className="w-1/4">Year</th>
+                        <th className="w-3/8">Avg. Points/Game</th>
+                        <th className="w-3/8">Avg. Points Against</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {yearlyStats.map((stat) => (
+                        <tr key={stat.year}>
+                            <td>{stat.year}</td>
+                            <td>
+                                {stat.avgPointsDisplay} ({stat.points.toFixed(2)})
+                            </td>
+                            <td>
+                                {stat.avgPointsAgainstDisplay} ({stat.pointsAgainst.toFixed(2)})
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {yearlyStats.length === 0 && (
+                <div className="notImplementedMessage">No yearly data available for this team.</div>
+            )}
+        </div>
+    );
+};
+
+
+// =========================================================================
+// MAIN REACT COMPONENT (RegularSeasonPoints)
+// =========================================================================
+
+const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
+    
+    const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'avgPointsPerGameValue', direction: 'descending' });
+    const [selectedTeam, setSelectedTeam] = useState<TeamRegularSeasonPoints | null>(null);
+
+    const handleSort = (key: SortKey) => {
+        let direction: SortConfig['direction'] = 'descending';
+        
+        if (sortConfig.key === key && sortConfig.direction === 'descending') {
+            direction = 'ascending';
+        } else if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            key = 'avgPointsPerGameValue'; 
+            direction = 'descending';
+        }
+        
+        setSortConfig({ key, direction });
+    };
+
+    const handleRowClick = (team: TeamRegularSeasonPoints) => {
+        setSelectedTeam(prev => (prev?.userId === team.userId ? null : team));
+    };
+
+
+    const { sortedPoints, maxMinValues } = useMemo(() => {
+        let allItems = aggregateRegularSeasonPoints(data);
+        
+        let sortableItems = allItems.filter(record => record.yearsPlayed >= minYears && record.totalGamesPlayed > 0);
+
+        if (sortableItems.length === 0) {
+            const emptyMaxMin: MaxMinPointsStats = {
+                yearsPlayed: { max: 0, min: 0 },
+                avgPointsPerGameValue: { max: 0, min: 0 },
+                avgPointsAgainstPerGameValue: { max: 0, min: 0 },
+            };
+            return { sortedPoints: [], maxMinValues: emptyMaxMin };
+        }
+
+        const avgValues = sortableItems.map(r => r.avgPointsPerGameValue);
+        const avgAgainstValues = sortableItems.map(r => r.avgPointsAgainstPerGameValue); 
+        const yearsValues = sortableItems.map(r => r.yearsPlayed);
+
+        const maxMinValues: MaxMinPointsStats = {
+            avgPointsPerGameValue: { 
+                max: Math.max(...avgValues), 
+                min: Math.min(...avgValues) 
+            },
+            avgPointsAgainstPerGameValue: {
+                max: Math.max(...avgAgainstValues), 
+                min: Math.min(...avgAgainstValues) 
+            },
+            yearsPlayed: {
+                max: Math.max(...yearsValues),
+                min: Math.min(...yearsValues)
+            }
+        };
+
+        if (sortConfig.key !== null) {
+            sortableItems.sort((a, b) => {
+                const aValue = a[sortConfig.key!];
+                const bValue = b[sortConfig.key!];
+
+                if (typeof aValue === 'string' && typeof bValue === 'string') {
+                    if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
+                    if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
+                } 
+                else if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    const isAgainst = sortConfig.key === 'avgPointsAgainstPerGameValue';
+                    
+                    if (isAgainst) {
+                        if (sortConfig.direction === 'ascending') return aValue - bValue;
+                        return bValue - aValue;
+                    } else {
+                        if (sortConfig.direction === 'ascending') return aValue - bValue;
+                        return bValue - aValue;
+                    }
+                }
+                return 0;
+            });
+        }
+        
+        if (selectedTeam && !sortableItems.find(t => t.userId === selectedTeam.userId)) {
+             setSelectedTeam(null);
+        }
+        
+        return { sortedPoints: sortableItems, maxMinValues };
+    }, [data, sortConfig, minYears, selectedTeam]);
+
+    useEffect(() => {
+        if (!selectedTeam && sortedPoints.length > 0) {
+            setSelectedTeam(sortedPoints[0]);
+        }
+    }, [sortedPoints, selectedTeam]);
+
+
+    const getSortIndicator = (key: SortKey) => {
+        if (sortConfig.key !== key) return null;
+        return sortConfig.direction === 'ascending' ? ' \u25B2' : ' \u25BC';
+    };
+
+    const getCellClassName = (key: keyof MaxMinPointsStats, value: number): string => {
+        const { max, min } = maxMinValues[key];
+        
+        if (max === min) return ''; 
+        
+        if (key === 'avgPointsPerGameValue') {
+            if (value === max) return 'highlight-best';
+            if (value === min) return 'highlight-worst';
+        }
+        
+        if (key === 'avgPointsAgainstPerGameValue') {
+            if (value === min) return 'highlight-best'; 
+            if (value === max) return 'highlight-worst';
+        }
+        
+        return '';
+    };
+    
+    if (sortedPoints.length === 0) {
+        return (
+            <div className="regular-season-points">
+                <div className="notImplementedMessage">
+                    No points data found for the current filter settings (min years: {minYears}).
+                </div>
+            </div>
+        );
+    }
+
+    // Removed the inline layoutStyles constant and <style> block.
+    // The layout is now entirely managed by the external RecordsStats.css.
+
+    return (
+        <div className="regular-season-points">
+            <div className="two-pane-layout">
+                
+                {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
+                <div className="main-table-pane">
+                    <table className="statsTable regular-season-table selectable-table">
+                        <thead>
+                            <tr>
+                                <th onClick={() => handleSort('teamName')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                    Team {getSortIndicator('teamName')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('avgPointsPerGameValue')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                    Avg. Pts {getSortIndicator('avgPointsPerGameValue')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('avgPointsAgainstPerGameValue')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                    Avg. Pts Against {getSortIndicator('avgPointsAgainstPerGameValue')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('yearsPlayed')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                    Years {getSortIndicator('yearsPlayed')}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sortedPoints.map((point, index) => (
+                                <tr 
+                                    key={point.userId} 
+                                    className={`${selectedTeam?.userId === point.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                                    onClick={() => handleRowClick(point)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <td className="team-name-cell">{point.teamName}</td>
+                                    
+                                    <td className={getCellClassName('avgPointsPerGameValue', point.avgPointsPerGameValue)}>
+                                        {point.avgPointsPerGameDisplay} ({point.totalPoints.toFixed(2)})
+                                    </td>
+                                    
+                                    <td className={getCellClassName('avgPointsAgainstPerGameValue', point.avgPointsAgainstPerGameValue)}>
+                                        {point.avgPointsAgainstPerGameDisplay} ({point.totalPointsAgainst.toFixed(2)})
+                                    </td>
+
+                                    <td>
+                                        {point.yearsPlayed}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
+                <div className="detail-pane-wrapper">
+                    {selectedTeam ? (
+                        <YearlyPointsBreakdown data={data} selectedTeam={selectedTeam} />
+                    ) : (
+                        <div className="notImplementedMessage">
+                            Select a team from the table to see a yearly points breakdown.
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RegularSeasonPoints;
