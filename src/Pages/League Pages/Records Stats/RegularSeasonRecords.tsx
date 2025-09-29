@@ -260,8 +260,8 @@ const YearlyRecordBreakdown: React.FC<YearlyRecordBreakdownProps> = ({ data, sel
                     <tr>
                         <th className="table-col-1">Year</th>
                         <th className="table-col-2">Overall</th>
-                        <th className="table-col-2">Vs. Avg</th>
-                        <th className="table-col-2">Vs. Top 50%</th>
+                        <th className="table-col-2">Vs. All</th>
+                        <th className="table-col-2">In Top 50%</th>
                         <th className="table-col-3">Vs. Winners</th>
                     </tr>
                 </thead>
@@ -436,11 +436,11 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                                 </th>
                                 
                                 <th onClick={() => handleSort('avgVsLeagueWinPctValue')} className="table-col-2 sortable">
-                                    Vs. Avg % {getSortIndicator('avgVsLeagueWinPctValue')}
+                                    Vs. All {getSortIndicator('avgVsLeagueWinPctValue')}
                                 </th>
                                 
                                 <th onClick={() => handleSort('top50WinPctValue')} className="table-col-2 sortable">
-                                    Vs. Top 50% {getSortIndicator('top50WinPctValue')}
+                                    In Top 50% {getSortIndicator('top50WinPctValue')}
                                 </th>
 
                                 <th onClick={() => handleSort('vsWinningTeamsWinPctValue')} className="table-col-2 sortable">
