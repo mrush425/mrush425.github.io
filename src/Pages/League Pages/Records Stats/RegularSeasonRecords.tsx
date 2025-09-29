@@ -260,8 +260,8 @@ const YearlyRecordBreakdown: React.FC<YearlyRecordBreakdownProps> = ({ data, sel
                     <tr>
                         <th className="table-col-1">Year</th>
                         <th className="table-col-2">Overall</th>
-                        <th className="table-col-2">Vs. All</th>
-                        <th className="table-col-2">In Top 50%</th>
+                        <th className="table-col-2">Vs. Avg</th>
+                        <th className="table-col-2">Vs. Top 50%</th>
                         <th className="table-col-3">Vs. Winners</th>
                     </tr>
                 </thead>
@@ -364,10 +364,14 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                 const aValue = a[sortConfig.key!];
                 const bValue = b[sortConfig.key!];
 
-                if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
-                    if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
-                } 
+                if (sortConfig.key === 'teamName') {
+                    // Custom sorting for teamName (which will fall back to yearsPlayed if names are equal)
+                    if (a.teamName < b.teamName) return sortConfig.direction === 'ascending' ? -1 : 1;
+                    if (a.teamName > b.teamName) return sortConfig.direction === 'ascending' ? 1 : -1;
+                    // If team names are the same, sort by yearsPlayed
+                    return sortConfig.direction === 'ascending' ? a.yearsPlayed - b.yearsPlayed : b.yearsPlayed - a.yearsPlayed;
+                }
+                
                 else if (typeof aValue === 'number' && typeof bValue === 'number') {
                     // For all win percentage values, descending is best (highest value is better)
                     if (sortConfig.direction === 'ascending') return aValue - bValue;
@@ -391,6 +395,7 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
     }, [sortedRecords, selectedTeam]);
 
 
+    // Removed getSortIndicator for 'yearsPlayed' since it's now part of 'teamName' or implicit.
     const getSortIndicator = (key: SortKey) => {
         if (sortConfig.key !== key) return null;
         return sortConfig.direction === 'ascending' ? ' \u25B2' : ' \u25BC';
@@ -428,7 +433,7 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('teamName')} className="table-col-team sortable">
-                                    Team {getSortIndicator('teamName')}
+                                    Team (Years) {getSortIndicator('teamName')}
                                 </th>
                                 
                                 <th onClick={() => handleSort('winPercentageValue')} className="table-col-2 sortable">
@@ -436,20 +441,18 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                                 </th>
                                 
                                 <th onClick={() => handleSort('avgVsLeagueWinPctValue')} className="table-col-2 sortable">
-                                    Vs. All {getSortIndicator('avgVsLeagueWinPctValue')}
+                                    Vs. Avg % {getSortIndicator('avgVsLeagueWinPctValue')}
                                 </th>
                                 
                                 <th onClick={() => handleSort('top50WinPctValue')} className="table-col-2 sortable">
-                                    In Top 50% {getSortIndicator('top50WinPctValue')}
+                                    Vs. Top 50% {getSortIndicator('top50WinPctValue')}
                                 </th>
 
                                 <th onClick={() => handleSort('vsWinningTeamsWinPctValue')} className="table-col-2 sortable">
                                     Vs. Winners {getSortIndicator('vsWinningTeamsWinPctValue')}
                                 </th>
 
-                                <th onClick={() => handleSort('yearsPlayed')} className="table-col-1 sortable">
-                                    Years {getSortIndicator('yearsPlayed')}
-                                </th>
+                                {/* REMOVED 'Years' COLUMN */}
                             </tr>
                         </thead>
                         <tbody>
@@ -459,7 +462,7 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                                     className={`${selectedTeam?.userId === record.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
                                     onClick={() => handleRowClick(record)}
                                 >
-                                    <td className="team-name-cell">{record.teamName}</td>
+                                    <td className="team-name-cell">{record.teamName} ({record.yearsPlayed})</td>
                                     
                                     <td className={getCellClassName('winPercentageValue', record.winPercentageValue)}>
                                         {formatRecordCell(record.totalWins + '-' + record.totalLosses + (record.totalTies > 0 ? '-' + record.totalTies : ''), record.winPercentage)}
@@ -475,10 +478,6 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
 
                                     <td className={getCellClassName('vsWinningTeamsWinPctValue', record.vsWinningTeamsWinPctValue)}>
                                         {formatRecordCell(record.vsWinningTeamsRecord, record.vsWinningTeamsWinPct)}
-                                    </td>
-
-                                    <td>
-                                        {record.yearsPlayed}
                                     </td>
                                 </tr>
                             ))}

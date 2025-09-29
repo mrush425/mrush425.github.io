@@ -212,6 +212,7 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'avgPointsPerGameValue', direction: 'descending' });
     const [selectedTeam, setSelectedTeam] = useState<TeamRegularSeasonPoints | null>(null);
 
+    // Sorting by teamName is the only column that needs to be manually implemented for the yearsPlayed to be sortable
     const handleSort = (key: SortKey) => {
         let direction: SortConfig['direction'] = 'descending';
         
@@ -268,10 +269,14 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                 const aValue = a[sortConfig.key!];
                 const bValue = b[sortConfig.key!];
 
-                if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
-                    if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
-                } 
+                if (sortConfig.key === 'teamName') {
+                    // Custom sorting for teamName (which will fall back to yearsPlayed if names are equal)
+                    if (a.teamName < b.teamName) return sortConfig.direction === 'ascending' ? -1 : 1;
+                    if (a.teamName > b.teamName) return sortConfig.direction === 'ascending' ? 1 : -1;
+                    // If team names are the same, sort by yearsPlayed
+                    return sortConfig.direction === 'ascending' ? a.yearsPlayed - b.yearsPlayed : b.yearsPlayed - a.yearsPlayed;
+                }
+                
                 else if (typeof aValue === 'number' && typeof bValue === 'number') {
                     const isAgainst = sortConfig.key === 'avgPointsAgainstPerGameValue';
                     
@@ -303,6 +308,7 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
     }, [sortedPoints, selectedTeam]);
 
 
+    // Removed getSortIndicator for 'yearsPlayed' since it's now part of 'teamName' or implicit.
     const getSortIndicator = (key: SortKey) => {
         if (sortConfig.key !== key) return null;
         return sortConfig.direction === 'ascending' ? ' \u25B2' : ' \u25BC';
@@ -345,8 +351,8 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                     <table className="statsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('teamName')} className="table-col-1 sortable">
-                                    Team {getSortIndicator('teamName')}
+                                <th onClick={() => handleSort('teamName')} className="table-col-2 sortable">
+                                    Team (Years) {getSortIndicator('teamName')}
                                 </th>
                                 
                                 <th onClick={() => handleSort('avgPointsPerGameValue')} className="table-col-2 sortable">
@@ -357,9 +363,7 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                                     Avg. Pts Against {getSortIndicator('avgPointsAgainstPerGameValue')}
                                 </th>
                                 
-                                <th onClick={() => handleSort('yearsPlayed')} className="table-col-1 sortable">
-                                    Years {getSortIndicator('yearsPlayed')}
-                                </th>
+                                {/* REMOVED 'Years' COLUMN */}
                             </tr>
                         </thead>
                         <tbody>
@@ -369,7 +373,7 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                                     className={`${selectedTeam?.userId === point.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
                                     onClick={() => handleRowClick(point)}
                                 >
-                                    <td className="team-name-cell">{point.teamName}</td>
+                                    <td className="team-name-cell">{point.teamName} ({point.yearsPlayed})</td>
                                     
                                     <td className={getCellClassName('avgPointsPerGameValue', point.avgPointsPerGameValue)}>
                                         {point.avgPointsPerGameDisplay} ({point.totalPoints.toFixed(2)})
@@ -377,10 +381,6 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                                     
                                     <td className={getCellClassName('avgPointsAgainstPerGameValue', point.avgPointsAgainstPerGameValue)}>
                                         {point.avgPointsAgainstPerGameDisplay} ({point.totalPointsAgainst.toFixed(2)})
-                                    </td>
-
-                                    <td>
-                                        {point.yearsPlayed}
                                     </td>
                                 </tr>
                             ))}
