@@ -173,12 +173,12 @@ const YearlyPointsBreakdown: React.FC<YearlyPointsBreakdownProps> = ({ data, sel
 
     return (
         <div className="detail-pane">
-            <table className="statsTable detail-table w-full">
+            <table className="statsTable detail-table">
                 <thead>
                     <tr>
-                        <th className="w-1/4">Year</th>
-                        <th className="w-3/8">Avg. Points/Game</th>
-                        <th className="w-3/8">Avg. Points Against</th>
+                        <th className="table-col-1">Year</th>
+                        <th className="table-col-2">Avg. Points/Game</th>
+                        <th className="table-col-2">Avg. Points Against</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -276,9 +276,11 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                     const isAgainst = sortConfig.key === 'avgPointsAgainstPerGameValue';
                     
                     if (isAgainst) {
-                        if (sortConfig.direction === 'ascending') return aValue - bValue;
+                        // For points against, descending is best (lowest value is better)
+                        if (sortConfig.direction === 'ascending') return aValue - bValue; 
                         return bValue - aValue;
                     } else {
+                        // For points scored, descending is best (highest value is better)
                         if (sortConfig.direction === 'ascending') return aValue - bValue;
                         return bValue - aValue;
                     }
@@ -317,8 +319,8 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
         }
         
         if (key === 'avgPointsAgainstPerGameValue') {
-            if (value === min) return 'highlight-best'; 
-            if (value === max) return 'highlight-worst';
+            if (value === min) return 'highlight-best'; // Lowest is best for Points Against
+            if (value === max) return 'highlight-worst'; // Highest is worst for Points Against
         }
         
         return '';
@@ -334,9 +336,6 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
         );
     }
 
-    // Removed the inline layoutStyles constant and <style> block.
-    // The layout is now entirely managed by the external RecordsStats.css.
-
     return (
         <div className="regular-season-points">
             <div className="two-pane-layout">
@@ -346,19 +345,19 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                     <table className="statsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('teamName')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                <th onClick={() => handleSort('teamName')} className="table-col-1 sortable">
                                     Team {getSortIndicator('teamName')}
                                 </th>
                                 
-                                <th onClick={() => handleSort('avgPointsPerGameValue')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                <th onClick={() => handleSort('avgPointsPerGameValue')} className="table-col-2 sortable">
                                     Avg. Pts {getSortIndicator('avgPointsPerGameValue')}
                                 </th>
                                 
-                                <th onClick={() => handleSort('avgPointsAgainstPerGameValue')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                <th onClick={() => handleSort('avgPointsAgainstPerGameValue')} className="table-col-2 sortable">
                                     Avg. Pts Against {getSortIndicator('avgPointsAgainstPerGameValue')}
                                 </th>
                                 
-                                <th onClick={() => handleSort('yearsPlayed')} style={{ cursor: 'pointer' }} className="w-1/4">
+                                <th onClick={() => handleSort('yearsPlayed')} className="table-col-1 sortable">
                                     Years {getSortIndicator('yearsPlayed')}
                                 </th>
                             </tr>
@@ -369,7 +368,6 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                                     key={point.userId} 
                                     className={`${selectedTeam?.userId === point.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
                                     onClick={() => handleRowClick(point)}
-                                    style={{ cursor: 'pointer' }}
                                 >
                                     <td className="team-name-cell">{point.teamName}</td>
                                     

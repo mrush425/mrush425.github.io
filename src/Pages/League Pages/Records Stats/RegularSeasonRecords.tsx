@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useEffect } from 'react';
-// Corrected import to the RecordComponentProps interface
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem'; 
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
@@ -259,19 +258,17 @@ const YearlyRecordBreakdown: React.FC<YearlyRecordBreakdownProps> = ({ data, sel
             <table className="statsTable detail-table">
                 <thead>
                     <tr>
-                        <th style={{ width: '10%' }}>Year</th>
-                        {/* REMOVED: The Games column header */}
-                        <th style={{ width: '22%' }}>Overall</th>
-                        <th style={{ width: '22%' }}>Vs. Avg</th>
-                        <th style={{ width: '22%' }}>Vs. Top 50%</th>
-                        <th style={{ width: '24%' }}>Vs. Winners</th>
+                        <th className="table-col-1">Year</th>
+                        <th className="table-col-2">Overall</th>
+                        <th className="table-col-2">Vs. Avg</th>
+                        <th className="table-col-2">Vs. Top 50%</th>
+                        <th className="table-col-3">Vs. Winners</th>
                     </tr>
                 </thead>
                 <tbody>
                     {yearlyStats.map((stat) => (
                         <tr key={stat.year}>
                             <td>{stat.year}</td>
-                            {/* REMOVED: The Games data cell */}
                             <td>{formatRecordCell(stat.overallRecord, stat.overallWinPct)}</td>
                             <td>{formatRecordCell(stat.avgVsLeagueRecord, stat.avgVsLeagueWinPct)}</td>
                             <td>{formatRecordCell(stat.top50Record, stat.top50WinPct)}</td>
@@ -370,7 +367,9 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                 if (typeof aValue === 'string' && typeof bValue === 'string') {
                     if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
                     if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
-                } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+                } 
+                else if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    // For all win percentage values, descending is best (highest value is better)
                     if (sortConfig.direction === 'ascending') return aValue - bValue;
                     return bValue - aValue;
                 }
@@ -381,15 +380,16 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
         if (selectedTeam && !sortableItems.find(t => t.userId === selectedTeam.userId)) {
              setSelectedTeam(null);
         }
-
+        
         return { sortedRecords: sortableItems, maxMinValues };
-    }, [data, sortConfig, minYears, selectedTeam]); 
-
+    }, [data, sortConfig, minYears, selectedTeam]);
+    
     useEffect(() => {
         if (!selectedTeam && sortedRecords.length > 0) {
             setSelectedTeam(sortedRecords[0]);
         }
     }, [sortedRecords, selectedTeam]);
+
 
     const getSortIndicator = (key: SortKey) => {
         if (sortConfig.key !== key) return null;
@@ -400,7 +400,8 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
         const { max, min } = maxMinValues[key];
         
         if (max === min) return ''; 
-        
+
+        // All win percentages use the same logic: max is best, min is worst
         if (value === max) return 'highlight-best';
         if (value === min) return 'highlight-worst';
         
@@ -411,105 +412,87 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
         return (
             <div className="regular-season-records">
                 <div className="notImplementedMessage">
-                    No records found for the current filter settings (min years: {minYears}).
+                    No record data found for the current filter settings (min years: {minYears}).
                 </div>
             </div>
         );
     }
-    
-    /* Column width allocation (total 7 columns):
-    Team Name: 15%
-    Overall Record: 18%
-    Vs. League Avg: 18%
-    Vs. Top 50%: 17%
-    Vs. Winners: 17%
-    Years: 15%
-    Total: 100%
-    */
 
     return (
         <div className="regular-season-records">
-            
             <div className="two-pane-layout">
                 
-                {/* -------------------- LEFT PANE: MAIN TABLE (66%) -------------------- */}
+                {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
                 <div className="main-table-pane">
-                    {/* Added overflow-x: auto wrapper for better horizontal viewing on smaller screens */}
-                    <div style={{ overflowX: 'auto' }}> 
-                        <table className="statsTable regular-season-table selectable-table" style={{ minWidth: '750px' }}>
-                            <thead>
-                                <tr>
-                                    <th onClick={() => handleSort('teamName')} style={{ cursor: 'pointer', width: '15%' }}>
-                                        Team {getSortIndicator('teamName')}
-                                    </th>
-                                    
-                                    <th onClick={() => handleSort('winPercentageValue')} style={{ cursor: 'pointer', width: '18%' }}>
-                                        Overall Record {getSortIndicator('winPercentageValue')}
-                                    </th>
-                                    
-                                    <th onClick={() => handleSort('avgVsLeagueWinPctValue')} style={{ cursor: 'pointer', width: '18%' }}>
-                                        Vs. League Avg {getSortIndicator('avgVsLeagueWinPctValue')}
-                                    </th>
-                                    
-                                    <th onClick={() => handleSort('top50WinPctValue')} style={{ cursor: 'pointer', width: '17%' }}>
-                                        Vs. Top 50% {getSortIndicator('top50WinPctValue')}
-                                    </th>
-                                    
-                                    <th onClick={() => handleSort('vsWinningTeamsWinPctValue')} style={{ cursor: 'pointer', width: '17%' }}>
-                                        Vs. Winners {getSortIndicator('vsWinningTeamsWinPctValue')}
-                                    </th>
+                    <table className="statsTable regular-season-table selectable-table">
+                        <thead>
+                            <tr>
+                                <th onClick={() => handleSort('teamName')} className="table-col-team sortable">
+                                    Team {getSortIndicator('teamName')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('winPercentageValue')} className="table-col-2 sortable">
+                                    Win % {getSortIndicator('winPercentageValue')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('avgVsLeagueWinPctValue')} className="table-col-2 sortable">
+                                    Vs. Avg % {getSortIndicator('avgVsLeagueWinPctValue')}
+                                </th>
+                                
+                                <th onClick={() => handleSort('top50WinPctValue')} className="table-col-2 sortable">
+                                    Vs. Top 50% {getSortIndicator('top50WinPctValue')}
+                                </th>
 
-                                    <th onClick={() => handleSort('yearsPlayed')} style={{ cursor: 'pointer', width: '15%' }}>
-                                        Years {getSortIndicator('yearsPlayed')}
-                                    </th>
+                                <th onClick={() => handleSort('vsWinningTeamsWinPctValue')} className="table-col-2 sortable">
+                                    Vs. Winners {getSortIndicator('vsWinningTeamsWinPctValue')}
+                                </th>
+
+                                <th onClick={() => handleSort('yearsPlayed')} className="table-col-1 sortable">
+                                    Years {getSortIndicator('yearsPlayed')}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sortedRecords.map((record, index) => (
+                                <tr 
+                                    key={record.userId} 
+                                    className={`${selectedTeam?.userId === record.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                                    onClick={() => handleRowClick(record)}
+                                >
+                                    <td className="team-name-cell">{record.teamName}</td>
+                                    
+                                    <td className={getCellClassName('winPercentageValue', record.winPercentageValue)}>
+                                        {formatRecordCell(record.totalWins + '-' + record.totalLosses + (record.totalTies > 0 ? '-' + record.totalTies : ''), record.winPercentage)}
+                                    </td>
+                                    
+                                    <td className={getCellClassName('avgVsLeagueWinPctValue', record.avgVsLeagueWinPctValue)}>
+                                        {formatRecordCell(record.avgVsLeagueRecord, record.avgVsLeagueWinPct)}
+                                    </td>
+                                    
+                                    <td className={getCellClassName('top50WinPctValue', record.top50WinPctValue)}>
+                                        {formatRecordCell(record.top50Record, record.top50WinPct)}
+                                    </td>
+
+                                    <td className={getCellClassName('vsWinningTeamsWinPctValue', record.vsWinningTeamsWinPctValue)}>
+                                        {formatRecordCell(record.vsWinningTeamsRecord, record.vsWinningTeamsWinPct)}
+                                    </td>
+
+                                    <td>
+                                        {record.yearsPlayed}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {sortedRecords.map((record, index) => (
-                                    <tr 
-                                        key={record.userId} 
-                                        className={`${selectedTeam?.userId === record.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                                        onClick={() => handleRowClick(record)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <td className="team-name-cell">{record.teamName}</td>
-                                        
-                                        <td className={getCellClassName('winPercentageValue', record.winPercentageValue)}>
-                                            {formatRecordCell(
-                                                displayRecord(record.totalWins, record.totalLosses, record.totalTies),
-                                                record.winPercentage
-                                            )}
-                                        </td>
-                                        
-                                        <td className={getCellClassName('avgVsLeagueWinPctValue', record.avgVsLeagueWinPctValue)}>
-                                            {formatRecordCell(record.avgVsLeagueRecord, record.avgVsLeagueWinPct)}
-                                        </td>
-                                        
-                                        <td className={getCellClassName('top50WinPctValue', record.top50WinPctValue)}>
-                                            {formatRecordCell(record.top50Record, record.top50WinPct)}
-                                        </td>
-
-                                        <td className={getCellClassName('vsWinningTeamsWinPctValue', record.vsWinningTeamsWinPctValue)}>
-                                            {formatRecordCell(record.vsWinningTeamsRecord, record.vsWinningTeamsWinPct)}
-                                        </td>
-                                        
-                                        <td>
-                                            {record.yearsPlayed}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
 
-                {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN (34%) -------------------- */}
+                {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
                 <div className="detail-pane-wrapper">
                     {selectedTeam ? (
                         <YearlyRecordBreakdown data={data} selectedTeam={selectedTeam} />
                     ) : (
                         <div className="notImplementedMessage">
-                            Select a team to view its yearly breakdown against winning teams.
+                            Select a team from the table to see a yearly record breakdown.
                         </div>
                     )}
                 </div>
