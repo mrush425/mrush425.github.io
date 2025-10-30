@@ -20,6 +20,9 @@ const LeagueNavBar: React.FC<LeagueNavBar> = ({ data }) => {
       <Link to={`/league-stats/league-points`} className="btn-custom btn btn-sm mr-2">
         Points Stats
       </Link>
+      <Link to={`/league-stats/league-other-stats`} className="btn-custom btn btn-sm mr-2">
+        Other Stats
+      </Link>
     </div>
   );
 };
