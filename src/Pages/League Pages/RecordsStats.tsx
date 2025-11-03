@@ -5,11 +5,13 @@ import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
 import { RecordStatItem } from '../../Interfaces/RecordStatItem'; 
 import RegularSeasonRecords from './Records Stats/RegularSeasonRecords';
+import WaffleStats from './Records Stats/WaffleStats';
 
 
 // Placeholder for your statistical components
 const STAT_COMPONENTS: RecordStatItem[] = [
-    { displayName: 'Regular Season Records', Component: RegularSeasonRecords },
+    { displayName: 'Regular Season Records', Component: RegularSeasonRecords }, 
+    { displayName: 'The Waffle', Component: WaffleStats}, 
     // { displayName: 'All-Time Wins', Component: AllTimeWins }, // Example of future components
 ];
 
