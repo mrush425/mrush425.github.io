@@ -6,9 +6,13 @@ import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
 import { OtherStatItem, OtherComponentProps } from '../../Interfaces/OtherStatItem'; 
+import DraftPositionVsPlace from '../OtherStats/DraftPositionVsPlace';
+import DraftChoiceVsPlace from '../OtherStats/DraftChoiceVsPlace';
+
 
 // 1. IMPORT YOUR NEW STATISTIC COMPONENT
 import PlaceStats from '../OtherStats/PlaceStats'; 
+import StreakComponent from '../OtherStats/StreakComponent';
 
 
 
@@ -16,6 +20,9 @@ import PlaceStats from '../OtherStats/PlaceStats';
 const STAT_COMPONENTS: OtherStatItem[] = [
     // 2. INSERT THE NEW COMPONENT
     { displayName: 'League Placement Stats', Component: PlaceStats },
+    { displayName: 'Draft Position vs. Place', Component: DraftPositionVsPlace },
+    { displayName: 'Draft Choice vs. Place', Component: DraftChoiceVsPlace },
+    { displayName: 'Win/Lose Streaks', Component: StreakComponent },
     
     // Example of future components (using a mock component for now if needed, 
     // otherwise, replace/remove all mock references)

@@ -6,12 +6,15 @@ import LeagueData from '../../Interfaces/LeagueData';
 import { RecordStatItem } from '../../Interfaces/RecordStatItem'; 
 import RegularSeasonRecords from './Records Stats/RegularSeasonRecords';
 import WaffleStats from './Records Stats/WaffleStats';
+import PlayoffOddsByRecord from './Records Stats/PlayoffOddsByRecord';
 
 
 // Placeholder for your statistical components
 const STAT_COMPONENTS: RecordStatItem[] = [
     { displayName: 'Regular Season Records', Component: RegularSeasonRecords }, 
     { displayName: 'The Waffle', Component: WaffleStats}, 
+    { displayName: 'Playoff Odds by Record', Component: PlayoffOddsByRecord },
+
     // { displayName: 'All-Time Wins', Component: AllTimeWins }, // Example of future components
 ];
 

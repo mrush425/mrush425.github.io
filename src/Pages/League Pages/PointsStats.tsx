@@ -5,6 +5,9 @@ import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
 // 1. IMPORT THE NEW COMPONENT
 import RegularSeasonPoints from './Points Stats/RegularSeasonPoints'; 
+import YearlyPointsLeaderboard from './Points Stats/YearlyPointsLeaderboard';
+import PlayoffTeamsAveragePoints from './Points Stats/PlayoffTeamsAveragePoints';
+
 
 
 // =========================================================================
@@ -30,6 +33,9 @@ export interface PointStatItem {
 // Populate the list with the available components.
 const POINT_COMPONENTS: PointStatItem[] = [ 
     { displayName: 'Average Points Per Game (APG)', Component: RegularSeasonPoints }, 
+    { displayName: 'Yearly Average Points Per Game', Component: YearlyPointsLeaderboard },
+    { displayName: 'Playoff Teams Average Points', Component: PlayoffTeamsAveragePoints }
+
 ];
 
 

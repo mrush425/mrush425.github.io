@@ -5,6 +5,8 @@ import SleeperUser from "../Interfaces/SleeperUser";
 import playoffJsonData from '../Data/playoffs.json'; // Import your trollData.json
 import Matchup from "../Interfaces/Matchup";
 import PlayerYearStats from "../Interfaces/PlayerYearStats";
+import yearTrollData from '../Data/yearTrollData.json';
+
 
 
 export function findRosterByUserId(user_id: string, rosters: SleeperRoster[]): SleeperRoster | undefined {
@@ -25,6 +27,41 @@ export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
 
     return sortedData.findIndex((user) => user.owner_id === user_id) + 1;
 }
+
+/**
+ * Function to retrieve overall place from yearTrollData.
+ * Safely converts the value to a number, handling undefined, null, or empty string ("").
+ * @returns {number | undefined} The overall place as a number, or undefined if missing/invalid.
+ */
+export const getOverallPlace = (userId: string, season: string): number | undefined => {
+    
+    const yearData = yearTrollData.find(
+        (yd: any) => yd.year === Number.parseFloat(season)
+    );
+
+    if (!yearData) return undefined;
+
+    const playerData = yearData.data.find(
+        (pd: any) => pd.sleeper_id === userId
+    );
+    
+    const placeValue = playerData?.place; 
+    
+    // 1. Check if the value exists and is not an empty string
+    if (placeValue === undefined || placeValue === null) {
+        return undefined;
+    }
+
+    // 2. Safely convert to number
+    const numberValue = Number(placeValue);
+    
+    // 3. Check if the result is actually a valid number
+    if (isNaN(numberValue)) {
+        return undefined; 
+    }
+    
+    return numberValue; 
+};
 
 export function getBowlWinner(bowlName: string, data: LeagueData): [SleeperUser|undefined, SleeperUser|undefined, string]{
   const selectedSeasonData: PlayoffData | undefined = playoffJsonData.find(d => d['year'].toString() === data.season)

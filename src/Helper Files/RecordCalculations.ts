@@ -71,54 +71,50 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
 
 }
 
-export const calculateRecordAsOfWeek = (team: SleeperUser, asOfWeek: number, data: LeagueData): [wins: number, losses: number, ties: number] => {
-    let wins: number = 0;
-    let losses: number = 0;
-    let ties: number = 0;
+export const calculateRecordAsOfWeek = (
+  team: SleeperUser,
+  asOfWeek: number,
+  data: LeagueData
+): [wins: number, losses: number, ties: number] => {
+  let wins = 0;
+  let losses = 0;
+  let ties = 0;
 
-    if (!data.matchupInfo) {
-        return [0, 0, 0]; // or handle it differently based on your use case
-    }
+  if (!data.matchupInfo) return [0, 0, 0];
 
-    // Find the matchupInfo for the current team and schedule
-    let teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
-    let scheduleRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+  const teamRosterId = findRosterByUserId(team.user_id, data.rosters)?.roster_id;
+  if (!teamRosterId) return [0, 0, 0];
 
-    let relevantMatchups;
-    if (data.nflSeasonInfo.season === data.season) {
-        relevantMatchups = data.matchupInfo.filter(
-            (matchup) =>
-                matchup.week < data.nflSeasonInfo.week && 
-                matchup.week < asOfWeek &&
-                matchup.week < data.settings.playoff_week_start &&
-                matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
-                matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
-        );
-    }
+  const latestWeekAllowed =
+    data.nflSeasonInfo.season === data.season
+      ? Math.min(asOfWeek, data.nflSeasonInfo.week - 1) // only completed weeks
+      : asOfWeek;
 
-    relevantMatchups?.forEach((matchup) => {
+  const relevantMatchups = data.matchupInfo.filter(
+    (matchup) =>
+      matchup.week <= latestWeekAllowed &&               // <= for "after week N"
+      matchup.week < data.settings.playoff_week_start && // regular season only
+      matchup.matchups.some((m) => m.roster_id === teamRosterId)
+  );
 
-        const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
-        const scheduleMatchup = matchup.matchups.find((m) => m.roster_id === scheduleRosterId);
-        const oppMatchup = matchup.matchups.find((m) => m.matchup_id === scheduleMatchup?.matchup_id && m.roster_id !== scheduleMatchup?.roster_id);
-        if (teamMatchup && scheduleMatchup) {
-            if (scheduleMatchup.matchup_id === teamMatchup.matchup_id) {
-                // If schedule's opponent is the same as teamMatchup, compare directly to schedule
-                wins += teamMatchup.points > scheduleMatchup.points ? 1 : 0;
-                losses += teamMatchup.points < scheduleMatchup.points ? 1 : 0;
-                ties += teamMatchup.points === scheduleMatchup.points ? 1 : 0;
-            } else {
-                // Otherwise, compare teamMatchup to schedule's opponent
-                if (oppMatchup) {
-                    wins += teamMatchup.points > oppMatchup.points ? 1 : 0;
-                    losses += teamMatchup.points < oppMatchup.points ? 1 : 0;
-                    ties += teamMatchup.points === oppMatchup.points ? 1 : 0;
-                }
-            }
-        }
-    });
-    return [wins, losses, ties];
-}
+  relevantMatchups.forEach((matchup) => {
+    const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+    if (!teamMatchup) return;
+
+    // opponent = same matchup_id, different roster_id
+    const oppMatchup = matchup.matchups.find(
+      (m) => m.matchup_id === teamMatchup.matchup_id && m.roster_id !== teamRosterId
+    );
+    if (!oppMatchup) return;
+
+    wins += teamMatchup.points > oppMatchup.points ? 1 : 0;
+    losses += teamMatchup.points < oppMatchup.points ? 1 : 0;
+    ties += teamMatchup.points === oppMatchup.points ? 1 : 0;
+  });
+
+  return [wins, losses, ties];
+};
+
 
 export const getLeagueRecordAtSchedule = (user: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
     let winsSum = 0;

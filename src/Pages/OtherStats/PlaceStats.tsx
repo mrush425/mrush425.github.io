@@ -34,7 +34,7 @@ export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
  * Safely converts the value to a number, handling undefined, null, or empty string ("").
  * @returns {number | undefined} The overall place as a number, or undefined if missing/invalid.
  */
-const getOverallPlace = (userId: string, season: string): number | undefined => {
+export const getOverallPlace = (userId: string, season: string): number | undefined => {
     
     const yearData = yearTrollData.find(
         (yd: any) => yd.year === Number.parseFloat(season)
@@ -49,7 +49,7 @@ const getOverallPlace = (userId: string, season: string): number | undefined => 
     const placeValue = playerData?.place; 
     
     // 1. Check if the value exists and is not an empty string
-    if (placeValue === undefined || placeValue === null || placeValue === "") {
+    if (placeValue === undefined || placeValue === null) {
         return undefined;
     }
 

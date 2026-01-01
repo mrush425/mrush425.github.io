@@ -112,3 +112,15 @@
         width: 100%;
     }
 }
+
+/* Bowl highlights */
+.bowl-green  { background-color: #d8f5d0; }  /* soft green */
+.bowl-blue   { background-color: #d6ecff; }  /* light blue */
+.bowl-orange { background-color: #ffe6cc; }  /* light orange */
+.bowl-red    { background-color: #ffd6d6; }  /* light red */
+
+/* Optional: make highlighted cells pop a bit more */
+.bowl-green, .bowl-blue, .bowl-orange, .bowl-red {
+  font-weight: 600;
+  border-radius: 6px; /* works best if your td padding exists */
+}
