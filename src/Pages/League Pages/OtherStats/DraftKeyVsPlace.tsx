@@ -1,9 +1,9 @@
 // DraftKeyVsPlace.tsx
 
 import React, { useMemo, useState } from 'react';
-import { OtherComponentProps } from '../../Interfaces/OtherStatItem';
-import LeagueData from '../../Interfaces/LeagueData';
-import yearTrollData from '../../Data/yearTrollData.json';
+import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
+import LeagueData from '../../../Interfaces/LeagueData';
+import yearTrollData from '../../../Data/yearTrollData.json';
 
 /* =========================================================================
    TYPES

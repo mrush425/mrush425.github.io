@@ -6,13 +6,13 @@ import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
 import { OtherStatItem, OtherComponentProps } from '../../Interfaces/OtherStatItem'; 
-import DraftPositionVsPlace from '../OtherStats/DraftPositionVsPlace';
-import DraftChoiceVsPlace from '../OtherStats/DraftChoiceVsPlace';
+import DraftPositionVsPlace from './OtherStats/DraftPositionVsPlace';
+import DraftChoiceVsPlace from './OtherStats/DraftChoiceVsPlace';
 
 
 // 1. IMPORT YOUR NEW STATISTIC COMPONENT
-import PlaceStats from '../OtherStats/PlaceStats'; 
-import StreakComponent from '../OtherStats/StreakComponent';
+import PlaceStats from './OtherStats/PlaceStats'; 
+import StreakComponent from './OtherStats/StreakComponent';
 
 
 

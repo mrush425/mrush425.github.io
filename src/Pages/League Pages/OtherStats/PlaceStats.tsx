@@ -1,11 +1,11 @@
 // PlaceStats.tsx
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { OtherComponentProps as PlaceComponentProps } from '../../Interfaces/OtherStatItem'; // Renamed import for clarity
-import LeagueData from '../../Interfaces/LeagueData';
-import SleeperUser from '../../Interfaces/SleeperUser';
-import SleeperRoster from '../../Interfaces/SleeperRoster';
-import yearTrollData from '../../Data/yearTrollData.json';
+import { OtherComponentProps as PlaceComponentProps } from '../../../Interfaces/OtherStatItem'; // Renamed import for clarity
+import LeagueData from '../../../Interfaces/LeagueData';
+import SleeperUser from '../../../Interfaces/SleeperUser';
+import SleeperRoster from '../../../Interfaces/SleeperRoster';
+import yearTrollData from '../../../Data/yearTrollData.json';
 
 // =========================================================================
 // HELPER FUNCTIONS (Place Logic)

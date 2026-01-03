@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
@@ -8,10 +8,10 @@ import {
   calculateYearPointsAgainst,
 } from '../../../Helper Files/PointCalculations';
 
-import {
-  getUserSeasonPlace,
-  getOverallPlace
-} from '../../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, getOverallPlace } from '../../../Helper Files/HelperMethods';
+
+// ✅ shared right pane
+import WeeklyMatchupsPane from '../../Reusable Components/WeeklyMatchupsPane';
 
 // =========================================================================
 // TYPE DEFINITIONS
@@ -71,10 +71,7 @@ const buildYearsPlayedMap = (data: LeagueData[]): Map<string, number> => {
   return map;
 };
 
-const buildTeamSeasonRows = (
-  data: LeagueData[],
-  minYears: number
-): TeamSeasonRow[] => {
+const buildTeamSeasonRows = (data: LeagueData[], minYears: number): TeamSeasonRow[] => {
   const yearsPlayedMap = buildYearsPlayedMap(data);
   const rows: TeamSeasonRow[] = [];
 
@@ -90,31 +87,19 @@ const buildTeamSeasonRows = (
 
       if (!userInLeague || !roster) return;
 
-      const games =
-        roster.settings.wins +
-        roster.settings.losses +
-        roster.settings.ties;
-
+      const games = roster.settings.wins + roster.settings.losses + roster.settings.ties;
       if (games <= 0) return;
 
       const year = Number.parseInt(league.season);
 
       const teamName =
-        userInLeague.metadata.team_name ||
-        `User ${userId.substring(0, 4)}`;
+        userInLeague.metadata.team_name || `User ${userId.substring(0, 4)}`;
 
-      // SAFE: undefined -> 0
-      const seasonPlace =
-        getUserSeasonPlace(userInLeague.user_id, league) ?? 0;
-
-      const place =
-        getOverallPlace(userInLeague.user_id, league.season) ?? 0;
+      const seasonPlace = getUserSeasonPlace(userInLeague.user_id, league) ?? 0;
+      const place = getOverallPlace(userInLeague.user_id, league.season) ?? 0;
 
       const points = calculateYearPoints(userInLeague as SleeperUser, league);
-      const pointsAgainst = calculateYearPointsAgainst(
-        userInLeague as SleeperUser,
-        league
-      );
+      const pointsAgainst = calculateYearPointsAgainst(userInLeague as SleeperUser, league);
 
       const avgPoints = points / games;
       const avgAgainst = pointsAgainst / games;
@@ -151,31 +136,34 @@ const buildTeamSeasonRows = (
 // MAIN COMPONENT
 // =========================================================================
 
-const YearlyPointsLeaderboard: React.FC<
-  RecordComponentProps & { minYears?: number }
-> = ({ data, minYears = 0 }) => {
+const YearlyPointsLeaderboard: React.FC<RecordComponentProps & { minYears?: number }> = ({
+  data,
+  minYears = 0,
+}) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: 'avgPointsPerGameValue',
     direction: 'descending',
   });
+
+  const [selectedRow, setSelectedRow] = useState<TeamSeasonRow | null>(null);
 
   const { sortedRows, maxMinValues } = useMemo(() => {
     const rows = buildTeamSeasonRows(data, minYears);
 
     if (rows.length === 0) {
       return {
-        sortedRows: [],
+        sortedRows: [] as TeamSeasonRow[],
         maxMinValues: {
           avgPointsPerGameValue: { max: 0, min: 0 },
           avgPointsAgainstPerGameValue: { max: 0, min: 0 },
-        },
+        } as MaxMinSeasonStats,
       };
     }
 
     const avgPts = rows.map((r) => r.avgPointsPerGameValue);
     const avgAgainst = rows.map((r) => r.avgPointsAgainstPerGameValue);
 
-    const maxMinValues: MaxMinSeasonStats = {
+    const mm: MaxMinSeasonStats = {
       avgPointsPerGameValue: {
         max: Math.max(...avgPts),
         min: Math.min(...avgPts),
@@ -186,27 +174,26 @@ const YearlyPointsLeaderboard: React.FC<
       },
     };
 
-    const sortedRows = [...rows].sort((a, b) => {
+    const sorted = [...rows].sort((a, b) => {
       const { key, direction } = sortConfig;
-
       const dir = direction === 'ascending' ? 1 : -1;
 
-      if (key === 'teamName') {
-        return a.teamName.localeCompare(b.teamName) * dir;
-      }
+      if (key === 'teamName') return a.teamName.localeCompare(b.teamName) * dir;
+      if (key === 'year') return (a.year - b.year) * dir;
 
-      if (key === 'year') {
-        return (a.year - b.year) * dir;
-      }
-
-      const aVal = a[key];
-      const bVal = b[key];
-
+      const aVal = a[key] as number;
+      const bVal = b[key] as number;
       return (aVal - bVal) * dir;
     });
 
-    return { sortedRows, maxMinValues };
+    return { sortedRows: sorted, maxMinValues: mm };
   }, [data, minYears, sortConfig]);
+
+  useEffect(() => {
+    if (!selectedRow && sortedRows.length > 0) {
+      setSelectedRow(sortedRows[0]);
+    }
+  }, [sortedRows, selectedRow]);
 
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) => ({
@@ -223,10 +210,7 @@ const YearlyPointsLeaderboard: React.FC<
     return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
   };
 
-  const getCellClassName = (
-    key: keyof MaxMinSeasonStats,
-    value: number
-  ): string => {
+  const getCellClassName = (key: keyof MaxMinSeasonStats, value: number): string => {
     const { max, min } = maxMinValues[key];
     if (max === min) return '';
 
@@ -255,79 +239,100 @@ const YearlyPointsLeaderboard: React.FC<
 
   return (
     <div className="regular-season-points">
-      <table className="statsTable regular-season-table">
-        <thead>
-          <tr>
-            <th onClick={() => handleSort('teamName')} className="sortable">
-              Team (Years) {getSortIndicator('teamName')}
-            </th>
+      <div className="two-pane-layout">
+        {/* LEFT TABLE */}
+        <div className="main-table-pane">
+          <table className="statsTable regular-season-table selectable-table">
+            <thead>
+              <tr>
+                <th onClick={() => handleSort('teamName')} className="sortable">
+                  Team (Years) {getSortIndicator('teamName')}
+                </th>
 
-            <th onClick={() => handleSort('year')} className="sortable">
-              Year {getSortIndicator('year')}
-            </th>
+                <th onClick={() => handleSort('year')} className="sortable">
+                  Year {getSortIndicator('year')}
+                </th>
 
-            <th onClick={() => handleSort('place')} className="sortable">
-              Place {getSortIndicator('place')}
-            </th>
+                <th onClick={() => handleSort('place')} className="sortable">
+                  Place {getSortIndicator('place')}
+                </th>
 
-            <th onClick={() => handleSort('seasonPlace')} className="sortable">
-              Season Place {getSortIndicator('seasonPlace')}
-            </th>
+                <th onClick={() => handleSort('seasonPlace')} className="sortable">
+                  Season Place {getSortIndicator('seasonPlace')}
+                </th>
 
-            <th
-              onClick={() => handleSort('avgPointsPerGameValue')}
-              className="sortable"
-            >
-              Avg. Pts {getSortIndicator('avgPointsPerGameValue')}
-            </th>
+                <th onClick={() => handleSort('avgPointsPerGameValue')} className="sortable">
+                  Avg. Pts {getSortIndicator('avgPointsPerGameValue')}
+                </th>
 
-            <th
-              onClick={() => handleSort('avgPointsAgainstPerGameValue')}
-              className="sortable"
-            >
-              Avg. Pts Against {getSortIndicator('avgPointsAgainstPerGameValue')}
-            </th>
-          </tr>
-        </thead>
+                <th
+                  onClick={() => handleSort('avgPointsAgainstPerGameValue')}
+                  className="sortable"
+                >
+                  Avg. Pts Against {getSortIndicator('avgPointsAgainstPerGameValue')}
+                </th>
+              </tr>
+            </thead>
 
-        <tbody>
-          {sortedRows.map((row, index) => (
-            <tr
-              key={`${row.userId}-${row.year}`}
-              className={index % 2 === 0 ? 'even-row' : 'odd-row'}
-            >
-              <td className="team-name-cell">
-                {row.teamName} ({row.yearsPlayed})
-              </td>
+            <tbody>
+              {sortedRows.map((row, index) => (
+                <tr
+                  key={`${row.userId}-${row.year}`}
+                  className={`${selectedRow?.userId === row.userId && selectedRow?.year === row.year
+                    ? 'active selected-row'
+                    : ''
+                    } ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                  onClick={() =>
+                    setSelectedRow((prev) =>
+                      prev?.userId === row.userId && prev?.year === row.year ? null : row
+                    )
+                  }
+                >
+                  <td className="team-name-cell">
+                    {row.teamName} ({row.yearsPlayed})
+                  </td>
 
-              <td>{row.year}</td>
+                  <td>{row.year}</td>
 
-              <td>{row.place || '-'}</td>
+                  <td>{row.place || '-'}</td>
 
-              <td>{row.seasonPlace || '-'}</td>
+                  <td>{row.seasonPlace || '-'}</td>
 
-              <td
-                className={getCellClassName(
-                  'avgPointsPerGameValue',
-                  row.avgPointsPerGameValue
-                )}
-              >
-                {row.avgPointsPerGameDisplay} ({row.points.toFixed(2)})
-              </td>
+                  <td
+                    className={getCellClassName('avgPointsPerGameValue', row.avgPointsPerGameValue)}
+                  >
+                    {row.avgPointsPerGameDisplay} ({row.points.toFixed(2)})
+                  </td>
 
-              <td
-                className={getCellClassName(
-                  'avgPointsAgainstPerGameValue',
-                  row.avgPointsAgainstPerGameValue
-                )}
-              >
-                {row.avgPointsAgainstPerGameDisplay} (
-                {row.pointsAgainst.toFixed(2)})
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  <td
+                    className={getCellClassName(
+                      'avgPointsAgainstPerGameValue',
+                      row.avgPointsAgainstPerGameValue
+                    )}
+                  >
+                    {row.avgPointsAgainstPerGameDisplay} ({row.pointsAgainst.toFixed(2)})
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* RIGHT PANE */}
+        <div className="detail-pane-wrapper">
+          {selectedRow ? (
+            <WeeklyMatchupsPane
+              allLeagues={data}
+              userId={selectedRow.userId}
+              season={selectedRow.year}
+            />
+          ) : (
+            <div className="notImplementedMessage">
+              Select a season row to see weekly matchups.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

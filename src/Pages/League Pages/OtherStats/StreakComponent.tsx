@@ -1,10 +1,10 @@
 // StreakComponent.tsx
 
 import React, { useMemo, useState } from 'react';
-import { OtherComponentProps } from '../../Interfaces/OtherStatItem';
-import LeagueData from '../../Interfaces/LeagueData';
-import SleeperUser from '../../Interfaces/SleeperUser';
-import { getUserLongestStreak, StreakType, Streak } from '../../Helper Files/StreakMethods'; // <-- adjust path if needed
+import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
+import LeagueData from '../../../Interfaces/LeagueData';
+import SleeperUser from '../../../Interfaces/SleeperUser';
+import { getUserLongestStreak, StreakType, Streak } from '../../../Helper Files/StreakMethods'; // <-- adjust path if needed
 
 interface TeamStreakRow {
   userId: string;
