@@ -7,6 +7,19 @@ import LeagueData from '../../Interfaces/LeagueData';
 import RegularSeasonPoints from './Points Stats/RegularSeasonPoints'; 
 import YearlyPointsLeaderboard from './Points Stats/YearlyPointsLeaderboard';
 import PlayoffTeamsAveragePoints from './Points Stats/PlayoffTeamsAveragePoints';
+import WeeklyPointsLeaderboard from './Points Stats/WeeklyPointsLeaderboard';
+import Heartbreaker from './Points Stats/Heartbreaker';
+import GetWreckd from './Points Stats/GetWreckd';
+import BetterLuckyThanGood from './Points Stats/BetterLuckyThanGood';
+import BeingABossWhenItCounts from './Points Stats/BeingABossWhenItCounts';
+import ComingInHot from './Points Stats/ComingInHot';
+import MaybeNextTime from './Points Stats/MaybeNextTime';
+import KickedInDaBallz from './Points Stats/KickedInDaBallz';
+import ConnarEffect from './Points Stats/ConnarEffect';
+import GetRunOver from './Points Stats/GetRunOver';
+import ReceivingLosses from './Points Stats/ReceivingLosses';
+import KilledByATightEnd from './Points Stats/KilledByATightEnd';
+import BlueBalls from './Points Stats/BlueBalls';
 
 
 
@@ -34,8 +47,20 @@ export interface PointStatItem {
 const POINT_COMPONENTS: PointStatItem[] = [ 
     { displayName: 'Average Points Per Game (APG)', Component: RegularSeasonPoints }, 
     { displayName: 'Yearly Average Points Per Game', Component: YearlyPointsLeaderboard },
-    { displayName: 'Playoff Teams Average Points', Component: PlayoffTeamsAveragePoints }
-
+    { displayName: 'Playoff Teams Average Points', Component: PlayoffTeamsAveragePoints },
+    { displayName: 'Weekly Points Leaderboard', Component: WeeklyPointsLeaderboard }, // Example placeholder
+    { displayName: 'Heartbreaker', Component: Heartbreaker },
+    { displayName: 'GetWreckd', Component: GetWreckd }, 
+    { displayName: 'Better Lucky Than Good', Component: BetterLuckyThanGood },
+    { displayName: 'Being a Boss When it Counts', Component: BeingABossWhenItCounts },
+    { displayName: 'Coming in Hot', Component: ComingInHot},
+    { displayName: 'Maybe Next Time', Component: MaybeNextTime},
+    { displayName: 'Kicked In Da Ballz', Component: KickedInDaBallz},
+    { displayName: 'Connar Effect' , Component: ConnarEffect },
+    { displayName: 'Get Run Over', Component: GetRunOver },
+    { displayName: 'Receiving Losses', Component: ReceivingLosses },
+    { displayName: 'Killed By a Tight End', Component: KilledByATightEnd },
+    { displayName: 'Blue Balls', Component: BlueBalls },
 ];
 
 

@@ -7,7 +7,7 @@ import { getRecordWinPercentage } from '../../../Helper Files/RecordCalculations
 import { getOverallPlace } from '../../../Helper Files/HelperMethods';
 
 // ✅ NEW: shared right pane
-import WeeklyMatchupsPane from '../../Reusable Components/WeeklyMatchupsPane';
+import WeeklyMatchupsPane from '../../../Components/WeeklyMatchupsPane';
 
 // =========================================================================
 // TYPES

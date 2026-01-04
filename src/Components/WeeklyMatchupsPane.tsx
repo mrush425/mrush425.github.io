@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import LeagueData from '../../Interfaces/LeagueData';
+import LeagueData from '../Interfaces/LeagueData';
 
-import { findRosterByUserId } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId } from '../Helper Files/HelperMethods';
 
 interface WeeklyMatchupRow {
   week: number;

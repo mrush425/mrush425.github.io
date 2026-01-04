@@ -14,6 +14,16 @@ import playerData from '../../Data/players.json';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import yearData from '../../Data/yearData.json';
 
+export interface PositionAgainstWeeklyDetail {
+  year: number;
+  week: number;
+  playerName: string;
+  points: number;
+}
+
+export interface PositionAgainstAccumulator {
+  details: PositionAgainstWeeklyDetail[];
+}
 
 class SidebetMethods {
   static Sidebets(): Sidebet[] {
@@ -810,45 +820,67 @@ class SidebetMethods {
     return orderedSidebets;
   }
 
-  static UserPointsAgainstByPosition(position: string, user: SleeperUser, data: LeagueData): number {
-    let pointsAgainstByPosition: number = 0;
-    let teamRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
-    let relevantMatchups;
-      if (data.nflSeasonInfo.season === data.season) {
-          relevantMatchups = data.matchupInfo.filter(
-              (matchup) =>
-                  matchup.week < data.nflSeasonInfo.week &&
-                  matchup.week < data.settings.playoff_week_start
-          );
-      }
-      else {
-          relevantMatchups = data.matchupInfo.filter(
-              (matchup) =>
-                  matchup.week < data.settings.playoff_week_start 
-          );
-      }
+  
+static UserPointsAgainstByPosition(
+  position: string,
+  user: SleeperUser,
+  data: LeagueData,
+  acc?: PositionAgainstAccumulator
+): number {
+  let pointsAgainstByPosition = 0;
+  const teamRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
 
-      relevantMatchups.forEach((matchup) => {
-        const teamMatchup: Matchup|undefined = matchup.matchups.find((m) => m.roster_id === teamRosterId);
-        const oppMatchup: Matchup|undefined = matchup.matchups.find((m) => m.matchup_id === teamMatchup?.matchup_id && m.roster_id !== teamMatchup?.roster_id);
-
-        if (teamMatchup && oppMatchup) {
-          for (let i = 0; i < oppMatchup.starters.length; i++) {
-              const playerId = oppMatchup.starters[i];
-
-              // Check if playerId exists in playerData
-              if (playerId in playerData) {
-                const player = (playerData as Record<string, any>)[playerId];
-                const fantasyPositions: string[] = player.fantasy_positions || [];
-                  if (fantasyPositions.includes(position)) {
-                      pointsAgainstByPosition += oppMatchup.starters_points[i];
-                  }
-              }
-          }
-      }
-    });
-    return pointsAgainstByPosition;
+  let relevantMatchups;
+  if (data.nflSeasonInfo.season === data.season) {
+    relevantMatchups = data.matchupInfo.filter(
+      (matchup) =>
+        matchup.week < data.nflSeasonInfo.week &&
+        matchup.week < data.settings.playoff_week_start
+    );
+  } else {
+    relevantMatchups = data.matchupInfo.filter(
+      (matchup) => matchup.week < data.settings.playoff_week_start
+    );
   }
+
+  const year = Number.parseInt(data.season);
+
+  relevantMatchups.forEach((matchup) => {
+    const teamMatchup = matchup.matchups.find((m) => m.roster_id === teamRosterId);
+    const oppMatchup = matchup.matchups.find(
+      (m) => m.matchup_id === teamMatchup?.matchup_id && m.roster_id !== teamMatchup?.roster_id
+    );
+
+    if (!teamMatchup || !oppMatchup) return;
+
+    for (let i = 0; i < oppMatchup.starters.length; i++) {
+      const playerId = oppMatchup.starters[i];
+      const pts = oppMatchup.starters_points[i] ?? 0;
+
+      if (!(playerId in playerData)) continue;
+
+      const p = (playerData as Record<string, any>)[playerId];
+      const fantasyPositions: string[] = p.fantasy_positions || [];
+
+      if (!fantasyPositions.includes(position)) continue;
+
+      pointsAgainstByPosition += pts;
+
+      if (acc) {
+        const playerName = `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || String(playerId);
+        acc.details.push({
+          year: Number.isFinite(year) ? year : 0,
+          week: matchup.week,
+          playerName,
+          points: pts,
+        });
+      }
+    }
+  });
+
+  return pointsAgainstByPosition;
+}
+
 
   static SortedPointsAgainstByPosition(position: string, data: LeagueData): SidebetStat[]{
     let orderedSidebets: SidebetStat[] = [];

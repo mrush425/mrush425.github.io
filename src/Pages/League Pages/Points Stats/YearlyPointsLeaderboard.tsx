@@ -11,7 +11,7 @@ import {
 import { getUserSeasonPlace, getOverallPlace } from '../../../Helper Files/HelperMethods';
 
 // ✅ shared right pane
-import WeeklyMatchupsPane from '../../Reusable Components/WeeklyMatchupsPane';
+import WeeklyMatchupsPane from '../../../Components/WeeklyMatchupsPane';
 
 // =========================================================================
 // TYPE DEFINITIONS
