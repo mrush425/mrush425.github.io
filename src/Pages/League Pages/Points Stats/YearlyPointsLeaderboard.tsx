@@ -242,7 +242,7 @@ const YearlyPointsLeaderboard: React.FC<RecordComponentProps & { minYears?: numb
       <div className="two-pane-layout">
         {/* LEFT TABLE */}
         <div className="main-table-pane">
-          <table className="statsTable regular-season-table selectable-table">
+          <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
                 <th onClick={() => handleSort('teamName')} className="sortable">

@@ -1,10 +1,12 @@
 .statsTable {
     margin: auto;
     margin-top: 20px;
+    max-width: 700px;
 }
 
 .statsTable th {
     min-width: 100px;
+    
 }
 
 .statsTable td {

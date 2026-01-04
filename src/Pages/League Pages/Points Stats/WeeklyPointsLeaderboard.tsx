@@ -239,7 +239,7 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
       <div className="two-pane-layout">
         {/* -------------------- LEFT PANE -------------------- */}
         <div className="main-table-pane">
-          <table className="statsTable regular-season-table selectable-table">
+          <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
                 <th onClick={() => handleSort('teamName')} className="sortable">

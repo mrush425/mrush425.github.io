@@ -310,7 +310,7 @@ const PositionPointsAgainstStats: React.FC<
         {/* LEFT */}
         <div className="main-table-pane">
           {mode === 'average' ? (
-            <table className="statsTable regular-season-table selectable-table">
+            <table className="leagueStatsTable regular-season-table selectable-table">
               <thead>
                 <tr>
                   <th>Team (Years)</th>
@@ -341,7 +341,7 @@ const PositionPointsAgainstStats: React.FC<
               </tbody>
             </table>
           ) : (
-            <table className="statsTable regular-season-table selectable-table">
+            <table className="leagueStatsTable regular-season-table selectable-table">
               <thead>
                 <tr>
                   <th>Team (Years)</th>
@@ -382,7 +382,7 @@ const PositionPointsAgainstStats: React.FC<
         <div className="detail-pane-wrapper">
           {mode === 'average' ? (
             selectedAverageUserId ? (
-              <table className="statsTable detail-table">
+              <table className="leagueStatsTable detail-table">
                 <thead>
                   <tr>
                     <th>Year</th>
@@ -402,7 +402,7 @@ const PositionPointsAgainstStats: React.FC<
               <div className="notImplementedMessage">Select a team to see yearly breakdown.</div>
             )
           ) : selectedSingleRow ? (
-            <table className="statsTable detail-table">
+            <table className="leagueStatsTable detail-table">
               <thead>
                 <tr>
                   <th>Year</th>

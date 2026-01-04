@@ -207,7 +207,7 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
       <div className="two-pane-layout">
         {/* LEFT TABLE */}
         <div className="main-table-pane">
-          <table className="statsTable selectable-table">
+          <table className="leagueStatsTable selectable-table">
             <thead>
               <tr>
                 <th onClick={() => handleSort('teamName')} className="table-col-team sortable">

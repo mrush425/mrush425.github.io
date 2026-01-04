@@ -152,7 +152,7 @@ const PlayoffTeamsAveragePoints: React.FC<RecordComponentProps> = ({ data }) => 
 
   return (
     <div className="regular-season-points">
-      <table className="statsTable regular-season-table">
+      <table className="leagueStatsTable regular-season-table">
         <thead>
           <tr>
             <th className="table-col-1"></th>

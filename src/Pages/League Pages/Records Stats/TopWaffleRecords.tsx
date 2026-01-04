@@ -127,7 +127,7 @@ const TopWaffleSeasons: React.FC<RecordComponentProps> = ({ data }) => {
   return (
     <div className="regular-season-records" style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ maxWidth: 900, width: '100%' }}>
-        <table className="statsTable regular-season-table selectable-table" style={{ margin: '0 auto' }}>
+        <table className="leagueStatsTable regular-season-table selectable-table" style={{ margin: '0 auto' }}>
           <thead>
             <tr>
               <th onClick={() => handleSort('teamName')} className="table-col-team sortable">Team (Years) {sortIndicator('teamName')}</th>

@@ -253,7 +253,7 @@ const YearlyPlaceBreakdown: React.FC<YearlyPlaceBreakdownProps> = ({ data, selec
     return (
         <div className="detail-pane">
             <h4>Yearly Breakdown for {selectedTeam.teamName}</h4>
-            <table className="statsTable detail-table">
+            <table className="leagueStatsTable detail-table">
                 <thead>
                     <tr>
                         <th className="table-col-1">Year</th>
@@ -419,7 +419,7 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
                 <div className="main-table-pane">
-                    <table className="statsTable regular-season-table selectable-table">
+                    <table className="leagueStatsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('teamName')} className="table-col-team sortable">

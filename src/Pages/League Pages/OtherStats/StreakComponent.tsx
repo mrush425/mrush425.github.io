@@ -139,7 +139,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
       </div>
 
       {/* ---- TABLE ---- */}
-      <table className="statsTable regular-season-table">
+      <table className="leagueStatsTable regular-season-table">
         <thead>
           <tr>
             <th className="table-col-team">Team (Years)</th>

@@ -227,7 +227,7 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
 
 
       {/* -------------------- TABLE -------------------- */}
-      <table className="statsTable regular-season-table">
+      <table className="leagueStatsTable regular-season-table">
         <thead>
           <tr>
             <th className="table-col-1">Year</th>

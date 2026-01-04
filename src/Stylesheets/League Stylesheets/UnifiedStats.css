@@ -3,6 +3,21 @@
  * Standardizes the desktop two-pane layout to 66% (main table) / 34% (detail pane).
  */
 
+.leagueStatsTable {
+    margin: auto;
+    margin-top: 20px;
+}
+
+.leagueStatsTable th {
+    min-width: 100px;
+    
+}
+
+.leagueStatsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
 /* --- Highlighting Styles --- */
 .highlight-best {
     /* Soft green */
@@ -17,12 +32,12 @@
 }
 
 /* --- Table Styles --- */
-.statsTable td {
+.leagueStatsTable td {
     text-align: center;
     vertical-align: middle;
 }
 
-.statsTable th {
+.leagueStatsTable th {
     padding: 8px 10px; 
 }
 
@@ -105,10 +120,10 @@
         width: 34%; /* Standardized detail pane width */
         margin-top: 0 !important;
     }
-    .statsTable {
+    .leagueStatsTable {
         width: 90%; /* Ensure table fills the 66% pane */
     }
-    .statsTable.detail-table {
+    .leagueStatsTable.detail-table {
         width: 100%;
     }
 }

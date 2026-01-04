@@ -127,7 +127,7 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
   return (
     <div className="playoff-odds-by-record">
 
-      <table className="statsTable">
+      <table className="leagueStatsTable">
         <thead>
           <tr>
             <th className="table-col-1">Losses</th>

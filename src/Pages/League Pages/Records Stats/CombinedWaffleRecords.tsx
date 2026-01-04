@@ -157,7 +157,7 @@ const YearlyBreakdown: React.FC<YearlyProps> = ({ data, selected }) => {
   const rows = useMemo(() => yearlyForUser(data, selected.userId), [data, selected.userId]);
   return (
     <div className="detail-pane">
-      <table className="statsTable detail-table">
+      <table className="leagueStatsTable detail-table">
         <thead>
           <tr>
             <th className="table-col-1">Year</th>
@@ -239,7 +239,7 @@ const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
       <div className="two-pane-layout">
         {/* Left: main table */}
         <div className="main-table-pane">
-          <table className="statsTable regular-season-table selectable-table">
+          <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
                 <th onClick={() => handleSort('teamName')} className="table-col-team sortable">

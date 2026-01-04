@@ -255,7 +255,7 @@ const YearlyRecordBreakdown: React.FC<YearlyRecordBreakdownProps> = ({ data, sel
 
     return (
         <div className="detail-pane">
-            <table className="statsTable detail-table">
+            <table className="leagueStatsTable detail-table">
                 <thead>
                     <tr>
                         <th className="table-col-1">Year</th>
@@ -429,7 +429,7 @@ const RegularSeasonRecords: React.FC<RecordComponentProps & { minYears?: number 
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
                 <div className="main-table-pane">
-                    <table className="statsTable regular-season-table selectable-table">
+                    <table className="leagueStatsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('teamName')} className="table-col-team sortable">
