@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 
-import SidebetMethods from '../../../Pages/Year Pages/SidebetMethods';
+import SidebetMethods from '../../../Helper Files/SidebetMethods';
 import SidebetStat from '../../../Interfaces/SidebetStat';
 
 import WeeklyPointsStats, { WeeklyStatRow } from './WeeklyPointsStats';

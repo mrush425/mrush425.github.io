@@ -56,6 +56,19 @@ export interface WeeklyPointsStatsProps {
    * For stats like Heartbreaker / BetterLuckyThanGood where smaller is better, pass 'low'.
    */
   bestDirection?: 'high' | 'low';
+
+  /**
+   * Optional UI: show season filters.
+   * When enabled, rows are filtered by whether their week is regular season or playoffs.
+   */
+  showSeasonFilters?: boolean;
+
+  /**
+   * Initial values for the season filters.
+   * Defaults match your desired “normal” behavior: regular season ON, playoffs OFF.
+   */
+  defaultIncludeRegularSeason?: boolean;
+  defaultIncludePlayoffs?: boolean;
 }
 
 // =========================================================================
@@ -69,6 +82,10 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
   defaultSort,
   allowDeselect = true,
   bestDirection = 'high',
+
+  showSeasonFilters = false,
+  defaultIncludeRegularSeason = true,
+  defaultIncludePlayoffs = false,
 }) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: defaultSort?.key ?? 'statValue',
@@ -77,11 +94,39 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
 
   const [selectedRow, setSelectedRow] = useState<WeeklyStatRow | null>(null);
 
-  // Build per-year min/max for highlighting
+  const [includeRegularSeason, setIncludeRegularSeason] = useState<boolean>(
+    defaultIncludeRegularSeason
+  );
+  const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(defaultIncludePlayoffs);
+
+  // IMPORTANT: determine playoffs using BOTH week and secondWeek (if present)
+  const isPlayoffRow = (r: WeeklyStatRow): boolean => {
+    const start = r.league?.settings?.playoff_week_start ?? Number.POSITIVE_INFINITY;
+
+    const weekIsPlayoff = r.week >= start;
+    const secondWeekIsPlayoff = (r.secondWeek ?? 0) >= start;
+
+    return weekIsPlayoff || secondWeekIsPlayoff;
+  };
+
+  const visibleRows = useMemo(() => {
+    if (!showSeasonFilters) return rows;
+
+    // If neither is selected, show nothing.
+    if (!includeRegularSeason && !includePlayoffs) return [];
+
+    return rows.filter((r) => {
+      const playoff = isPlayoffRow(r);
+      if (playoff) return includePlayoffs;
+      return includeRegularSeason;
+    });
+  }, [rows, showSeasonFilters, includeRegularSeason, includePlayoffs]);
+
+  // Build per-year min/max for highlighting (use *visibleRows* so highlights match filtered view)
   const yearExtremes = useMemo(() => {
     const map = new Map<number, { min: number; max: number }>();
 
-    rows.forEach((r) => {
+    visibleRows.forEach((r) => {
       const y = r.year;
       const v = r.statValue;
 
@@ -95,10 +140,10 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
     });
 
     return map;
-  }, [rows]);
+  }, [visibleRows]);
 
   const sortedRows = useMemo(() => {
-    const sorted = [...rows].sort((a, b) => {
+    const sorted = [...visibleRows].sort((a, b) => {
       const { key, direction } = sortConfig;
       const dir = direction === 'ascending' ? 1 : -1;
 
@@ -111,8 +156,24 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
     });
 
     return sorted;
-  }, [rows, sortConfig]);
+  }, [visibleRows, sortConfig]);
 
+  // If the current selection disappears due to filtering, clear it.
+  useEffect(() => {
+    if (!selectedRow) return;
+
+    const stillVisible = sortedRows.some(
+      (r) =>
+        r.userId === selectedRow.userId &&
+        r.year === selectedRow.year &&
+        r.week === selectedRow.week &&
+        (r.secondWeek ?? null) === (selectedRow.secondWeek ?? null)
+    );
+
+    if (!stillVisible) setSelectedRow(null);
+  }, [sortedRows, selectedRow]);
+
+  // Pick a default selection when none exists
   useEffect(() => {
     if (!selectedRow && sortedRows.length > 0) {
       setSelectedRow(sortedRows[0]);
@@ -180,6 +241,28 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
   if (sortedRows.length === 0) {
     return (
       <div className="regular-season-points">
+        {showSeasonFilters && (
+          <div className="season-filter-row" style={{ marginBottom: 10 }}>
+            <label style={{ marginRight: 14 }}>
+              <input
+                type="checkbox"
+                checked={includeRegularSeason}
+                onChange={(e) => setIncludeRegularSeason(e.target.checked)}
+              />{' '}
+              Include Regular Season
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includePlayoffs}
+                onChange={(e) => setIncludePlayoffs(e.target.checked)}
+              />{' '}
+              Include Playoffs
+            </label>
+          </div>
+        )}
+
         <div className="notImplementedMessage">{emptyMessage}</div>
       </div>
     );
@@ -187,6 +270,28 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
 
   return (
     <div className="regular-season-points">
+      {showSeasonFilters && (
+        <div className="season-filter-row" style={{ marginBottom: 10 }}>
+          <label style={{ marginRight: 14 }}>
+            <input
+              type="checkbox"
+              checked={includeRegularSeason}
+              onChange={(e) => setIncludeRegularSeason(e.target.checked)}
+            />{' '}
+            Include Regular Season
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={includePlayoffs}
+              onChange={(e) => setIncludePlayoffs(e.target.checked)}
+            />{' '}
+            Include Playoffs
+          </label>
+        </div>
+      )}
+
       <div className="two-pane-layout">
         {/* LEFT PANE */}
         <div className="main-table-pane">
@@ -241,7 +346,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
                       {row.teamName} ({row.yearsPlayed})
                     </td>
 
-                    {/* ✅ per-year best/worst highlight is applied to the YEAR cell */}
+                    {/* per-year best/worst highlight is applied to the YEAR cell */}
                     <td className={getYearCellClassName(row)}>{row.year}</td>
 
                     <td>{row.week || '-'}</td>

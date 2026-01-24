@@ -13,6 +13,7 @@ import DraftChoiceVsPlace from './OtherStats/DraftChoiceVsPlace';
 // 1. IMPORT YOUR NEW STATISTIC COMPONENT
 import PlaceStats from './OtherStats/PlaceStats'; 
 import StreakComponent from './OtherStats/StreakComponent';
+import HelmetMaster from './OtherStats/HelmetMaster';
 
 
 
@@ -23,6 +24,7 @@ const STAT_COMPONENTS: OtherStatItem[] = [
     { displayName: 'Draft Position vs. Place', Component: DraftPositionVsPlace },
     { displayName: 'Draft Choice vs. Place', Component: DraftChoiceVsPlace },
     { displayName: 'Win/Lose Streaks', Component: StreakComponent },
+    { displayName: 'Helmet Master', Component: HelmetMaster }
     
     // Example of future components (using a mock component for now if needed, 
     // otherwise, replace/remove all mock references)

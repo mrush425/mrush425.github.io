@@ -12,7 +12,8 @@ import {
     recordAgainstWinningTeams, // <--- NEW IMPORT
 } from '../../Helper Files/RecordCalculations';
 import yearSidebetsData from '../../Data/yearSidebets.json';
-import SidebetMethods, { Sidebet, YearSidebet } from './SidebetMethods';
+import SidebetMethods, { Sidebet, YearSidebet } from '../../Helper Files/SidebetMethods';
+
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
 import { getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';

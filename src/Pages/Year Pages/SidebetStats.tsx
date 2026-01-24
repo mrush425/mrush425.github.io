@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
-import SidebetMethods, { Sidebet } from './SidebetMethods';
+import SidebetMethods, { Sidebet } from '../../Helper Files/SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
 
 import '../../Stylesheets/Year Stylesheets/SidebetStats.css';

@@ -6,7 +6,7 @@ import SleeperUser from '../../../Interfaces/SleeperUser';
 import SidebetMethods, {
   PositionAgainstAccumulator,
   PositionAgainstWeeklyDetail,
-} from '../../../Pages/Year Pages/SidebetMethods';
+} from '../../../Helper Files/SidebetMethods';
 
 import { findRosterByUserId } from '../../../Helper Files/HelperMethods';
 

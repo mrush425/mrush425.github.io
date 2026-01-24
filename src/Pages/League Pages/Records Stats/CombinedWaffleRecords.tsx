@@ -3,7 +3,7 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 
-import SidebetMethods from '../../Year Pages/SidebetMethods';
+import SidebetMethods from '../../../Helper Files/SidebetMethods';
 import SidebetStat from '../../../Interfaces/SidebetStat';
 
 // =============================================================

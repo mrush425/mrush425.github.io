@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 
-import SidebetMethods from '../../../Pages/Year Pages/SidebetMethods';
+import SidebetMethods from '../../../Helper Files/SidebetMethods';
 import SidebetStat from '../../../Interfaces/SidebetStat';
 
 import WeeklyPointsStats, { WeeklyStatRow } from './WeeklyPointsStats';
@@ -53,7 +53,8 @@ const buildHeartbreakerWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] 
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const stats: SidebetStat[] = SidebetMethods.Heartbreaker(league);
+    // ✅ Build the superset (regular + playoffs), then let WeeklyPointsStats filter with checkboxes.
+    const stats: SidebetStat[] = SidebetMethods.Heartbreaker(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -94,7 +95,10 @@ const buildHeartbreakerWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] 
 // COMPONENT
 // =========================================================================
 
-const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
+const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number }> = ({
+  data,
+  minYears = 0,
+}) => {
   const weeklyRows = useMemo(() => {
     return buildHeartbreakerWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
   }, [data, minYears]);
@@ -106,6 +110,10 @@ const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number }> = ({ 
       emptyMessage={`No Heartbreaker data found (min years: ${minYears}).`}
       defaultSort={{ key: 'statValue', direction: 'ascending' }} // smaller = more heartbreaking
       allowDeselect={true}
+      bestDirection="low"
+      showSeasonFilters
+      defaultIncludeRegularSeason={true}
+      defaultIncludePlayoffs={false}
     />
   );
 };
