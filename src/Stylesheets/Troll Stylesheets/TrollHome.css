@@ -1,0 +1,426 @@
+.troll-home {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  min-height: 100vh;
+}
+
+.troll-stats-overview {
+  margin-bottom: 40px;
+}
+
+.troll-stats-overview h2 {
+  margin: 0 0 40px 0;
+  font-weight: 700;
+  color: #e0e0e0;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+}
+
+/* Career Stats Section */
+.stats-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 30px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #a0a0a0;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-secondary {
+  font-size: 12px;
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+/* Matchup Section */
+.matchup-section {
+  margin-bottom: 40px;
+}
+
+.matchup-section h3 {
+  margin: 0 0 20px 0;
+  color: #e0e0e0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.matchup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.matchup-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.matchup-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
+}
+
+.matchup-card.best {
+  --accent-color: #4ade80;
+}
+
+.matchup-card.worst {
+  --accent-color: #ef4444;
+}
+
+.matchup-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent-color);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.matchup-opponent {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.matchup-record-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.matchup-record {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.matchup-winpct {
+  font-size: 36px;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.matchup-ppg {
+  font-size: 13px;
+  color: #a0a0a0;
+}
+
+/* Bowl Section */
+.bowl-section {
+  margin-bottom: 40px;
+}
+
+.bowl-section h3 {
+  margin: 0 0 20px 0;
+  color: #e0e0e0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.bowl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.bowl-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.bowl-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.bowl-name {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.bowl-record-display {
+  font-size: 24px;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+/* Season Section */
+.season-section {
+  margin-bottom: 0;
+}
+
+.season-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.season-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.season-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--season-accent) 0%, transparent 100%);
+}
+
+.season-card.best {
+  --season-accent: #60a5fa;
+}
+
+.season-card.worst {
+  --season-accent: #f97316;
+}
+
+.season-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #a0a0a0;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.season-year {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.season-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.season-stats span {
+  font-size: 14px;
+  color: #fff;
+}
+
+.season-place {
+  color: #a0a0a0;
+  font-size: 12px;
+}
+
+.season-points {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--season-accent);
+}
+
+/* Season Breakdown Table */
+.season-breakdown {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+  margin-top: 40px;
+  overflow-x: auto;
+  backdrop-filter: blur(10px);
+}
+
+.season-breakdown h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.season-breakdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.season-breakdown table thead {
+  background: transparent;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.season-breakdown table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  font-weight: 700;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.season-breakdown table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+  position: relative;
+  padding-right: 28px;
+}
+
+.season-breakdown table th.sortable:hover {
+  color: #e0e0e0;
+}
+
+.season-breakdown table th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.4;
+}
+
+.season-breakdown table th.sorted-asc::after {
+  border-bottom: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+.season-breakdown table th.sorted-desc::after {
+  border-top: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+.season-breakdown table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  font-size: 14px;
+  vertical-align: middle;
+  line-height: 1;
+  text-align: left;
+}
+
+.season-breakdown table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.season-breakdown table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.season-breakdown table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.season-breakdown table td:first-child {
+  font-weight: 600;
+  color: #fff;
+}
+
+.season-breakdown table td:nth-child(2) {
+  font-weight: 500;
+}
+
+.season-breakdown table td:nth-child(4) {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.season-breakdown table td:nth-child(5) {
+  color: #f97316;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .troll-home {
+    padding: 20px 16px;
+  }
+
+  .troll-stats-overview h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+
+  .stat-group {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .matchup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bowl-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .season-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+}

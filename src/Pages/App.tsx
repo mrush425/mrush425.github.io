@@ -22,6 +22,7 @@ import LeagueHome from './League Pages/LeagueHome';
 import RecordsStats from './League Pages/RecordsStats';
 import PointsStats from './League Pages/PointsStats';
 import OtherStats from './League Pages/OtherStats';
+import TrollData from './Troll Pages/TrollData';
 
 function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
   const path = `/season/${league.season}${pathSuffix}`;
@@ -71,6 +72,8 @@ return (
             {/*Hall of Fame Pages*/}
             <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
             <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
+            {/*Troll Pages*/}
+            <Route path="/troll/:trollId/*" element={<TrollData data={leagueData} />} />
             {/*Year Pages*/}
             {leagueData.map((leagueYear) => (
               <React.Fragment key={leagueYear.season}>

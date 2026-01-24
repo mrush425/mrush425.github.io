@@ -9,9 +9,10 @@ interface NavbarProps {
 
 const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [sidebarView, setSidebarView] = useState<'main' | 'seasons'>('main'); // Tracks the sidebar view
+  const [sidebarView, setSidebarView] = useState<'main' | 'seasons' | 'trolls'>('main'); // Tracks the sidebar view
   const closeDropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isTrollsDropdownOpen, setTrollsDropdownOpen] = useState(false);
 
   const handleShowSidebar = () => setShowSidebar(true);
   const handleCloseSidebar = () => {
@@ -29,8 +30,18 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const handleMouseLeave = () => {
     closeDropdownTimeout.current = setTimeout(() => {
       setDropdownOpen(false);
+      setTrollsDropdownOpen(false);
     }, 200);
   };
+
+  // Get all unique trolls across all leagues
+  const trolls = Array.from(
+    new Map(
+      data
+        .flatMap((league) => league.users)
+        .map((user) => [user.user_id, { id: user.user_id, name: user.metadata?.team_name || user.display_name || user.user_id }])
+    ).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   const logoImageUrl =
     'https://images.unsplash.com/photo-1627477150479-b7f109c3aaa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80';
@@ -61,7 +72,9 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
       <Offcanvas show={showSidebar} onHide={handleCloseSidebar} placement="start" className="bg-dark text-white">
         <Offcanvas.Header closeButton closeVariant="white">
           <Offcanvas.Title>
-            {sidebarView === 'main' ? 'League of the Trolls' : 'Seasons'}
+            {sidebarView === 'main' && 'League of the Trolls'}
+            {sidebarView === 'seasons' && 'Seasons'}
+            {sidebarView === 'trolls' && 'Trolls'}
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
@@ -85,6 +98,14 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
                 Seasons
                 <span>&gt;</span> {/* Simple text indicator */}
               </Nav.Link>
+              {/* Trolls Menu with Indicator */}
+              <Nav.Link
+                onClick={() => setSidebarView('trolls')}
+                className="d-flex justify-content-between align-items-center cursor-pointer"
+              >
+                Trolls
+                <span>&gt;</span> {/* Simple text indicator */}
+              </Nav.Link>
             </Nav>
           )}
           {/* Seasons Submenu */}
@@ -101,6 +122,24 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
                   onClick={handleCloseSidebar}
                 >
                   Season {league.season}
+                </Nav.Link>
+              ))}
+            </Nav>
+          )}
+          {/* Trolls Submenu */}
+          {sidebarView === 'trolls' && (
+            <Nav className="flex-column fs-4">
+              <Nav.Link onClick={() => setSidebarView('main')} className="cursor-pointer">
+                ← Back
+              </Nav.Link>
+              {trolls.map((troll) => (
+                <Nav.Link
+                  key={troll.id}
+                  as={Link}
+                  to={`/troll/${troll.id}`}
+                  onClick={handleCloseSidebar}
+                >
+                  {troll.name}
                 </Nav.Link>
               ))}
             </Nav>
@@ -130,7 +169,7 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
             <Nav.Link as={Link} to="/hall-of-fame">
               Hall of Fame
             </Nav.Link>
-            {/* Hover-based Dropdown for Large Screens */}
+            {/* Hover-based Dropdown for Large Screens - Seasons */}
             <NavDropdown
               title="Seasons"
               id="basic-nav-dropdown"
@@ -141,6 +180,25 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
               {data.map((league) => (
                 <NavDropdown.Item key={league.league_id} as={Link} to={`/season/${league.season}`}>
                   Season {league.season}
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
+            {/* Hover-based Dropdown for Large Screens - Trolls */}
+            <NavDropdown
+              title="Trolls"
+              id="trolls-nav-dropdown"
+              show={isTrollsDropdownOpen}
+              onMouseEnter={() => {
+                if (closeDropdownTimeout.current) {
+                  clearTimeout(closeDropdownTimeout.current);
+                }
+                setTrollsDropdownOpen(true);
+              }}
+              onMouseLeave={handleMouseLeave}
+            >
+              {trolls.map((troll) => (
+                <NavDropdown.Item key={troll.id} as={Link} to={`/troll/${troll.id}`}>
+                  {troll.name}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>

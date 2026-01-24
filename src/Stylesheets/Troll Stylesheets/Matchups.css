@@ -1,0 +1,255 @@
+.troll-matchups {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.troll-matchups h2 {
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #333;
+}
+
+.opponent-selector {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.opponent-selector label {
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.opponent-selector .form-select {
+  flex: 1;
+  max-width: 300px;
+}
+
+.h2h-stats {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.h2h-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #667eea;
+}
+
+.h2h-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.h2h-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.h2h-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.h2h-card h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 15px 0;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.h2h-card .big-stat {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.h2h-card .win-pct,
+.h2h-card .avg-ppg {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.no-selection {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 18px;
+}
+
+/* Weekly Matchups Table Styles */
+.weekly-matchups {
+  margin-top: 40px;
+}
+
+.weekly-matchups h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.matchups-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.matchups-table thead {
+  background-color: #667eea;
+  color: white;
+}
+
+.matchups-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.matchups-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.matchup-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.matchup-row:hover {
+  background-color: #f0f0f0;
+}
+
+.matchup-row.selected {
+  background-color: #e8eaf6;
+  border-left: 4px solid #667eea;
+  padding-left: 11px;
+}
+
+.matchup-row .result-w {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.matchup-row .result-l {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.matchup-row .result-t {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.matchups-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Matchup Display Section */
+.matchup-display-section {
+  margin-top: 40px;
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.matchup-display-section h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Playoff Stats Styling */
+.playoff-stats {
+  margin-top: 50px;
+  border-top: 3px solid #764ba2;
+  padding-top: 30px;
+}
+
+.playoff-header {
+  color: #764ba2;
+}
+
+.playoff-stats .h2h-card {
+  background: linear-gradient(135deg, #764ba2 0%, #5a3280 100%);
+}
+
+.no-playoff-matchups {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .opponent-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .opponent-selector label {
+    white-space: normal;
+  }
+
+  .opponent-selector .form-select {
+    max-width: 100%;
+  }
+
+  .h2h-card-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .h2h-card .big-stat {
+    font-size: 28px;
+  }
+
+  .matchups-table {
+    font-size: 12px;
+  }
+
+  .matchups-table th,
+  .matchups-table td {
+    padding: 10px 8px;
+  }
+
+  .matchup-display-section {
+    padding: 15px;
+  }
+}
