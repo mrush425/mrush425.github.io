@@ -1,34 +1,47 @@
+@import '../StandardStyles.css';
+@import '../Dropdowns.css';
+
 .troll-matchups {
-  padding: 20px;
-  max-width: 1000px;
+  padding: 24px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .troll-matchups h2 {
-  margin-bottom: 30px;
-  font-weight: bold;
-  color: #333;
+  margin-bottom: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 28px;
+  letter-spacing: 0.5px;
 }
 
 .opponent-selector {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(30, 34, 54, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 30px;
 }
 
 .opponent-selector label {
   font-weight: 600;
   margin: 0;
   white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .opponent-selector .form-select {
   flex: 1;
-  max-width: 300px;
+  min-width: 200px;
+}
+
+.opponent-selector .form-select:focus {
+  outline: none;
 }
 
 .h2h-stats {
@@ -50,12 +63,12 @@
   text-align: center;
   margin-bottom: 30px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--accent-blue);
 }
 
 .h2h-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .h2h-card-container {
@@ -66,12 +79,18 @@
 }
 
 .h2h-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+  color: var(--text-primary);
   padding: 25px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  transition: all 0.2s ease;
+}
+
+.h2h-card:hover {
+  box-shadow: 0 12px 32px rgba(96, 165, 250, 0.25);
 }
 
 .h2h-card h4 {
@@ -99,7 +118,7 @@
 .no-selection {
   text-align: center;
   padding: 60px 20px;
-  color: #999;
+  color: var(--text-tertiary);
   font-size: 18px;
 }
 
@@ -112,21 +131,22 @@
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .matchups-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .matchups-table thead {
-  background-color: #667eea;
-  color: white;
+  background: transparent;
+  color: var(--text-tertiary);
 }
 
 .matchups-table th {
@@ -136,12 +156,15 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-tertiary);
 }
 
 .matchups-table td {
   padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 14px;
+  color: var(--text-secondary);
 }
 
 .matchup-row {
@@ -150,27 +173,27 @@
 }
 
 .matchup-row:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .matchup-row.selected {
-  background-color: #e8eaf6;
-  border-left: 4px solid #667eea;
+  background-color: rgba(96, 165, 250, 0.2);
+  border-left: 4px solid var(--accent-blue);
   padding-left: 11px;
 }
 
 .matchup-row .result-w {
-  color: #28a745;
+  color: var(--accent-green);
   font-weight: bold;
 }
 
 .matchup-row .result-l {
-  color: #dc3545;
+  color: var(--accent-red);
   font-weight: bold;
 }
 
 .matchup-row .result-t {
-  color: #ffc107;
+  color: var(--accent-orange);
   font-weight: bold;
 }
 
@@ -179,46 +202,54 @@
 }
 
 /* Matchup Display Section */
-.matchup-display-section {
+.troll-matchup-display-section {
   margin-top: 40px;
   padding: 30px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
-.matchup-display-section h4 {
+.troll-troll-matchup-display-section h4 {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 /* Playoff Stats Styling */
 .playoff-stats {
   margin-top: 50px;
-  border-top: 3px solid #764ba2;
+  border-top: 3px solid var(--accent-purple);
   padding-top: 30px;
 }
 
 .playoff-header {
-  color: #764ba2;
+  color: var(--accent-purple);
 }
 
 .playoff-stats .h2h-card {
-  background: linear-gradient(135deg, #764ba2 0%, #5a3280 100%);
+  background: linear-gradient(135deg, var(--accent-purple) 0%, #663b97 100%);
 }
 
 .no-playoff-matchups {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--text-tertiary);
   font-size: 16px;
-  background-color: #f8f9fa;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   margin: 20px 0;
+  backdrop-filter: blur(10px);
 }
 
 @media (max-width: 768px) {
+  .troll-matchups {
+    padding: 16px;
+  }
+
   .opponent-selector {
     flex-direction: column;
     align-items: stretch;
@@ -229,7 +260,9 @@
   }
 
   .opponent-selector .form-select {
-    max-width: 100%;
+    min-width: 160px;
+    padding: 12px 14px;
+    font-size: 15px;
   }
 
   .h2h-card-container {

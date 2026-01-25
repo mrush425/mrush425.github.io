@@ -1,0 +1,465 @@
+@import 'StandardStyles.css';
+
+/* ========================================================================
+   UNIFIED DROPDOWN STYLES
+   Consistent dropdown styling across all pages
+   ======================================================================== */
+
+/* Container for dropdown + navigation buttons */
+.dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(30, 34, 54, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+
+/* Wrapper for dropdown without navigation */
+.dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  width: fit-content;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dropdown-wrapper label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.dropdown-wrapper .dropdown-select {
+  width: 100%;
+  min-width: unset;
+}
+
+.dropdown-container label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Dropdown Select Styling */
+.dropdown-select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-dark-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2360a5fa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.dropdown-select:hover {
+  border-color: var(--accent-blue);
+  background-color: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.dropdown-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25), inset 0 0 8px rgba(96, 165, 250, 0.08);
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.dropdown-select option {
+  background: var(--bg-dark-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+}
+
+/* Arrow Navigation Buttons */
+.nav-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--bg-glass-light) 0%, var(--bg-glass-medium) 100%);
+  color: var(--text-primary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.nav-arrow-btn:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: linear-gradient(135deg, var(--bg-glass-medium) 0%, var(--bg-glass-hover) 100%);
+  color: var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-arrow-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(96, 165, 250, 0.15);
+}
+
+.nav-arrow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Mobile-optimized button sizing */
+@media (max-width: 768px) {
+  .dropdown-container {
+    gap: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+
+  .dropdown-select {
+    min-width: 160px;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+
+  .nav-arrow-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown-container {
+    gap: 8px;
+    padding: 12px 12px;
+    flex-wrap: wrap;
+  }
+
+  .dropdown-container label {
+    flex-basis: 100%;
+    margin-bottom: 8px;
+  }
+
+  .dropdown-select {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px 12px;
+    font-size: 14px;
+    background-position: right 8px center;
+    padding-right: 30px;
+  }
+
+  .nav-arrow-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+/* ========================================================================
+   UNIFIED FORM SELECT (Bootstrap compatibility)
+   ======================================================================== */
+
+.form-select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-dark-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2360a5fa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.form-select:hover {
+  border-color: var(--accent-blue);
+  background-color: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25), inset 0 0 8px rgba(96, 165, 250, 0.08);
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.form-select::selection {
+  background-color: rgba(96, 165, 250, 0.3) !important;
+  color: var(--text-primary) !important;
+}
+
+.form-select:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25), inset 0 0 8px rgba(96, 165, 250, 0.08);
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.form-select option {
+  background: var(--bg-dark-secondary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+}
+
+/* Dropdown wrapper for single select */
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.dropdown-wrapper label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-size: 14px;
+  margin: 0;
+}
+
+.dropdown-wrapper select {
+  flex: 1;
+}
+
+/* ========================================================================
+   BACKWARD COMPATIBILITY CLASSES
+   ======================================================================== */
+
+/* Legacy styles for existing dropdowns */
+.recordsDropdown,
+.sidebetDropdown {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-dark-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2360a5fa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.recordsDropdown:hover,
+.sidebetDropdown:hover {
+  border-color: var(--accent-blue);
+  background-color: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.recordsDropdown:focus,
+.sidebetDropdown:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25), inset 0 0 8px rgba(96, 165, 250, 0.08);
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.recordsDropdown option,
+.sidebetDropdown option {
+  background: var(--bg-dark-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+}
+
+/* Legacy arrow button styles - Compact */
+.arrowButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 16px;
+  background: linear-gradient(135deg, var(--bg-glass-light) 0%, var(--bg-glass-medium) 100%);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.arrowButton:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: linear-gradient(135deg, var(--bg-glass-medium) 0%, var(--bg-glass-hover) 100%);
+  color: var(--accent-blue);
+  box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+  transform: translateY(-1px);
+}
+
+.arrowButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(96, 165, 250, 0.15);
+}
+
+.arrowButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Legacy picker spacing - More compact design */
+.recordsStatsPicker,
+.pointsStatsPicker,
+.sidebetPicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(30, 34, 54, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Compact dropdown styling */
+.recordsDropdown,
+.pointsDropdown,
+.sidebetDropdown {
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-dark-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2360a5fa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.recordsDropdown:hover,
+.pointsDropdown:hover,
+.sidebetDropdown:hover {
+  border-color: var(--accent-blue);
+  background-color: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+}
+
+.recordsDropdown:focus,
+.pointsDropdown:focus,
+.sidebetDropdown:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.25), inset 0 0 8px rgba(96, 165, 250, 0.08);
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.recordsDropdown option,
+.pointsDropdown option,
+.sidebetDropdown option {
+  background: var(--bg-dark-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+}
+@media (max-width: 768px) {
+  .recordsStatsPicker,
+  .pointsStatsPicker,
+  .sidebetPicker {
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    max-width: 380px;
+  }
+
+  .recordsDropdown,
+  .pointsDropdown,
+  .sidebetDropdown {
+    min-width: 140px;
+    max-width: 240px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .arrowButton {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .recordsStatsPicker,
+  .pointsStatsPicker,
+  .sidebetPicker {
+    gap: 6px;
+    padding: 10px 10px;
+    max-width: 100%;
+  }
+
+  .recordsDropdown,
+  .pointsDropdown,
+  .sidebetDropdown {
+    min-width: 110px;
+    max-width: 200px;
+    padding: 10px 10px;
+    font-size: 13px;
+    background-position: right 6px center;
+    padding-right: 28px;
+  }
+
+  .arrowButton {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}

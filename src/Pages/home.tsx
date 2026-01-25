@@ -9,8 +9,19 @@ const user = {
 
 function Home() {
   return (
-    <div >
-      <h1>{user.name}</h1>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '40px 20px',
+      textAlign: 'center'
+    }}>
+      <h1 style={{
+        fontSize: '36px',
+        marginBottom: '40px',
+        fontWeight: '700',
+        letterSpacing: '-0.5px'
+      }}>{user.name}</h1>
       <img
         className="avatar"
         src={user.imageUrl}
@@ -18,7 +29,10 @@ function Home() {
         style={{
           width: user.imageSize,
           height: user.imageSize,
-          display: 'inline-block'
+          borderRadius: '12px',
+          border: '2px solid var(--accent-blue)',
+          boxShadow: '0 8px 24px rgba(96, 165, 250, 0.2)',
+          objectFit: 'cover'
         }}
       />
     </div>

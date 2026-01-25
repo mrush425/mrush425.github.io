@@ -4,7 +4,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 
-import '../../Stylesheets/Year Stylesheets/REPLACEME.css'; 
+import '../../Stylesheets/YearStylesheets/REPLACEME.css'; 
 
 //Instructions for new page
 //Use Ctrl+H to replace REPLACEME with the name of the file

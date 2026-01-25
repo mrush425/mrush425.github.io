@@ -1,141 +1,261 @@
-/* Stats.css
- * Unified styling for RecordsStats and PointsStats components.
- * Standardizes the desktop two-pane layout to 66% (main table) / 34% (detail pane).
- */
+@import '../StandardStyles.css';
+@import '../Dropdowns.css';
 
+/* ========================================================================
+   UNIFIED STATS STYLES
+   Styling for RecordsStats and PointsStats components
+   ======================================================================== */
+
+/* Header Container */
+.recordsHeader,
+.pointsHeader,
+.otherStatsHeader {
+  padding: 24px 24px 8px 24px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recordsHeader h3,
+.pointsHeader h3,
+.otherStatsHeader h3 {
+  font-size: 24px;
+  margin: 0 0 16px 0;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Picker and Filter Controls */
+.recordsStatsPicker.picker-spacing,
+.pointsStatsPicker.picker-spacing,
+.otherStatsStatsPicker.picker-spacing {
+  margin-bottom: 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.recordsFilter.filter-style,
+.pointsFilter.filter-style,
+.otherStatsFilter.filter-style {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.recordsFilter input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent-blue);
+}
+
+/* Two-Pane Layout */
+.two-pane-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  align-items: start;
+}
+
+/* Main Table Pane */
+.main-pane {
+  min-width: 0;
+}
+
+/* Detail Pane */
+.detail-pane {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 100px;
+}
+
+.detail-pane h4 {
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  color: var(--text-primary);
+}
+
+.detail-pane p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0;
+}
+
+/* Selectable Table */
 .leagueStatsTable {
-    margin: auto;
-    margin-top: 20px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .leagueStatsTable th {
-    min-width: 100px;
-    
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  vertical-align: middle;
+  line-height: 1;
+  min-width: 100px;
 }
 
 .leagueStatsTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1;
 }
 
-/* --- Highlighting Styles --- */
+/* Team Name Cell */
+.team-name-cell {
+  text-align: left !important;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Highlight Styles */
 .highlight-best {
-    /* Soft green */
-    background-color: #d4edda; 
-    font-weight: bold;
+  background: rgba(74, 222, 128, 0.15) !important;
+  color: var(--accent-green) !important;
+  font-weight: 600;
 }
 
 .highlight-worst {
-    /* Soft red */
-    background-color: #f8d7da; 
-    font-weight: bold;
-}
-
-/* --- Table Styles --- */
-.leagueStatsTable td {
-    text-align: center;
-    vertical-align: middle;
-}
-
-.leagueStatsTable th {
-    padding: 8px 10px; 
-}
-
-.team-name-cell {
-    text-align: left !important; /* Keep team names left-aligned */
-    font-weight: 500;
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: var(--accent-red) !important;
+  font-weight: 600;
 }
 
 /* Selectable Table Row Styles */
 .selectable-table tr {
-    cursor: pointer; /* Indicate rows are clickable */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectable-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .selectable-table tr.selected-row,
 .selectable-table tr.active {
-    background-color: #e6f7ff; /* Light blue background for selected row */
+  border-left: 5px solid var(--accent-blue);
+  box-shadow: 
+    inset 0 0 30px rgba(96, 165, 250, 0.2),
+    0 0 20px rgba(96, 165, 250, 0.15);
 }
 
-/* --- Component Spacing and Layout --- */
-
-/* 1. recordsHeader: Controls the overall top spacing and side padding */
-.recordsHeader {
-    /* Set a minimal top margin as requested to move content closer to the NavBar */
-    margin-top: 10px; 
-    padding: 0 15px; /* Added back side padding for clean edges */
+.selectable-table tr:hover:not(.selected-row) {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
-/* 2. recordsStatsPicker: Controls the component selector area */
-.recordsStatsPicker.picker-spacing {
-    /* Increased margin-bottom slightly to separate the picker from the header (h3) */
-    margin-bottom: 5px; 
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 1200px) {
+  .two-pane-layout {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
 }
 
-/* 4. h3 Header: Controls the spacing of the main component title */
-.recordsHeader h3 {
-    /* Keep minimal gap above h3 (from picker) */
-    margin-top: 5px; 
-    /* Reduced margin-bottom to pull the filter closer */
-    margin-bottom: 0px; 
+@media (max-width: 1024px) {
+  .two-pane-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-pane {
+    position: relative;
+    top: 0;
+  }
+
+  .recordsHeader {
+    padding: 16px;
+  }
 }
 
-/* 3. recordsFilter: Controls the filter checkbox styling and spacing */
-.recordsFilter.filter-style {
-    /* Slightly larger font for the filter text */
-    font-size: 1.1em; 
-    /* Minimal top margin */
-    margin-top: 5px; 
-    /* CHANGED: Reduced margin-bottom to minimize gap above tables */
-    margin-bottom: 5px; 
+@media (max-width: 768px) {
+  .two-pane-layout {
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .leagueStatsTable th,
+  .leagueStatsTable td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .leagueStatsTable th {
+    font-size: 11px;
+  }
+
+  .detail-pane {
+    padding: 16px;
+  }
+
+  .detail-pane h4 {
+    font-size: 14px;
+  }
+
+  .detail-pane p {
+    font-size: 12px;
+  }
 }
 
-/* --- New Layout Styles for Two-Pane Display (Mobile First) --- */
+@media (max-width: 480px) {
+  .two-pane-layout {
+    padding: 8px;
+  }
 
-.two-pane-layout {
-    display: flex;
-    flex-direction: column; /* Stack vertically by default (mobile) */
-    gap: 20px; /* Spacing between panes */
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
+  .recordsHeader {
+    padding: 12px;
+  }
 
-.main-table-pane, .detail-pane-wrapper {
-    width: 100%; /* Full width on mobile */
-    display: flex; 
-    flex-direction: column;
-}
+  .recordsHeader h3 {
+    font-size: 20px;
+  }
 
-/* Desktop/Tablet Layout (768px and up) - Standardized to 66% / 34% */
-@media (min-width: 769px) {
-    .two-pane-layout {
-        flex-direction: row; /* Side-by-side on desktop */
-        align-items: flex-start; /* Align both tables at the very top */
-    }
-    .main-table-pane {
-        width: 66%; /* Standardized main content width */
-        margin-top: 0 !important; 
-    }
-    .detail-pane-wrapper {
-        width: 34%; /* Standardized detail pane width */
-        margin-top: 0 !important;
-    }
-    .leagueStatsTable {
-        width: 90%; /* Ensure table fills the 66% pane */
-    }
-    .leagueStatsTable.detail-table {
-        width: 100%;
-    }
-}
+  .leagueStatsTable th,
+  .leagueStatsTable td {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 
-/* Bowl highlights */
-.bowl-green  { background-color: #d8f5d0; }  /* soft green */
-.bowl-blue   { background-color: #d6ecff; }  /* light blue */
-.bowl-orange { background-color: #ffe6cc; }  /* light orange */
-.bowl-red    { background-color: #ffd6d6; }  /* light red */
+  .leagueStatsTable th {
+    font-size: 10px;
+    min-width: 80px;
+  }
 
-/* Optional: make highlighted cells pop a bit more */
-.bowl-green, .bowl-blue, .bowl-orange, .bowl-red {
-  font-weight: 600;
-  border-radius: 6px; /* works best if your td padding exists */
+  .detail-pane {
+    padding: 12px;
+  }
+
+  .recordsFilter {
+    flex-wrap: wrap;
+  }
 }

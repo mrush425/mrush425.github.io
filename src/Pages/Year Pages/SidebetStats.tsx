@@ -4,7 +4,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import SidebetMethods, { Sidebet } from '../../Helper Files/SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
 
-import '../../Stylesheets/Year Stylesheets/SidebetStats.css';
+import '../../Stylesheets/YearStylesheets/SidebetStats.css';
 
 interface SidebetStatsProps {
   data: LeagueData;
@@ -93,7 +93,7 @@ return (
     </div>
 
     <h2>{header + " " + data.season}</h2>
-    <div>{description}</div>
+    <div className="sidebetDescription">{description}</div>
     {!isImplemented ? (
       <div className="notImplementedMessage">Stat not implemented</div>
     ) : (

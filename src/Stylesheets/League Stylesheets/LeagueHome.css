@@ -1,58 +1,196 @@
-/* General styles for the league-stats-table */
-.league-stats-table {
-  width: 100%;
-  margin: 0 auto;
-  border-collapse: collapse;
+@import '../StandardStyles.css';
+
+/* ========================================================================
+   LEAGUE HOME STYLES
+   ======================================================================== */
+
+/* Main Container */
+.league-home-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
 }
 
-.league-stats-table th,
+/* Content Wrapper - flexbox row for side-by-side layout */
+.league-home-content {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
+}
+
+/* Stats Section */
+.league-stats-section {
+  flex: 0 1 calc(50% - 12px);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.league-stats-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Matchup Display Section */
+.matchup-display-section {
+  flex: 0 1 calc(50% - 12px);
+  min-width: 0;
+  overflow: hidden;
+  background: rgba(30, 34, 54, 0.4);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 30px rgba(96, 165, 250, 0.2), inset 0 0 20px rgba(96, 165, 250, 0.05);
+}
+
+.matchup-display-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Table Styling */
+.league-stats-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+
+.league-stats-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  color: #e6edfa;
+  font-weight: 800;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+
 .league-stats-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.08);
+  color: #f1f5f9;
+  font-size: 15px;
+  vertical-align: middle;
+  line-height: 1.2;
   text-align: left;
 }
 
-.league-stats-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+.league-stats-table td:first-child {
+  color: #f1f5f9;
+  font-weight: 400;
+  cursor: default;
+}
+
+.league-stats-table td:nth-child(2) {
+  min-width: 120px;
+  text-align: left;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.league-stats-table tbody tr:hover {
+  background: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 2px 12px 0 rgba(96, 165, 250, 0.08);
 }
 
 .clickable-winner {
   cursor: pointer;
-  color: inherit;
+  color: var(--accent-blue);
+  font-weight: 700;
+  transition: color 0.2s, text-shadow 0.2s;
 }
 
 .clickable-winner:hover {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 8px var(--accent-cyan);
   text-decoration: underline;
-  color: #007bff;
 }
 
-/* Desktop Layout */
-.league-home-container {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
+.clickable-winner:active {
+  color: var(--accent-purple);
 }
 
-.league-stats-section,
-.matchup-display-section {
-  flex: 1;
-  padding: 16px;
+.league-stats-table tbody tr {
+  transition: all 0.2s ease;
 }
 
-.league-stats-section {
-  border-right: 2px solid #ccc;
+.league-stats-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.league-stats-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Clickable Winner */
+.clickable-winner {
+  cursor: pointer;
+  color: var(--accent-blue);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.clickable-winner:hover {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+}
+
+/* ========================================================================
+   SECTION HEADERS
+   ======================================================================== */
+
+.league-stats-section h3,
+.matchup-display-section h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 1024px) {
+  .league-home-content {
+    gap: 16px;
+    padding: 16px;
+  }
 }
 
 @media (max-width: 768px) {
-  .league-home-container {
+  .league-home-content {
     flex-direction: column;
+    gap: 24px;
+    padding: 12px;
   }
 
   .league-stats-section,
   .matchup-display-section {
-    display: none;
     width: 100%;
+    display: none;
   }
 
   .league-stats-section.mobile-visible,
@@ -60,64 +198,35 @@
     display: block;
   }
 
-  .league-stats-section {
-    border-right: none; /* Remove the right border in mobile view */
-    overflow-x: auto; /* Enable horizontal scrolling only if necessary */
-    padding: 8px; /* Reduce padding */
-  }
-
   .league-stats-table {
-    width: 100%; /* Ensure the table takes up the full width of the container */
-    table-layout: fixed; /* Distribute column widths evenly */
-    font-size: 0.9rem; /* Reduce font size for better fit */
-    border-collapse: collapse;
+    overflow-x: auto;
   }
 
   .league-stats-table th,
   .league-stats-table td {
-    padding: 6px; /* Reduce padding for smaller screens */
-    text-align: left;
-    word-wrap: break-word; /* Allow breaking long text onto multiple lines */
-    overflow: hidden; /* Prevent text overflow */
-    text-overflow: ellipsis; /* Add ellipsis for overflowed text */
-    white-space: nowrap; /* Prevent wrapping for consistent ellipsis effect */
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
   .league-stats-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    font-size: 1rem; /* Slightly smaller font for headers */
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .league-home-content {
+    padding: 8px;
+    gap: 16px;
   }
 
+  .league-stats-table th,
   .league-stats-table td {
-    font-size: 0.9rem; /* Smaller font for table content */
+    padding: 6px 10px;
+    font-size: 11px;
   }
 
-  /* Ensure the first column gets more space */
-  .league-stats-table td:nth-child(1),
-  .league-stats-table th:nth-child(1) {
-    width: 20%; /* First column takes up 20% of the width */
-  }
-
-  /* Make the second column share space with the rest dynamically */
-  .league-stats-table td:nth-child(n+2),
-  .league-stats-table th:nth-child(n+2) {
-    width: auto; /* Distribute remaining space dynamically */
-  }
-
-  /* Adjust button styling for mobile */
-  .back-button {
-    display: block;
-    margin-bottom: 16px;
-    padding: 8px 16px;
-    background-color: #5fa1cc;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .back-button:hover {
-    background-color: #005b96;
+  .league-stats-table th {
+    font-size: 10px;
   }
 }

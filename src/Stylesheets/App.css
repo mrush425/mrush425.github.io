@@ -1,52 +1,106 @@
+@import 'StandardStyles.css';
+
+/* ========================================================================
+   APP CONTAINER STYLES
+   ======================================================================== */
+
 .App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--bg-dark-primary) 0%, var(--bg-dark-secondary) 100%);
+  color: var(--text-primary);
+}
+
+/* Navigation Bar - Fixed at Top */
+.App-navbar {
+  flex-shrink: 0;
+  z-index: 1000;
+}
+
+/* Main Content Area - Scrollable */
+.App-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar Styling */
+.App-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.App-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.App-content::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+
+.App-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Avatar Styling */
+.avatar {
+  border-radius: 50%;
+  text-align: center;
+  object-fit: cover;
+  border: 2px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.avatar:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.3);
+}
+
+/* ========================================================================
+   UTILITY CLASSES
+   ======================================================================== */
+
+.text-center {
   text-align: center;
 }
 
-.avatar {
-    border-radius: 50%;
-    text-align: center;
+.text-left {
+  text-align: left;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.text-right {
+  text-align: right;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+.p-4 { padding: 32px; }
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 768px) {
+  .App {
+    height: 100vh;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.App {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Make the container full height */
-}
 
 .WebsiteNavBar {
   position: fixed;

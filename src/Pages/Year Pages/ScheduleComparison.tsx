@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
-import '../../Stylesheets/Year Stylesheets/ScheduleComparison.css'; // Create a CSS file for styling
+import '../../Stylesheets/YearStylesheets/ScheduleComparison.css'; // Create a CSS file for styling
 import SleeperUser from '../../Interfaces/SleeperUser';
 import { findRosterByUserId } from '../../Helper Files/HelperMethods';
 import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
@@ -42,10 +42,10 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
 
     if (wins === extremeRecords[0]) {
       // Best record, apply softer green background
-      return { backgroundColor: '#9ae59a'};
+      return { backgroundColor: 'rgba(74, 222, 128, 0.2)'};
     } else if (wins === extremeRecords[1]) {
       // Worst record, apply softer red background
-      return { backgroundColor: '#ff9999'};
+      return { backgroundColor: 'rgba(239, 68, 68, 0.2)'};
     }
 
     // Default styling
@@ -163,8 +163,9 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
 
 
   return (
-    <div className="schedule-comparison-container">
+    <div>
       <YearNavBar data={data} />
+      <div className="schedule-comparison-container">
       <table className="schedule-table schedule-comparison-table">
         <thead>
           <tr>
@@ -252,6 +253,7 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

@@ -1,43 +1,208 @@
-/* FootballPlayerChampions.css */
+@import '../StandardStyles.css';
 
-/* Center the main table */
+/* ========================================================================
+   FOOTBALL PLAYER CHAMPIONS STYLES
+   ======================================================================== */
+
+.football-player-container {
+  padding: 32px 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.football-player-title {
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Main content wrapper */
+div > h2 {
+  text-align: center;
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
 .football-player-championships-table {
-    margin: auto;
-    border-collapse: collapse; /* Collapse borders between cells */
+  background: rgba(30, 34, 54, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(96, 165, 250, 0.05);
 }
 
-/* Add borders to all cells in the main table */
+/* Header row styling */
+.football-player-championships-table thead tr {
+  background: linear-gradient(90deg, var(--accent-blue) 0%, var(--bg-dark-secondary) 100%);
+  border-bottom: 2px solid var(--accent-blue);
+}
+
+.football-player-championships-table thead td {
+  padding: 16px 12px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  border: none !important;
+  background: transparent !important;
+}
+
 .football-player-championships-table td {
-    border: 1px solid #ddd;
-    padding: 4px; /* Adjust padding as needed */
-    vertical-align: top;
+  border: 1px solid rgba(96, 165, 250, 0.1);
+  padding: 14px 12px;
+  vertical-align: top;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
-/* Remove borders from inner tables */
-.football-player-championships-table table td {
-    border: none;
+.football-player-championships-table tbody tr {
+  transition: all 0.2s ease;
 }
 
-/* Align content in inner tables to the top */
-.football-player-championships-table table td {
-    vertical-align: top;
+.football-player-championships-table tbody tr:hover td {
+  background: rgba(96, 165, 250, 0.08);
+  border-color: rgba(96, 165, 250, 0.2);
 }
 
-/* Set fixed width for inner tables */
+/* Inner tables within main table cells */
 .football-player-championships-table table {
-    width: 100%; /* Adjust the width as needed */
+  width: 100%;
+  border-collapse: collapse;
+  padding: 0;
+  line-height: 1.5;
 }
 
-/* Set fixed width for the first and second columns */
+.football-player-championships-table table tr {
+  background: transparent !important;
+}
+
+.football-player-championships-table table tr:hover td {
+  background: transparent !important;
+}
+
+.football-player-championships-table table td {
+  border: none !important;
+  padding: 6px 0;
+  background: transparent !important;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 .football-player-championships-table table td:nth-child(1) {
-    width: auto;
-}
-.football-player-championships-table table td:nth-child(2) {
-    width: 80px; /* Adjust the width as needed */
+  text-align: left;
+  width: auto;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-/* Condense the heights of inner tables */
-.football-player-championships-table table {
-    padding: 2px; /* Adjust padding as needed */
-    line-height: 1; /* Set line-height to 1 for condensed appearance */
+.football-player-championships-table table td:nth-child(2) {
+  text-align: right;
+  width: auto;
+  color: var(--accent-orange);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.football-player-championships-table table tr:hover td {
+  background: transparent;
+}
+
+/* Player name styling */
+.player-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* Championship count */
+.championship-count {
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Year styling */
+.championship-year {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+@media (max-width: 1024px) {
+  .football-player-container {
+    padding: 24px 16px;
+  }
+
+  .football-player-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .football-player-championships-table thead td {
+    padding: 14px 10px;
+    font-size: 13px;
+  }
+
+  .football-player-championships-table td {
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+
+  .football-player-championships-table table td {
+    padding: 5px 0;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .football-player-container {
+    padding: 16px 12px;
+  }
+
+  .football-player-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .football-player-championships-table {
+    border-radius: 12px;
+  }
+
+  .football-player-championships-table thead td {
+    padding: 12px 8px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .football-player-championships-table td {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .football-player-championships-table table td {
+    padding: 4px 0;
+    font-size: 11px;
+  }
+
+  .player-name {
+    font-size: 12px;
+  }
+
+  .championship-year {
+    font-size: 10px;
+  }
 }

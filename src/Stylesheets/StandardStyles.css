@@ -1,8 +1,294 @@
-/* Define Color Variables */
-:root {
-    --primary-blue: #5fa1cc; /* Primary blue for headers */
-    --light-blue: #e6f7ff; /* Light blue for rows */
-    --dark-blue: #005b96; /* Deep blue for circle borders */
-    --text-light: #f4f9fc; /* Light text color for contrast */
+/* ========================================================================
+   STANDARD STYLES - Global Design System
+   Dark Glassmorphism Theme with Modern Color Palette
+   ======================================================================== */
 
+/* Color Palette */
+:root {
+  /* Background Colors */
+  --bg-dark-primary: #1a1a2e;
+  --bg-dark-secondary: #16213e;
+  --bg-glass-light: rgba(255, 255, 255, 0.05);
+  --bg-glass-medium: rgba(255, 255, 255, 0.08);
+  --bg-glass-hover: rgba(255, 255, 255, 0.12);
+  
+  /* Text Colors */
+  --text-primary: #fff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #a0a0a0;
+  --text-muted: #808080;
+  
+  /* Accent Colors */
+  --accent-green: #4ade80;
+  --accent-red: #ef4444;
+  --accent-blue: #60a5fa;
+  --accent-orange: #f97316;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #a855f7;
+  
+  /* Border Colors */
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.25);
+  
+  /* Deprecated (kept for compatibility) */
+  --primary-blue: #60a5fa;
+  --light-blue: #06b6d4;
+  --dark-blue: #0369a1;
+  --text-light: #f4f9fc;
+}
+
+/* ========================================================================
+   GLOBAL STYLES
+   ======================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, var(--bg-dark-primary) 0%, var(--bg-dark-secondary) 100%);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ========================================================================
+   TYPOGRAPHY
+   ======================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 32px;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 28px;
+  letter-spacing: -0.3px;
+}
+
+h3 {
+  font-size: 20px;
+  letter-spacing: -0.2px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+h6 {
+  font-size: 14px;
+}
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-cyan);
+}
+
+/* ========================================================================
+   COMMON COMPONENTS
+   ======================================================================== */
+
+/* Glass Effect Section */
+.glass-section {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.glass-section:hover {
+  background: var(--bg-glass-medium);
+  border-color: var(--border-medium);
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.btn-primary:hover {
+  background: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(6, 182, 212, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-glass-medium);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-hover);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+}
+
+table thead {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+}
+
+table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+  vertical-align: middle;
+  line-height: 1;
+  text-align: left;
+}
+
+table tbody tr {
+  transition: all 0.2s ease;
+}
+
+table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Input Fields */
+input, textarea, select {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: var(--bg-glass-medium);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 28px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  .glass-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+  
+  h2 {
+    font-size: 20px;
+  }
+  
+  h3 {
+    font-size: 18px;
+  }
+  
+  .glass-section {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  
+  table th, table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 20px;
+  }
+  
+  h2 {
+    font-size: 18px;
+  }
+  
+  .glass-section {
+    padding: 12px;
+  }
 }

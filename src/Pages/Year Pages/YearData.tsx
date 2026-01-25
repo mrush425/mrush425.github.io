@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; // Import useEffect
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar'; // Import the YearNavBar component
-import '../../Stylesheets/Year Stylesheets/YearData.css'; // Create a CSS file for styling
+import '../../Stylesheets/YearStylesheets/YearData.css'; // Create a CSS file for styling
 import { 
     displayRecord, 
     getAverageLeagueRecordAtSchedule, 
@@ -24,6 +24,7 @@ interface YearDataProps {
 
 // Extend SortKey type to include the new column
 type SortKey = 'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams' | 'default';
+type TabType = 'basic' | 'advanced' | 'sidebets';
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
     // UPDATED: Added 'winsAgainstWinningTeams' to the possible sort keys
@@ -31,8 +32,20 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [sortedRosters, setSortedRosters] = useState(data.rosters); // Initial state with data.rosters
     const [sidebetsDisplay, setSidebetsDisplay] = useState<SidebetDisplay[]>([]); // State to store sidebets data
+    const [activeTab, setActiveTab] = useState<TabType>('sidebets');
+    const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const users = data.users;
     const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
+
+    const toggleRowExpanded = (rosterId: number) => {
+        const newExpanded = new Set(expandedRows);
+        if (newExpanded.has(rosterId)) {
+            newExpanded.delete(rosterId);
+        } else {
+            newExpanded.add(rosterId);
+        }
+        setExpandedRows(newExpanded);
+    };
 
     // UPDATED: Added 'winsAgainstWinningTeams' to the handleSort parameter type
     const handleSort = (column: 'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams') => {
@@ -178,130 +191,251 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
         return "0-0-0";
     };
 
+    // Helper to format record without ties if ties are 0
+    const formatRecordWithoutTies = (recordStr: string): string => {
+        const parts = recordStr.split('-');
+        if (parts.length === 3 && parts[2] === '0') {
+            return `${parts[0]}-${parts[1]}`;
+        }
+        return recordStr;
+    };
+
     return (
         <div>
             <YearNavBar data={data} />
 
-            <h2>{`Season ${data.season}`}</h2>
-            <table className="records-table">
-                <thead>
-                    <tr>
-                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('seasonPlace')}>
-                            Season Place
-                            {sortBy === 'seasonPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ width: '150px' }}>
-                            Team
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('wins')}>
-                            Record
-                            {sortBy === 'wins' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fpts')}>
-                            Points
-                            {sortBy === 'fpts' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        
-                        {/* NEW COLUMN HEADER: Positioned after "Points" */}
-                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('winsAgainstWinningTeams')}>
-                            Vs Winning Teams
-                            {sortBy === 'winsAgainstWinningTeams' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        
-                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('last3Ave')}>
-                            Last 3 Average
-                            {sortBy === 'last3Ave' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '130px' }} onClick={() => handleSort('fptsAgainst')}>
-                            Points Against
-                            {sortBy === 'fptsAgainst' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstEveryone')}>
-                            Record Against Everyone
-                            {sortBy === 'winsAgainstEveryone' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAtSchedule')}>
-                            League Record at Schedule
-                            {sortBy === 'winsAtSchedule' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                        <th style={{ cursor: 'pointer', width: '160px' }} onClick={() => handleSort('winsTop50')}>
-                            Record in top 50%
-                            {sortBy === 'winsTop50' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortedRosters.map((roster, index) => {
+            <div className="year-data-container">
+                <h2 className="year-data-title">{`Season ${data.season}`}</h2>
+
+                {/* Stat Cards Section */}
+                <div className="stat-cards-container">
+                    {sortedRosters.map((roster) => {
                         const user = users.find((u) => u.user_id === roster.owner_id);
-                        const seasonPlace = user ? getUserSeasonPlace(user.user_id, data) : null;
-                        let recordAgainstEveryone: string = "";
-                        let leagueRecordAtSchedule: string = "";
-                        let averageRecordAgainstEveryone: string = "";
-                        let averageLeagueRecordAtSchedule: string = "";
-                        let recordInTop50: string = "";
-                        let recordVsWinningTeams: string = ""; // <--- NEW RECORD STRING
-                        let className = "";
-                        let last3Average = "";
-
-                        if (user && getUserSeasonPlace(user.user_id, data) <= 6) {
-                            className = "playoffs-team";
-                        }
-
-                        if (user) {
-                            recordAgainstEveryone = displayRecord(...getRecordAgainstLeague(user, data));
-                            leagueRecordAtSchedule = displayRecord(...getLeagueRecordAtSchedule(user, data));
-                            averageRecordAgainstEveryone = displayRecord(...getAverageRecordAgainstLeague(user, data));
-                            averageLeagueRecordAtSchedule = displayRecord(...getAverageLeagueRecordAtSchedule(user, data));
-                            recordInTop50 = displayRecord(...getRecordInTop50(user, data));
-                            recordVsWinningTeams = getRecordAgainstWinningTeams(user.user_id); // <--- CALL NEW HELPER
-                            last3Average = last3AveragePointsMap.get(user.user_id)?.toFixed(2) ?? "";
-                        }
-
+                        if (!user) return null;
+                        const wins = roster.settings.wins;
+                        const totalGames = wins + roster.settings.losses;
+                        const winPct = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) : '0';
+                        const recordAgainstEveryone = getRecordAgainstLeague(user, data);
+                        const seasonPlace = getUserSeasonPlace(user.user_id, data);
+                        
                         return (
-                            <tr className={className} key={roster.roster_id}>
-                                <td>{seasonPlace}</td>
-                                <td>{user?.metadata.team_name}</td>
-                                <td>{`${roster.settings.wins}-${roster.settings.losses}`}</td>
-                                <td>{`${roster.settings.fpts}.${roster.settings.fpts_decimal}`}</td>
+                            <div key={roster.roster_id} className="stat-card">
+                                <div className="stat-card-header">
+                                    <div className="stat-card-title">{user.metadata.team_name}</div>
+                                    <div className={`stat-card-place ${seasonPlace <= 6 ? 'playoffs' : 'no-playoffs'}`}>
+                                        #{seasonPlace}
+                                    </div>
+                                </div>
                                 
-                                {/* NEW COLUMN DATA */}
-                                <td>{recordVsWinningTeams}</td>
-
-                                <td>{`${last3Average}`}</td>
-                                <td>{`${roster.settings.fpts_against}.${roster.settings.fpts_against_decimal}`}</td>
-                                <td>{`${recordAgainstEveryone} (${averageRecordAgainstEveryone})`}</td>
-                                <td>{`${leagueRecordAtSchedule} (${averageLeagueRecordAtSchedule})`}</td>
-                                <td>{`${recordInTop50}`}</td>
-                            </tr>
+                                <div className="stat-card-grid">
+                                    <div className="stat-item">
+                                        <div className="stat-label">Record</div>
+                                        <div className="stat-value">{wins}-{roster.settings.losses}</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-label">Win %</div>
+                                        <div className="stat-value">{winPct}%</div>
+                                        <div className="progress-bar">
+                                            <div className="progress-fill" style={{width: `${winPct}%`}}></div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-label">Points</div>
+                                        <div className="stat-value">{roster.settings.fpts}.{roster.settings.fpts_decimal}</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-label">vs All</div>
+                                        <div className="stat-value">{formatRecordWithoutTies(displayRecord(...recordAgainstEveryone))}</div>
+                                    </div>
+                                </div>
+                            </div>
                         );
                     })}
-                </tbody>
-            </table>
+                </div>
 
-            {/* ... (Sidebets JSX remains the same) ... */}
-            <div>
-                <h3 style={{ marginTop: '20px' }}>Sidebets</h3>
-                <table className="sidebets-table">
-                    <thead>
-                        <tr>
-                            <th>Sidebet</th>
-                            <th>Winners</th>
-                            <th>Stats</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sidebetsDisplay.map((sidebet, index) => (
-                            <tr key={index}>
-                                <td>{sidebet.sidebetName}</td>
-                                <td>{sidebet.winners.join(", ")}</td>
-                                <td dangerouslySetInnerHTML={{
-                                    __html: sidebet.statDisplays.join("<br>"),
-                                }}
-                                ></td>
+                {/* Tab Navigation */}
+                <div className="tab-navigation">
+                    <button className={`tab-button ${activeTab === 'basic' ? 'active' : ''}`} onClick={() => setActiveTab('basic')}>
+                        Basic Stats
+                    </button>
+                    <button className={`tab-button ${activeTab === 'advanced' ? 'active' : ''}`} onClick={() => setActiveTab('advanced')}>
+                        Advanced Stats
+                    </button>
+                    <button className={`tab-button ${activeTab === 'sidebets' ? 'active' : ''}`} onClick={() => setActiveTab('sidebets')}>
+                        Sidebets
+                    </button>
+                </div>
+
+                {/* Tables Based on Tab */}
+                {(activeTab === 'basic' || activeTab === 'advanced') && (
+                    <table className="records-table">
+                        <thead>
+                            <tr>
+                                <th style={{ cursor: 'pointer', width: '50px' }} onClick={() => handleSort('seasonPlace')}>
+                                    Place
+                                    {sortBy === 'seasonPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                </th>
+                                <th style={{ width: '150px' }}>Team</th>
+                                
+                                {activeTab === 'basic' && (
+                                    <>
+                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('wins')}>
+                                            Record
+                                            {sortBy === 'wins' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fpts')}>
+                                            Points
+                                            {sortBy === 'fpts' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('last3Ave')}>
+                                            Last 3 Avg
+                                            {sortBy === 'last3Ave' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fptsAgainst')}>
+                                            Points Against
+                                            {sortBy === 'fptsAgainst' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                    </>
+                                )}
+                                
+                                {activeTab === 'advanced' && (
+                                    <>
+                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstEveryone')}>
+                                            vs Everyone
+                                            {sortBy === 'winsAgainstEveryone' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAtSchedule')}>
+                                            League Schedule
+                                            {sortBy === 'winsAtSchedule' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsTop50')}>
+                                            Top 50%
+                                            {sortBy === 'winsTop50' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstWinningTeams')}>
+                                            vs Winning Teams
+                                            {sortBy === 'winsAgainstWinningTeams' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                        </th>
+                                    </>
+                                )}
+                                
+                                <th style={{ width: '40px' }}>Details</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {sortedRosters.map((roster, index) => {
+                                const user = users.find((u) => u.user_id === roster.owner_id);
+                                const seasonPlace = user ? getUserSeasonPlace(user.user_id, data) : null;
+                                let recordAgainstEveryone: string = "";
+                                let leagueRecordAtSchedule: string = "";
+                                let averageRecordAgainstEveryone: string = "";
+                                let averageLeagueRecordAtSchedule: string = "";
+                                let recordInTop50: string = "";
+                                let recordVsWinningTeams: string = "";
+                                let className = "";
+                                let last3Average = "";
+
+                                if (user && getUserSeasonPlace(user.user_id, data) <= 6) {
+                                    className = "playoffs-team";
+                                }
+
+                                if (user) {
+                                    recordAgainstEveryone = displayRecord(...getRecordAgainstLeague(user, data));
+                                    leagueRecordAtSchedule = displayRecord(...getLeagueRecordAtSchedule(user, data));
+                                    averageRecordAgainstEveryone = displayRecord(...getAverageRecordAgainstLeague(user, data));
+                                    averageLeagueRecordAtSchedule = displayRecord(...getAverageLeagueRecordAtSchedule(user, data));
+                                    recordInTop50 = displayRecord(...getRecordInTop50(user, data));
+                                    recordVsWinningTeams = getRecordAgainstWinningTeams(user.user_id);
+                                    last3Average = last3AveragePointsMap.get(user.user_id)?.toFixed(2) ?? "";
+                                }
+
+                                const isExpanded = expandedRows.has(roster.roster_id);
+
+                                return (
+                                    <React.Fragment key={roster.roster_id}>
+                                        <tr className={className}>
+                                            <td>{seasonPlace}</td>
+                                            <td>{user?.metadata.team_name}</td>
+                                            
+                                            {activeTab === 'basic' && (
+                                                <>
+                                                    <td>{`${roster.settings.wins}-${roster.settings.losses}`}</td>
+                                                    <td>{`${roster.settings.fpts}.${roster.settings.fpts_decimal}`}</td>
+                                                    <td>{`${last3Average}`}</td>
+                                                    <td>{`${roster.settings.fpts_against}.${roster.settings.fpts_against_decimal}`}</td>
+                                                </>
+                                            )}
+                                            
+                                            {activeTab === 'advanced' && (
+                                                <>
+                                                    <td>{`${recordAgainstEveryone} (${averageRecordAgainstEveryone})`}</td>
+                                                    <td>{`${leagueRecordAtSchedule} (${averageLeagueRecordAtSchedule})`}</td>
+                                                    <td>{`${recordInTop50}`}</td>
+                                                    <td>{`${recordVsWinningTeams}`}</td>
+                                                </>
+                                            )}
+                                            
+                                            <td className="expand-cell">
+                                                <button className="expand-button" onClick={() => toggleRowExpanded(roster.roster_id)}>
+                                                    {isExpanded ? '−' : '+'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        
+                                        {isExpanded && (
+                                            <tr className="expanded-row">
+                                                <td colSpan={activeTab === 'basic' ? 7 : 7} className="expanded-content">
+                                                    <div className="expanded-details">
+                                                        <div className="detail-column">
+                                                            <h4>Record</h4>
+                                                            <div>Season: {roster.settings.wins}-{roster.settings.losses}</div>
+                                                            <div>vs Everyone: {recordAgainstEveryone} ({averageRecordAgainstEveryone})</div>
+                                                            <div>League Schedule: {leagueRecordAtSchedule} ({averageLeagueRecordAtSchedule})</div>
+                                                            <div>Top 50%: {recordInTop50}</div>
+                                                            <div>vs Winning Teams: {recordVsWinningTeams}</div>
+                                                        </div>
+                                                        <div className="detail-column">
+                                                            <h4>Scoring</h4>
+                                                            <div>Total Points: {roster.settings.fpts}.{roster.settings.fpts_decimal}</div>
+                                                            <div>Points Against: {roster.settings.fpts_against}.{roster.settings.fpts_against_decimal}</div>
+                                                            <div>Last 3 Average: {last3Average}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                )}
+
+                {activeTab === 'sidebets' && (
+                    <div className="sidebets-section">
+                        <table className="sidebets-table">
+                            <thead>
+                                <tr>
+                                    <th>Sidebet</th>
+                                    <th>Winners</th>
+                                    <th>Stats</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {sidebetsDisplay.map((sidebet, index) => (
+                                    <tr key={index}>
+                                        <td>{sidebet.sidebetName}</td>
+                                        <td><span className="winner-badge">{sidebet.winners.join(", ")}</span></td>
+                                        <td dangerouslySetInnerHTML={{
+                                            __html: sidebet.statDisplays.join("<br>"),
+                                        }}
+                                        ></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

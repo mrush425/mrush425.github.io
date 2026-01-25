@@ -4,7 +4,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 
-import '../../Stylesheets/Year Stylesheets/AllPlayoffPossibilities.css';
+import '../../Stylesheets/YearStylesheets/AllPlayoffPossibilities.css';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
@@ -28,38 +28,22 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
 
   // Define state to toggle between the two maps
   const [useLast3Points, setUseLast3Points] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  // State for results
+  const [userWinsMap, setUserWinsMap] = useState<Map<string, Map<number, number>>>(new Map());
+  const [userPlaceMap, setUserPlaceMap] = useState<Map<string, Map<number, number>>>(new Map());
 
   // Fetch both maps
   const averagePointsMap = getAveragePointsMap(data);
   const averageLast3PointsMap = getLast3WeeksAveragePointsMap(data);
-
-  const userWinsMap: Map<string, Map<number, number>> = new Map();
-
-  // Initialize userWinsMap for each user with 0 wins through 15
-  data.users.forEach((user) => {
-    const userWins = new Map<number, number>(Array.from({ length: 16 }, (_, i) => [i, 0]));
-    userWinsMap.set(user.user_id, userWins);
-  });
 
   const sortedData = data.users.slice().sort((a, b) => {
     const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
     const rosterB = data.rosters.find((u) => u.owner_id === b.user_id);
     if (!rosterA || !rosterB) return 0;
     return rosterB.settings.wins - rosterA.settings.wins || rosterB.settings.fpts - rosterA.settings.fpts;
-  });
-
-  const userMaps: Map<string, Map<number, number>>[] = sortedData.map((user) => {
-    const userMap = new Map<number, number>(Array.from({ length: 12 }, (_, index) => [index + 1, 0]));
-    const mapForUser = new Map<string, Map<number, number>>();
-    mapForUser.set(user.user_id, userMap);
-    return mapForUser;
-  });
-
-  const userPlaceMap: Map<string, Map<number, number>> = new Map();
-  userMaps.forEach((userMap) => {
-    userMap.forEach((value, key) => {
-      userPlaceMap.set(key, value);
-    });
   });
 
   const calculateRecord = () => {
@@ -81,7 +65,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     //console.log(recordArray);
   };
 
-  const runSimulation = () => {
+  const runSimulation = (currentUserWinsMap: Map<string, Map<number, number>>, currentUserPlaceMap: Map<string, Map<number, number>>) => {
     let recordArray: Record[] = [];
     data.users.forEach((user) => {
       const roster = data.rosters.find((roster) => roster.owner_id === user.user_id);
@@ -101,7 +85,8 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     // Use the correct points map based on the toggle state
     const pointsMap = useLast3Points ? averageLast3PointsMap : averagePointsMap;
 
-    if (data.nflSeasonInfo.season === data.season) {
+    // Only simulate if the season is ongoing and there are remaining regular season games
+    if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type !== "post") {
       for (let week = data.nflSeasonInfo.week; week < data.settings.playoff_week_start; week++) {
         const weeklyMatchups = data.matchupInfo.filter((matchup) => matchup.week === week);
         weeklyMatchups.forEach((matchup) => {
@@ -152,12 +137,12 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     });
 
     recordArray.forEach((record, index) => {
-      const userPlace = userPlaceMap.get(record.userId);
+      const userPlace = currentUserPlaceMap.get(record.userId);
       if (userPlace) {
         const timesAtPlace = (userPlace?.get(index + 1) ?? 0) as number;
         userPlace.set(index + 1, timesAtPlace + 1);
       }
-      const winsMap = userWinsMap.get(record.userId);
+      const winsMap = currentUserWinsMap.get(record.userId);
       if (winsMap) {
         const currentCount = winsMap.get(record.wins) || 0;
         winsMap.set(record.wins, currentCount + 1);
@@ -165,16 +150,58 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     });
   };
 
-  const fillUserPlaceMap = () => {
-    const usersCount = data.users.length;
-    const rosterIds = Array.from({ length: usersCount }, (_, i) => i + 1);
+  const fillUserPlaceMap = async () => {
+    setIsLoading(true);
+    setLoadingProgress(0);
+
+    const newUserWinsMap: Map<string, Map<number, number>> = new Map();
+    data.users.forEach((user) => {
+      const userWins = new Map<number, number>(Array.from({ length: 16 }, (_, i) => [i, 0]));
+      newUserWinsMap.set(user.user_id, userWins);
+    });
+
+    const sortedData = data.users.slice().sort((a, b) => {
+      const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
+      const rosterB = data.rosters.find((u) => u.owner_id === b.user_id);
+      if (!rosterA || !rosterB) return 0;
+      return rosterB.settings.wins - rosterA.settings.wins || rosterB.settings.fpts - rosterA.settings.fpts;
+    });
+
+    const userMaps: Map<string, Map<number, number>>[] = sortedData.map((user) => {
+      const userMap = new Map<number, number>(Array.from({ length: 12 }, (_, index) => [index + 1, 0]));
+      const mapForUser = new Map<string, Map<number, number>>();
+      mapForUser.set(user.user_id, userMap);
+      return mapForUser;
+    });
+
+    const newUserPlaceMap: Map<string, Map<number, number>> = new Map();
+    userMaps.forEach((userMap) => {
+      userMap.forEach((value, key) => {
+        newUserPlaceMap.set(key, value);
+      });
+    });
+
+    // Run simulation in chunks to allow UI updates
     for (let i = 0; i < maxCombinations; i++) {
-      runSimulation();
+      runSimulation(newUserWinsMap, newUserPlaceMap);
+      
+      // Update progress every 10000 iterations and allow UI to update
+      if (i % 10000 === 0) {
+        setLoadingProgress(Math.round((i / maxCombinations) * 100));
+        await new Promise(resolve => setTimeout(resolve, 0)); // Yield to browser
+      }
     }
+
+    setUserWinsMap(newUserWinsMap);
+    setUserPlaceMap(newUserPlaceMap);
+    setIsLoading(false);
+    setLoadingProgress(100);
   };
 
-  // Call the fillUserPlaceMap method
-  fillUserPlaceMap();
+  // Load data on component mount
+  useEffect(() => {
+    fillUserPlaceMap();
+  }, [useLast3Points]);
 
   const tableHeaders = ["Team Name", "Place in Season", "Current Record", "Times in the Playoffs", ...Array.from({ length: 12 }, (_, index) => index + 1)];
 
@@ -189,7 +216,13 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
           </tr>
         </thead>
         <tbody>
-          {Array.from(userPlaceMap.entries()).map(([userId, userMap]) => {
+          {Array.from(userPlaceMap.entries())
+            .sort(([userIdA], [userIdB]) => {
+              const placeA = getUserSeasonPlace(userIdA, data);
+              const placeB = getUserSeasonPlace(userIdB, data);
+              return placeA - placeB;
+            })
+            .map(([userId, userMap]) => {
             const userData = data.users.find((user) => user.user_id === userId);
             const teamName = userData ? userData.metadata.team_name : "";
             if (!userData) return;
@@ -260,18 +293,48 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     <div>
       <YearNavBar data={data} />
       <h2>{maxCombinations} Simulations - {!useLast3Points ? "Average Points" : "Last 3 Game Average Points"}</h2>
-      {/* Toggle button to switch between average points and last 3 weeks average */}
-      <button onClick={() => {
-        setUseLast3Points(!useLast3Points); 
-        fillUserPlaceMap();  // Re-run the simulation with the new map
-      }}
-      className="button-margin">
       
-      {useLast3Points ? "Run with Average Points" : "Run with Last 3 Game Average Points"}
-      </button>
-      {renderPlaceTable()}
-      <h2 style={{ marginTop: '30px' }}>Win Distribution</h2>
-      {renderWinDistributionTable()}
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '18px', marginBottom: '20px', color: 'var(--text-secondary)' }}>
+            Calculating playoff possibilities...
+          </div>
+          <div style={{ 
+            width: '100%', 
+            maxWidth: '400px', 
+            height: '8px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '4px',
+            margin: '0 auto',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              height: '100%',
+              width: `${loadingProgress}%`,
+              backgroundColor: 'var(--accent-blue)',
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
+          <div style={{ fontSize: '14px', marginTop: '10px', color: 'var(--text-tertiary)' }}>
+            {loadingProgress}% complete
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Toggle button to switch between average points and last 3 weeks average */}
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <button 
+              onClick={() => setUseLast3Points(!useLast3Points)}
+              className="button-margin"
+            >
+              {useLast3Points ? "Run with Average Points" : "Run with Last 3 Game Average Points"}
+            </button>
+          </div>
+          {renderPlaceTable()}
+          <h2 style={{ marginTop: '30px' }}>Win Distribution</h2>
+          {renderWinDistributionTable()}
+        </>
+      )}
     </div>
   );
 };

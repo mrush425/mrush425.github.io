@@ -4,7 +4,7 @@ import YearNavBar from '../../Navigation/YearNavBar';
 import { getMatchupData } from '../../SleeperApiMethods';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
 import UserAsOfWeekStats from '../../Interfaces/UserAsOfWeekStats';
-import '../../Stylesheets/Year Stylesheets/OvertimeComparison.css';
+import '../../Stylesheets/YearStylesheets/OvertimeComparison.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import AllUserWeekStats from '../../Interfaces/AllUserAsOfWeekStats';
 
@@ -13,6 +13,26 @@ interface OvertimeComparisonProps {
 }
 
 const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
+  // Color scheme for 12 teams - vibrant and distinct colors
+  const teamColors = [
+    '#FF6B6B', // Red
+    '#4ECDC4', // Teal
+    '#45B7D1', // Sky Blue
+    '#FFA07A', // Light Salmon
+    '#98D8C8', // Mint
+    '#F7DC6F', // Gold
+    '#BB8FCE', // Purple
+    '#85C1E2', // Light Blue
+    '#F8B88B', // Peach
+    '#52C41A', // Green
+    '#FF85C0', // Pink
+    '#FF7A45', // Orange
+  ];
+
+  // Get color for a team by index
+  const getTeamColor = (userId: string, teamIndex: number): string => {
+    return teamColors[teamIndex % teamColors.length];
+  };
   const [graphData, setGraphData] = useState<AllUserWeekStats[]>([]);
   const [activeTeam, setActiveTeam] = useState<string | null>(null); // State for active team
   const [hoveredTeam, setHoveredTeam] = useState<string | null>(null); // State for hovered team
@@ -163,39 +183,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
     return lastRegularSeasonWeek;
   };
 
-  // Function to generate a hash code from a string
-  const hashCode = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-  };
 
-  // Function to convert a hash code to a hexadecimal color code
-  const intToRGB = (i: number) => {
-    // Convert input number (hash) to a hue value in the range [0, 360]
-    const hue = (i * 137) % 360; // Multiply by an arbitrary prime number to spread out the hues
-  
-    // Introduce variance in saturation and lightness
-    const saturation = 50 + (i % 50); // Randomize saturation between 50% and 100%
-    const lightness = 40 + (i % 40);  // Randomize lightness between 40% and 80%
-  
-    // Convert HSL to RGB
-    return hslToHex(hue, saturation, lightness);
-  };
-  
-  // Helper function to convert HSL to Hex
-  const hslToHex = (h: number, s: number, l: number) => {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0'); // Convert to hex and pad with zeros if necessary
-    };
-    return `${f(0)}${f(8)}${f(4)}`.toUpperCase(); // Return the hex color
-  };
 
   const handleTeamClick = (teamName: string) => {
     setActiveTeam(activeTeam === teamName ? null : teamName); // Toggle active team
@@ -209,19 +197,19 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
   const renderLegend = () => {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px' }}>
-        {graphData.map((userData) => {
-          const lineColor = `#${intToRGB(hashCode(userData.user_id))}`;
+        {graphData.map((userData, index) => {
+          const lineColor = getTeamColor(userData.user_id, index);
           return (
             <div
               key={userData.user_id}
-              onMouseEnter={() => handleLegendHover(userData.team_name)} // Handle hover
-              onMouseLeave={() => handleLegendHover(null)} // Reset hover
+              onMouseEnter={() => handleLegendHover(userData.team_name)}
+              onMouseLeave={() => handleLegendHover(null)}
               onClick={() => handleTeamClick(userData.team_name)}
               style={{
                 cursor: 'pointer',
                 margin: '0 20px',
                 fontWeight: activeTeam === userData.team_name ? 'bold' : 'normal',
-                color: activeTeam === userData.team_name ? lineColor : lineColor,
+                color: lineColor,
               }}
             >
               {userData.team_name}
@@ -246,7 +234,7 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
             y={20}
             textAnchor="middle"
             dominantBaseline="middle"
-            style={{ fontSize: '18px', fontWeight: 'bold' }}
+            style={{ fontSize: '18px', fontWeight: 'bold', fill: '#ffffff' }}
           >
             {data.season} Overtime Comparison
           </text>
@@ -261,16 +249,16 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
           <Tooltip />
           <Legend content={renderLegend()} /> {/* Custom legend */}
 
-          {graphData.map((userData) => (
+          {graphData.map((userData, index) => (
             <Line
               key={userData.user_id}
               type="linear"
               dataKey="rank"
               data={userData.user_week_stats}
               name={userData.team_name}
-              stroke={`#${intToRGB(hashCode(userData.user_id))}`}
+              stroke={getTeamColor(userData.user_id, index)}
               strokeWidth={2}
-              opacity={hoveredTeam && hoveredTeam !== userData.team_name ? 0.2 : 1} // Set opacity on hover
+              opacity={hoveredTeam && hoveredTeam !== userData.team_name ? 0.2 : 1}
             />
           ))}
         </LineChart>

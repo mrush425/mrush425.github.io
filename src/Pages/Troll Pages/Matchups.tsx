@@ -159,14 +159,14 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
         <label htmlFor="opponent-dropdown">Select Opponent:</label>
         <select
           id="opponent-dropdown"
-          className="form-select"
+          className="dropdown-select"
           value={selectedOpponentId || ''}
           onChange={(e) => {
             setSelectedOpponentId(e.target.value || null);
             setSelectedMatchup(null);
           }}
         >
-          <option value="">-- Choose an opponent --</option>
+          <option value="" hidden>-- Choose an opponent --</option>
           {trolls.map(([id, name]) => (
             <option key={id} value={id}>
               {name}
@@ -257,7 +257,7 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
 
           {/* Matchup Display */}
           {selectedMatchup && displayMatchupData && (
-            <div className="matchup-display-section">
+            <div className="troll-matchup-display-section">
               <h4>Matchup Details</h4>
               <MatchupDisplay
                 user1={displayMatchupData.user1}

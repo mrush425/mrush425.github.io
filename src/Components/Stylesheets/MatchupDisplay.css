@@ -6,12 +6,21 @@
 }
 
 /* General Table Styles */
+
 .matchup-display-table {
     width: 100%;
-    border-collapse: separate; /* Keep separate borders for cells */
-    border-spacing: 0; /* Removes spacing between cells */
+    border-collapse: separate;
+    border-spacing: 0;
     text-align: center;
-    font-size: 14px; /* Reduce font size for compact display */
+    font-size: 16px;
+    background: rgba(30,34,54,0.92);
+    border-radius: 18px;
+    border: 2px solid var(--accent-blue);
+    box-shadow: 0 4px 32px 0 rgba(96,165,250,0.10);
+    color: #e6edfa;
+    margin: 0;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
 }
 
 /* Column Widths */
@@ -32,34 +41,61 @@
     border: none; /* No border on the rows */
 }
 
+
 .matchup-display-table th,
 .matchup-display-table td {
-    padding: 4px; /* Reduce padding */
-    border-top: 1px solid black; /* Top border for all cells */
-    border-bottom: 1px solid black; /* Bottom border for all cells */
+    padding: 7px 6px;
+    border-top: 1px solid rgba(96,165,250,0.10);
+    border-bottom: 1px solid rgba(96,165,250,0.10);
+    color: #f1f5f9;
+    background: transparent;
+    font-size: 17px;
+    font-weight: 500;
 }
 
-/* Header Row Styles */
-.header-row th:nth-child(-n+3),
-.header-row th:nth-child(n+5):nth-child(-n+7) {
-    background-color: var(--primary-blue); /* Use variable for header background */
-    color: var(--text-light); /* Use variable for text color */
-    font-weight: bold; /* Emphasize the header text */
+/* Header Row Styles - Unified Header */
+
+.header-row {
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--bg-dark-secondary) 100%);
+}
+
+.header-row th {
+    background: transparent !important;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    border: none !important;
+    padding: 10px 6px;
+    text-transform: none;
 }
 
 /* Second Week Header Row */
+.second-week-header {
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--bg-dark-secondary) 100%);
+}
+
 .second-week-header td {
-    background-color: var(--primary-blue) !important; /* Use variable for header background */
-    color: var(--text-light); /* Use variable for text color */
-    font-weight: bold; /* Bold text for emphasis */
-    text-align: center; /* Center-align text */
-    padding: 6px; /* Match padding with header row */
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 6px;
+    border: none !important;
+    font-size: 15px;
+}
+
+/* Data Row Styles */
+.matchup-display-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.matchup-display-table tbody tr:hover {
+    background-color: rgba(96,165,250,0.05);
 }
 
 /* Alternating Row Colors */
-.matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(-n+3),
-.matchup-display-table tr:not(.empty-row):nth-child(even) td:nth-child(n+5):nth-child(-n+7) {
-    background-color: var(--light-blue); /* Use variable for light blue */
+.matchup-display-table tr:not(.empty-row):not(.header-row):not(.second-week-header):nth-child(even) td {
+    background-color: rgba(96,165,250,0.04);
 }
 
 /* Empty Row Styles */
@@ -69,7 +105,8 @@
 
 .empty-row td {
     border: none !important; /* Prevent borders for empty row cells */
-    height: 10px;
+    height: 4px;
+    padding: 2px 0 !important;
 }
 
 /* Total Points Row */
@@ -87,13 +124,31 @@
     content: none !important; /* Prevent the circle from being rendered */
 }
 
-/* Special Column Styles */
+/* Special Column Styles - Center Circle */
 .matchup-display-table th:nth-child(4),
 .matchup-display-table td:nth-child(4) {
     border: none !important; /* Remove borders for the 4th column */
     position: relative; /* Ensure positioning for pseudo-element */
     text-align: center; /* Center the text inside the circle */
     z-index: 1; /* Ensure the text stays above the circle */
+    padding: 14px 4px;
+}
+
+.matchup-display-table th:nth-child(5),
+.matchup-display-table td:nth-child(5) {
+    padding-left: 16px;
+    text-align: left;
+}
+
+.matchup-display-table th:nth-child(3),
+.matchup-display-table td:nth-child(3) {
+    padding-right: 16px;
+    text-align: right;
+}
+
+.matchup-display-table th:nth-child(6),
+.matchup-display-table td:nth-child(6) {
+    text-align: right;
 }
 
 .matchup-display-table th:nth-child(4)::before,
@@ -103,12 +158,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 55px; /* Reduce circle size */
-    height: 55px;
-    border: 1px solid var(--dark-blue);
+    width: 62px;
+    height: 62px;
+    border: 2px solid var(--accent-blue);
     border-radius: 50%; /* Makes the element a circle */
     z-index: -1; /* Ensures it appears behind the text */
-    background-color: var(--circle-background); /* Use variable for circle background */
+    background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 70%);
+    box-shadow: 0 0 20px rgba(96,165,250,0.15);
 }
 
 /* Borders for Specific Columns */
@@ -152,54 +208,84 @@
 }
 
 /* Player and Team Avatar Styles */
+
 .player-image,
 .team-avatar {
-    width: 40px; /* Reduce size */
-    height: 40px;
-    border-radius: 50%; /* Keep circular shape */
-    border: 1px solid var(--dark-blue); /* Adjust border size */
-    background-color: var(--circle-background); /* Keep consistent background */
-    object-fit: cover; /* Ensure the image covers the circle without distortion */
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-blue);
+    background: #1e2236;
+    object-fit: cover;
+    box-shadow: 0 2px 12px 0 rgba(96,165,250,0.15);
+    transition: all 0.25s ease;
+}
+
+.player-image:hover,
+.team-avatar:hover {
+    border: 2px solid var(--accent-cyan);
+    box-shadow: 0 4px 20px 0 rgba(6,182,212,0.25);
+    transform: scale(1.08);
 }
 
 /* Header Font Size */
+
 .matchup-header th {
-    font-size: 16px; /* Reduce font size */
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--bg-dark-secondary) 100%);
+    border-bottom: none;
+    letter-spacing: 0.03em;
+}
+
+/* MatchupDisplay Component Styles */
+.matchup-display-section > div > h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 /* Responsive Design for Mobile */
 @media (max-width: 768px) {
     .matchup-display-table {
-        font-size: 12px; /* Further reduce font size */
+        font-size: 14px;
     }
 
     .matchup-display-table th,
     .matchup-display-table td {
-        padding: 2px; /* Reduce padding on smaller screens */
+        padding: 8px 6px;
+        font-size: 15px;
     }
 
     .player-image,
     .team-avatar {
-        width: 30px; /* Further reduce avatar size */
-        height: 30px;
+        width: 40px;
+        height: 40px;
     }
 
     .matchup-col-10 {
-        width: 10%; /* Adjust column proportions */
+        width: 10%;
     }
 
     .matchup-col-28 {
-        width: 25%;
+        width: 22%;
     }
 
     .matchup-col-4 {
-        width: 5%;
+        width: 4%;
     }
 
     .matchup-display-table th:nth-child(4)::before,
     .matchup-display-table td:nth-child(4)::before {
-        width: 30px; /* Reduce circle size further */
-        height: 30px;
-        border: 1px solid var(--dark-blue);
+        width: 50px;
+        height: 50px;
+    }
+
+    .header-row th {
+        font-size: 16px;
+        padding: 10px 6px;
     }
 }

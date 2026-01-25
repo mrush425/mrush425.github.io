@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import TeamDropdown from './TeamDropdown';
-import '../../Stylesheets/Year Stylesheets/ScheduleViewer.css';
+import '../../Stylesheets/YearStylesheets/ScheduleViewer.css';
 import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getScoreForWeek } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
 

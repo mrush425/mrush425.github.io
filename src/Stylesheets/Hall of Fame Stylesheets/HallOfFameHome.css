@@ -1,38 +1,147 @@
+@import '../StandardStyles.css';
+
+/* ========================================================================
+   HALL OF FAME HOME STYLES
+   ======================================================================== */
+
+.hall-of-fame-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hall-of-fame-title {
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
 .hall-of-fame-table {
-    margin: 0 auto;
-    border: 1px solid black;
-    border-collapse: collapse;
-    text-align: center;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.hall-of-fame-table th,
+.hall-of-fame-table td {
+  padding: 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.hall-of-fame-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+}
+
+.hall-of-fame-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.hall-of-fame-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.hall-of-fame-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.header-column {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  color: var(--accent-orange);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.year-column {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  color: var(--accent-orange);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.champion-image,
+.butler-image {
+  height: 350px;
+  width: auto;
+  max-width: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.champion-image:hover,
+.butler-image:hover {
+  border-color: var(--accent-orange);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
+}
+
+@media (max-width: 1024px) {
+  .hall-of-fame-container {
+    padding: 16px;
   }
-  
+
+  .hall-of-fame-title {
+    font-size: 24px;
+  }
+
   .hall-of-fame-table th,
   .hall-of-fame-table td {
-    border: 1px solid black;
-    padding: 10px;
-    vertical-align: middle;
+    padding: 12px;
   }
-  
-  .hall-of-fame-table th {
-    font-weight: bold;
-  }
-  
-  .header-column {
-    font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font */
-    color: #ff4500; /* Bright orange color */
-    font-size: 1.5rem; /* Bigger font size */
-    background-color: #f0f0f0; /* Optional light gray background */
-  }
-  
-  .year-column {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    color: #ff4500;
-    font-size: 1.5rem;
-    text-align: left;
-  }
-  
+
   .champion-image,
   .butler-image {
-    height: 350px;
-    object-fit: cover;
+    height: 250px;
+    max-width: 200px;
   }
+}
+
+@media (max-width: 768px) {
+  .hall-of-fame-container {
+    padding: 12px;
+  }
+
+  .hall-of-fame-title {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .hall-of-fame-table th,
+  .hall-of-fame-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .header-column {
+    font-size: 1.2rem;
+  }
+
+  .year-column {
+    font-size: 1rem;
+  }
+
+  .champion-image,
+  .butler-image {
+    height: 200px;
+    max-width: 150px;
+  }
+}
   

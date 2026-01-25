@@ -1,10 +1,45 @@
+@import '../StandardStyles.css';
+
 .troll-data-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-dark-primary) 0%, var(--bg-dark-secondary) 100%);
 }
 
 .troll-content {
   flex: 1;
   overflow-y: auto;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.troll-content h2 {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 1024px) {
+  .troll-content {
+    padding: 16px;
+  }
+
+  .troll-content h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .troll-content {
+    padding: 12px;
+  }
+
+  .troll-content h2 {
+    font-size: 18px;
+  }
 }

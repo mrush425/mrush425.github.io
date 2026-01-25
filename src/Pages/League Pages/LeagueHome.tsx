@@ -17,16 +17,14 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
   }>({
     winner: null,
     loser: null,
-    week: 1,
+    week: 0,
     secondWeek: null,
     leagueData: null,
     bowl: null,
   });
+  const [isMobile, setIsMobile] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'matchup'>('table');
 
-  const [isMobile, setIsMobile] = useState(false); // Track if the user is on a mobile device
-  const [viewMode, setViewMode] = useState<'table' | 'matchup'>('table'); // Mobile view state
-
-  // Detect screen width to determine if it's mobile
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -81,10 +79,10 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
   };
 
   return (
-    <div>
+    <div className="league-home-container">
       <LeagueNavBar data={data} />
-      <div className={`league-home-container ${isMobile ? 'mobile-view' : ''}`}>
-        {/* Desktop: Always show both sections */}
+      <div className="league-home-content">
+        {/* Desktop: Show table and matchup side by side */}
         {!isMobile && (
           <>
             <div className="league-stats-section">
@@ -110,10 +108,6 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                             onClick={() =>
                               handleWinnerClick(winner, loser, league, bowl)
                             }
-                            style={{
-                              cursor: 'pointer',
-                              color: winner ? 'blue' : 'inherit',
-                            }}
                           >
                             {winner ? winner.metadata.team_name : 'N/A'}
                           </td>
@@ -162,10 +156,6 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                           onClick={() =>
                             handleWinnerClick(winner, loser, league, bowl)
                           }
-                          style={{
-                            cursor: 'pointer',
-                            color: winner ? 'blue' : 'inherit',
-                          }}
                         >
                           {winner ? winner.metadata.team_name : 'N/A'}
                         </td>

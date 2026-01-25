@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import DraftPick from '../../Interfaces/DraftPick';
 import PlayerYearStats from '../../Interfaces/PlayerYearStats';
-import '../../Stylesheets/Year Stylesheets/DraftReportCard.css'; // Create a CSS file for styling
+import '../../Stylesheets/YearStylesheets/DraftReportCard.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
 import TeamDropdown from './TeamDropdown'; // Adjust the path accordingly
 import {getBackgroundAndTextColor, getPlayerStats } from './SharedDraftMethods';

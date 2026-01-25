@@ -146,7 +146,7 @@ const OtherStats: React.FC<LeagueProps> = ({ data }) => {
                             style={{ marginRight: '6px' }} 
                             onChange={(e) => handleFilterChange(e.target.checked)}
                         />
-                        Filter teams with fewer than **3** years played
+                        Filter teams with fewer than 3 years played
                     </label>
                 </div>
                 

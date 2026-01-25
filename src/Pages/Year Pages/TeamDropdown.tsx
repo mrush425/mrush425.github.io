@@ -14,9 +14,9 @@ const TeamDropdown: React.FC<TeamDropdownProps> = ({ users, onSelectTeam }) => {
   };
 
   return (
-    <div>
-      <label htmlFor="teamDropdown" style={{ marginRight: '8px' }}>Select Team:</label>
-      <select id="teamDropdown" onChange={handleTeamSelect}>
+    <div className="dropdown-wrapper">
+      <label htmlFor="teamDropdown">Select Team:</label>
+      <select id="teamDropdown" className="dropdown-select" onChange={handleTeamSelect}>
         <option value="">Select a Team</option>
         {users.map((user) => (
           <option key={user.user_id} value={user.metadata.team_name}>
