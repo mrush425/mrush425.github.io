@@ -1,6 +1,6 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId } from "./HelperMethods";
+import { findRosterByUserId, getUserSeasonPlace } from "./HelperMethods";
 
 export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
     let wins: number = 0;
@@ -280,4 +280,124 @@ export const recordAgainstWinningTeams = (user: SleeperUser, data: LeagueData): 
 
 export const displayRecord = (wins: number, losses: number, ties: number): string => {
     return wins + "-" + losses + "-" + ties;
+};
+
+export const calculatePlayoffRecord = (user: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
+    let wins = 0;
+    let losses = 0;
+    let ties = 0;
+
+    if (!data.matchupInfo || !data.rosters) {
+        return [0, 0, 0];
+    }
+
+    const targetRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
+    if (!targetRosterId) {
+        return [0, 0, 0];
+    }
+
+    const playoffStartWeek = data.settings.playoff_week_start;
+    
+    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
+    const seasonPlace = getUserSeasonPlace(user.user_id, data);
+    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
+
+    // Filter for playoff weeks only
+    let playoffMatchups = data.matchupInfo.filter(
+        (matchup) => matchup.week >= playoffStartWeek
+    );
+    
+    // If user has a bye, skip the first playoff week
+    if (hasByeInFirstWeek) {
+        playoffMatchups = playoffMatchups.filter((matchup) => matchup.week > playoffStartWeek);
+    }
+
+    playoffMatchups.forEach((matchup) => {
+        const teamMatchup = matchup.matchups.find((m) => m.roster_id === targetRosterId);
+        
+        if (teamMatchup) {
+            // Find the opponent in the same matchup_id
+            const opponentMatchup = matchup.matchups.find(
+                (m) => m.matchup_id === teamMatchup.matchup_id && m.roster_id !== targetRosterId
+            );
+
+            // If no opponent found, it's a bye week - don't count it
+            if (!opponentMatchup) {
+                return;
+            }
+
+            // Count the game result
+            if (teamMatchup.points > opponentMatchup.points) {
+                wins++;
+            } else if (teamMatchup.points < opponentMatchup.points) {
+                losses++;
+            } else {
+                ties++;
+            }
+        }
+    });
+
+    return [wins, losses, ties];
+};
+
+
+export const getPlayoffRecordAgainstLeague = (user: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
+    let winsSum = 0;
+    let lossesSum = 0;
+    let tiesSum = 0;
+
+    if (!data.matchupInfo || !data.rosters) {
+        return [0, 0, 0];
+    }
+
+    const targetRosterId = findRosterByUserId(user.user_id, data.rosters)?.roster_id;
+    if (!targetRosterId) {
+        return [0, 0, 0];
+    }
+
+    const playoffStartWeek = data.settings.playoff_week_start;
+    
+    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
+    const seasonPlace = getUserSeasonPlace(user.user_id, data);
+    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
+
+    // Filter for playoff weeks only
+    let playoffMatchups = data.matchupInfo.filter(
+        (matchup) => matchup.week >= playoffStartWeek
+    );
+    
+    // If user has a bye, skip the first playoff week
+    if (hasByeInFirstWeek) {
+        playoffMatchups = playoffMatchups.filter((matchup) => matchup.week > playoffStartWeek);
+    }
+
+    // For each playoff week, compare user's score against all other teams
+    playoffMatchups.forEach((matchup) => {
+        const teamMatchup = matchup.matchups.find((m) => m.roster_id === targetRosterId);
+        
+        if (teamMatchup) {
+            // Compare against all teams in this week
+            matchup.matchups.forEach((oppMatchup) => {
+                if (oppMatchup.roster_id !== targetRosterId) {
+                    // Check if opponent has an actual opponent (not on bye)
+                    const oppHasOpponent = matchup.matchups.some(
+                        (m) => m.matchup_id === oppMatchup.matchup_id && m.roster_id !== oppMatchup.roster_id
+                    );
+                    
+                    // Only count if opponent is not on bye
+                    if (oppHasOpponent) {
+                        if (teamMatchup.points > oppMatchup.points) {
+                            winsSum++;
+                        } else if (teamMatchup.points < oppMatchup.points) {
+                            lossesSum++;
+                        } else {
+                            tiesSum++;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    return [winsSum, lossesSum, tiesSum];
 };

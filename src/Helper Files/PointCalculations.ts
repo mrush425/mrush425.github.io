@@ -1,6 +1,6 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId } from "./HelperMethods";
+import { findRosterByUserId, getUserSeasonPlace } from "./HelperMethods";
 
 /**
  * Calculates the total fantasy points scored by a specific team for the entire year (season).
@@ -48,4 +48,107 @@ export const calculateYearPointsAgainst = (user: SleeperUser, league: LeagueData
     const rawTotalPointsAgainst = pointsAgainstInteger + (pointsAgainstDecimal / 100);
 
     return Math.round(rawTotalPointsAgainst * 100) / 100;
+};
+
+/**
+ * Calculates the total fantasy points scored by a team during playoff weeks only.
+ * Only includes weeks >= playoff_week_start where the team actually plays (not on bye).
+ * Users in positions 1, 2, 7, 8 have a bye in the first playoff week.
+ * @param user The SleeperUser object for the team.
+ * @param data The LeagueData object containing matchupInfo and settings.
+ * @returns An object with total points and games played during playoffs.
+ */
+export const calculatePlayoffPoints = (
+    user: SleeperUser,
+    data: LeagueData
+): { points: number; gamesPlayed: number } => {
+    if (!data.matchupInfo || !data.rosters) {
+        return { points: 0, gamesPlayed: 0 };
+    }
+
+    const roster = findRosterByUserId(user.user_id, data.rosters);
+    if (!roster) {
+        return { points: 0, gamesPlayed: 0 };
+    }
+
+    const playoffStartWeek = data.settings.playoff_week_start || Infinity;
+    
+    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
+    const seasonPlace = getUserSeasonPlace(user.user_id, data);
+    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
+    
+    let totalPoints = 0;
+    let gamesPlayed = 0;
+
+    data.matchupInfo.forEach((weekBlock) => {
+        if (weekBlock.week < playoffStartWeek) return;
+        
+        // Skip first playoff week if user has a bye
+        if (hasByeInFirstWeek && weekBlock.week === playoffStartWeek) return;
+
+        const teamMatchup = weekBlock.matchups.find((m) => m.roster_id === roster.roster_id);
+        if (!teamMatchup) return;
+
+        // Check if team is on bye (no opponent)
+        const hasOpponent = weekBlock.matchups.some(
+            (m) => m.matchup_id === teamMatchup.matchup_id && m.roster_id !== roster.roster_id
+        );
+        if (!hasOpponent) return;
+
+        totalPoints += teamMatchup.points ?? 0;
+        gamesPlayed++;
+    });
+
+    return { points: Math.round(totalPoints * 100) / 100, gamesPlayed };
+};
+
+/**
+ * Calculates the total fantasy points scored AGAINST a team during playoff weeks only.
+ * Only includes weeks >= playoff_week_start where the team actually plays (not on bye).
+ * Users in positions 1, 2, 7, 8 have a bye in the first playoff week.
+ * @param user The SleeperUser object for the team.
+ * @param data The LeagueData object containing matchupInfo and settings.
+ * @returns An object with total points against and games played during playoffs.
+ */
+export const calculatePlayoffPointsAgainst = (
+    user: SleeperUser,
+    data: LeagueData
+): { points: number; gamesPlayed: number } => {
+    if (!data.matchupInfo || !data.rosters) {
+        return { points: 0, gamesPlayed: 0 };
+    }
+
+    const roster = findRosterByUserId(user.user_id, data.rosters);
+    if (!roster) {
+        return { points: 0, gamesPlayed: 0 };
+    }
+
+    const playoffStartWeek = data.settings.playoff_week_start || Infinity;
+    
+    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
+    const seasonPlace = getUserSeasonPlace(user.user_id, data);
+    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
+    
+    let totalPointsAgainst = 0;
+    let gamesPlayed = 0;
+
+    data.matchupInfo.forEach((weekBlock) => {
+        if (weekBlock.week < playoffStartWeek) return;
+        
+        // Skip first playoff week if user has a bye
+        if (hasByeInFirstWeek && weekBlock.week === playoffStartWeek) return;
+
+        const teamMatchup = weekBlock.matchups.find((m) => m.roster_id === roster.roster_id);
+        if (!teamMatchup) return;
+
+        const oppMatchup = weekBlock.matchups.find(
+            (m) => m.matchup_id === teamMatchup.matchup_id && m.roster_id !== roster.roster_id
+        );
+        if (!oppMatchup) return;
+
+        totalPointsAgainst += oppMatchup.points ?? 0;
+        gamesPlayed++;
+    });
+
+    return { points: Math.round(totalPointsAgainst * 100) / 100, gamesPlayed };
 };
