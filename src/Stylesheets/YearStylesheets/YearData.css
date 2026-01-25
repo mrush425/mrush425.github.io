@@ -415,6 +415,15 @@
     grid-template-columns: 1fr;
   }
 
+  .stat-card-grid .stat-item {
+    text-align: left !important;
+  }
+
+  .stat-card-grid .stat-item:nth-child(2),
+  .stat-card-grid .stat-item:nth-child(4) {
+    text-align: left !important;
+  }
+
   .stat-value {
     font-size: 12px;
   }
