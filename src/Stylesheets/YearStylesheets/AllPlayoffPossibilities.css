@@ -1,0 +1,90 @@
+@import '../StandardStyles.css';
+
+/* ========================================================================
+   ALL PLAYOFF POSSIBILITIES STYLES
+   ======================================================================== */
+
+.possibilities-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.button-margin {
+  margin-bottom: 20px;
+}
+
+/* Possibilities Tables */
+.all-possibilities-table,
+.win-distribution-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  margin: 20px auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.all-possibilities-table th,
+.all-possibilities-table td,
+.win-distribution-table th,
+.win-distribution-table td {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.all-possibilities-table th,
+.win-distribution-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.all-possibilities-table td,
+.win-distribution-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.all-possibilities-table tbody tr,
+.win-distribution-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.all-possibilities-table tbody tr:nth-child(even),
+.win-distribution-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.all-possibilities-table tbody tr:hover,
+.win-distribution-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .possibilities-container {
+    padding: 12px;
+  }
+
+  .all-possibilities-table th,
+  .all-possibilities-table td,
+  .win-distribution-table th,
+  .win-distribution-table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .all-possibilities-table th,
+  .win-distribution-table th {
+    font-size: 10px;
+  }
+}
+
+

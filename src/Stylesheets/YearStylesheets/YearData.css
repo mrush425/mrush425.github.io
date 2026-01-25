@@ -1,0 +1,554 @@
+@import '../StandardStyles.css';
+
+/* ========================================================================
+   YEAR DATA PAGE STYLES - DASHBOARD LAYOUT
+   ======================================================================== */
+
+.year-data-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.year-data-title {
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* ========================================================================
+   STAT CARDS SECTION
+   ======================================================================== */
+
+.stat-cards-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.08) 0%, rgba(30, 34, 54, 0.6) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.12) 0%, rgba(30, 34, 54, 0.7) 100%);
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.15);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.1);
+}
+
+.stat-card-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.stat-card-place {
+  font-weight: 700;
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(96, 165, 250, 0.2);
+  color: var(--accent-blue);
+}
+
+.stat-card-place.playoffs {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--accent-green);
+}
+
+.stat-card-place.no-playoffs {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+}
+
+.stat-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left !important;
+}
+
+.stat-card-grid .stat-item:nth-child(2),
+.stat-card-grid .stat-item:nth-child(4) {
+  text-align: right !important;
+}
+
+.stat-card-grid .stat-item:nth-child(2) .stat-label,
+.stat-card-grid .stat-item:nth-child(2) .stat-value,
+.stat-card-grid .stat-item:nth-child(4) .stat-label,
+.stat-card-grid .stat-item:nth-child(4) .stat-value {
+  text-align: right !important;
+}
+
+.stat-label {
+  font-size: 15px !important;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-align: left !important;
+}
+
+.stat-value {
+  font-size: 20px !important;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left !important;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(96, 165, 250, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ========================================================================
+   TAB NAVIGATION
+   ======================================================================== */
+
+.tab-navigation {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.tab-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+}
+
+/* ========================================================================
+   RECORDS TABLE
+   ======================================================================== */
+
+.records-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 32px;
+}
+
+.records-table th,
+.records-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.records-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.records-table th:hover {
+  color: var(--accent-blue);
+}
+
+.records-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.records-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.records-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.records-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.records-table tbody tr:not(.expanded-row):hover {
+  background: rgba(96, 165, 250, 0.08);
+}
+
+/* Playoffs team highlight */
+.playoffs-team {
+  background: rgba(74, 222, 128, 0.15) !important;
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+/* Expand button */
+.expand-cell {
+  text-align: center;
+  padding: 12px 8px !important;
+}
+
+.expand-button {
+  background: rgba(96, 165, 250, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.expand-button:hover {
+  background: rgba(96, 165, 250, 0.2);
+  border-color: rgba(96, 165, 250, 0.5);
+  color: var(--accent-blue);
+}
+
+/* Expanded row */
+.expanded-row {
+  background: rgba(96, 165, 250, 0.05) !important;
+}
+
+.expanded-row td {
+  padding: 20px 16px !important;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.expanded-content {
+  padding: 20px !important;
+}
+
+.expanded-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.detail-column h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-column div {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  line-height: 1.6;
+}
+
+/* ========================================================================
+   SIDEBETS SECTION
+   ======================================================================== */
+
+.sidebets-section {
+  margin-top: 0;
+}
+
+.sidebets-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sidebets-table th,
+.sidebets-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.sidebets-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.sidebets-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.sidebets-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.winner-badge {
+  background: rgba(96, 165, 250, 0.2);
+  color: var(--accent-blue);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 1024px) {
+  .year-data-container {
+    padding: 16px;
+  }
+
+  .year-data-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .stat-cards-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-card-grid {
+    gap: 6px;
+  }
+
+  .stat-value {
+    font-size: 13px;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .year-data-container {
+    padding: 12px;
+  }
+
+  .year-data-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .stat-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 12px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .tab-navigation {
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .records-table {
+    font-size: 12px;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .expand-button {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .expanded-details {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .detail-column div {
+    font-size: 12px;
+  }
+}
+
+.playoffs-team:hover {
+  background: rgba(74, 222, 128, 0.25) !important;
+}
+
+/* Team name column */
+.year-data-table td:first-child {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 150px;
+}
+
+/* Stats columns */
+.stat-value {
+  text-align: right;
+  font-weight: 500;
+}
+
+.stat-value.wins {
+  color: var(--accent-green);
+}
+
+.stat-value.losses {
+  color: var(--accent-red);
+}
+
+.stat-value.points {
+  color: var(--accent-blue);
+}
+
+/* Sidebet section */
+.sidebet-section {
+  margin-top: 40px;
+}
+
+.sidebet-section h3 {
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .year-data-container {
+    padding: 16px;
+  }
+
+  .year-data-title {
+    font-size: 20px;
+  }
+
+  .year-data-table th,
+  .year-data-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .year-data-table th {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .year-data-container {
+    padding: 12px;
+  }
+
+  .year-data-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .year-data-table th,
+  .year-data-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .year-data-table th {
+    font-size: 10px;
+  }
+
+  .year-data-table td:first-child {
+    min-width: 120px;
+  }
+
+  .sidebet-section {
+    margin-top: 24px;
+  }
+
+  .sidebet-section h3 {
+    font-size: 16px;
+  }
+}

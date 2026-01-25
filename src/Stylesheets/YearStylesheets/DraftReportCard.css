@@ -1,0 +1,230 @@
+@import '../StandardStyles.css';
+@import '../Dropdowns.css';
+
+/* ========================================================================
+   DRAFT REPORT CARD STYLES
+   ======================================================================== */
+
+.report-card-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.report-card-title {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.report-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.report-card {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.report-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: inset 0 0 20px rgba(96, 165, 250, 0.05);
+}
+
+.report-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.report-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.report-card-grade {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--accent-blue);
+}
+
+.report-card-grade.a {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--accent-green);
+}
+
+.report-card-grade.b {
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--accent-blue);
+}
+
+.report-card-grade.c {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--accent-orange);
+}
+
+.report-card-grade.d {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}
+
+.report-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-card-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.report-card-stat:last-child {
+  border-bottom: none;
+}
+
+.report-card-stat-label {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-card-stat-value {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.report-cards-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+}
+
+.report-cards-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-cards-table th,
+.report-cards-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.report-cards-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+}
+
+.report-cards-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.report-cards-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.report-cards-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.report-cards-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.team-draft-picks-table {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@media (max-width: 1024px) {
+  .report-card-container {
+    padding: 16px;
+  }
+
+  .report-card-title {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .report-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .report-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-card-container {
+    padding: 12px;
+  }
+
+  .report-card-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .report-card-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .report-card {
+    padding: 12px;
+  }
+
+  .report-card-name {
+    font-size: 16px;
+  }
+
+  .report-card-grade {
+    font-size: 14px;
+  }
+
+  .report-cards-table th,
+  .report-cards-table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .report-cards-table th {
+    font-size: 10px;
+  }
+}

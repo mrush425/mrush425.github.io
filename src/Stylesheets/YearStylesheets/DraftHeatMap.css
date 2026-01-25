@@ -1,0 +1,239 @@
+@import '../StandardStyles.css';
+
+/* ========================================================================
+   DRAFT HEATMAP STYLES
+   ======================================================================== */
+
+.heatmap-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.heatmap-title {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.heatmap-table-wrapper {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: auto;
+  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+}
+
+.heatmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.heatmap-table th,
+.heatmap-table td {
+  padding: 12px 8px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  width: calc(100% / 12);
+  overflow: hidden;
+}
+
+.heatmap-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  position: relative;
+}
+
+.heatmap-table td {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.01);
+  padding: 4px !important;
+}
+
+/* Draft cell content styling */
+.draft-cell-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 4px;
+  font-size: 11px;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.draft-player-name {
+  font-weight: 700;
+  font-size: 15px;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.draft-position-points {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.draft-player-position {
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.draft-player-points {
+  font-weight: 600;
+  font-size: 13px;
+  text-align: right;
+}
+
+.draft-picked-by {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* Heatmap cell coloring based on value */
+.heatmap-cell {
+  position: relative;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.heatmap-cell:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Heatmap scale - Green (high) to Red (low) */
+.heatmap-cell.high {
+  background: rgba(74, 222, 128, 0.25);
+  color: var(--text-primary);
+}
+
+.heatmap-cell.medium-high {
+  background: rgba(96, 165, 250, 0.20);
+  color: var(--text-secondary);
+}
+
+.heatmap-cell.medium {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+}
+
+.heatmap-cell.medium-low {
+  background: rgba(249, 115, 22, 0.20);
+  color: var(--text-secondary);
+}
+
+.heatmap-cell.low {
+  background: rgba(239, 68, 68, 0.25);
+  color: var(--text-primary);
+}
+
+/* Tooltip for heatmap cells */
+.heatmap-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-dark-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  border: 1px solid var(--border-light);
+  z-index: 100;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.heatmap-cell:hover .heatmap-tooltip {
+  opacity: 1;
+}
+
+/* Legend */
+.heatmap-legend {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 1024px) {
+  .heatmap-container {
+    padding: 16px;
+  }
+
+  .heatmap-title {
+    font-size: 20px;
+  }
+
+  .heatmap-table th,
+  .heatmap-table td {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heatmap-container {
+    padding: 12px;
+  }
+
+  .heatmap-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .heatmap-legend {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .legend-color {
+    width: 20px;
+    height: 20px;
+  }
+
+  .legend-item {
+    font-size: 11px;
+  }
+}
