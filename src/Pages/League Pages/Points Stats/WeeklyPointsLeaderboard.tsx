@@ -85,10 +85,10 @@ const getPlayoffStartWeek = (league: LeagueData): number => {
 };
 
 /**
- * Builds a list of regular season "single game" rows.
+ * Builds a list of all game rows (regular season + playoffs).
  * Uses matchup_id matching via getMatchupForWeek to find opponent.
  */
-const buildRegularSeasonGameRows = (data: LeagueData[]): GameRow[] => {
+const buildAllGameRows = (data: LeagueData[]): GameRow[] => {
   const yearsPlayedMap = buildYearsPlayedMap(data);
   const rows: GameRow[] = [];
 
@@ -96,14 +96,16 @@ const buildRegularSeasonGameRows = (data: LeagueData[]): GameRow[] => {
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const playoffStartWeek = getPlayoffStartWeek(league);
-    const lastRegularSeasonWeek = Math.max(1, playoffStartWeek - 1);
-
     // Pre-map users for lookup
     const users = league.users as SleeperUser[];
 
-    // For each week in regular season, build matchup rows
-    for (let week = 1; week <= lastRegularSeasonWeek; week++) {
+    // Fetch all weeks (regular season + playoffs)
+    // Assuming weeks go up to 18 (or check league settings)
+    const anySettings = league.settings as any;
+    const playoffEndWeek = anySettings?.playoff_end_week ?? 18;
+
+    // For each week (both regular season and playoff), build matchup rows
+    for (let week = 1; week <= playoffEndWeek; week++) {
       users.forEach((user) => {
         const matchup = getMatchupForWeek(user, week, league);
         if (!matchup) return;
@@ -160,9 +162,11 @@ const buildRegularSeasonGameRows = (data: LeagueData[]): GameRow[] => {
 // MAIN COMPONENT
 // =========================================================================
 
-const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minYears?: number }> = ({
+const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({
   data,
   minYears = 0,
+  includeRegularSeason = true,
+  includePlayoffs = true,
 }) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: 'points',
@@ -172,9 +176,27 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
   const [selectedRow, setSelectedRow] = useState<GameRow | null>(null);
 
   const { sortedRows } = useMemo(() => {
-    const allRows = buildRegularSeasonGameRows(data);
+    const allRows = buildAllGameRows(data);
 
-    const filtered = allRows.filter((r) => r.yearsPlayed >= minYears);
+    let filtered = allRows.filter((r) => r.yearsPlayed >= minYears);
+
+    // Filter out regular season weeks if includeRegularSeason is false
+    if (!includeRegularSeason) {
+      filtered = filtered.filter((row) => {
+        const league = row.league;
+        const playoffStartWeek = getPlayoffStartWeek(league);
+        return row.week >= playoffStartWeek;
+      });
+    }
+
+    // Filter out playoff weeks if includePlayoffs is false
+    if (!includePlayoffs) {
+      filtered = filtered.filter((row) => {
+        const league = row.league;
+        const playoffStartWeek = getPlayoffStartWeek(league);
+        return row.week < playoffStartWeek;
+      });
+    }
 
     const sorted = [...filtered].sort((a, b) => {
       const { key, direction } = sortConfig;
@@ -192,7 +214,7 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
     });
 
     return { sortedRows: sorted };
-  }, [data, minYears, sortConfig]);
+  }, [data, minYears, includeRegularSeason, includePlayoffs, sortConfig]);
 
   useEffect(() => {
     if (!selectedRow && sortedRows.length > 0) {
@@ -217,7 +239,7 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
     return (
       <div className="regular-season-points">
         <div className="notImplementedMessage">
-          No regular season game scores found (min years: {minYears}).
+          No game scores found (min years: {minYears}).
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import WebsiteNavBar from '../Navigation/WebsiteNavbar';
 import Home from './home';
+import LoadingScreen from '../Components/LoadingScreen';
 
 import { getLeagueData } from '../SleeperApiMethods';
 import { Current_League_Id } from '../Helper Files/Constants';
@@ -34,16 +35,34 @@ function generateYearRoute(league: LeagueData, pathSuffix: string, component: Re
 function App() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   
 
   useEffect(() => {
     const fetchLeagueData = async () => {
       try {
+        // Simulate progress updates
+        setLoadingProgress(10);
+        
         const data = await getLeagueData(Current_League_Id);
+        
+        // Update progress as data loads
+        setLoadingProgress(50);
+        
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setLoadingProgress(80);
+        
         setLeagueData(data);
+        
+        setLoadingProgress(100);
+        
+        // Small delay before showing content
+        await new Promise(resolve => setTimeout(resolve, 300));
         setDataFetched(true);
       } catch (error) {
         console.error('Error fetching league data:', error);
+        setDataFetched(true); // Show app even on error
       }
     };
 
@@ -51,7 +70,7 @@ function App() {
   }, []);
 
   if (!dataFetched) {
-    return <div>Loading...</div>;
+    return <LoadingScreen progress={loadingProgress} />;
   }
 
 // App.tsx

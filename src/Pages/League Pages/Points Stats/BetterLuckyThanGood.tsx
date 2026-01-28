@@ -53,7 +53,7 @@ const buildBetterLuckyThanGoodWeeklyRows = (allLeagues: LeagueData[]): WeeklySta
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const stats: SidebetStat[] = SidebetMethods.BetterLuckyThanGood(league);
+    const stats: SidebetStat[] = SidebetMethods.BetterLuckyThanGood(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -94,9 +94,11 @@ const buildBetterLuckyThanGoodWeeklyRows = (allLeagues: LeagueData[]): WeeklySta
 // COMPONENT
 // =========================================================================
 
-const BetterLuckyThanGood: React.FC<RecordComponentProps & { minYears?: number }> = ({
+const BetterLuckyThanGood: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({
   data,
   minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
 }) => {
   const weeklyRows = useMemo(() => {
     return buildBetterLuckyThanGoodWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
@@ -109,6 +111,8 @@ const BetterLuckyThanGood: React.FC<RecordComponentProps & { minYears?: number }
       emptyMessage={`No Better Lucky Than Good data found (min years: ${minYears}).`}
       defaultSort={{ key: 'statValue', direction: 'ascending' }} // smaller winning score = luckier
       allowDeselect={true}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };

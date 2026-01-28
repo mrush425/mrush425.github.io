@@ -95,9 +95,11 @@ const buildHeartbreakerWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] 
 // COMPONENT
 // =========================================================================
 
-const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number }> = ({
+const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({
   data,
   minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
 }) => {
   const weeklyRows = useMemo(() => {
     return buildHeartbreakerWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
@@ -111,9 +113,8 @@ const Heartbreaker: React.FC<RecordComponentProps & { minYears?: number }> = ({
       defaultSort={{ key: 'statValue', direction: 'ascending' }} // smaller = more heartbreaking
       allowDeselect={true}
       bestDirection="low"
-      showSeasonFilters
-      defaultIncludeRegularSeason={true}
-      defaultIncludePlayoffs={false}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };

@@ -53,7 +53,7 @@ const buildMaybeNextTimeWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[]
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const stats: SidebetStat[] = SidebetMethods.MaybeNextTime(league);
+    const stats: SidebetStat[] = SidebetMethods.MaybeNextTime(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -94,7 +94,12 @@ const buildMaybeNextTimeWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[]
 // COMPONENT
 // =========================================================================
 
-const MaybeNextTime: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
+const MaybeNextTime: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({ 
+  data, 
+  minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
+}) => {
   const weeklyRows = useMemo(() => {
     return buildMaybeNextTimeWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
   }, [data, minYears]);
@@ -107,6 +112,8 @@ const MaybeNextTime: React.FC<RecordComponentProps & { minYears?: number }> = ({
       defaultSort={{ key: 'statValue', direction: 'descending' }} // higher losing score = "maybe next time"
       bestDirection="high"
       allowDeselect={true}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };

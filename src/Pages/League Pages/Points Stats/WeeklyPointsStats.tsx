@@ -69,7 +69,12 @@ export interface WeeklyPointsStatsProps {
    */
   defaultIncludeRegularSeason?: boolean;
   defaultIncludePlayoffs?: boolean;
-}
+  /**
+   * Season filters passed from parent component.
+   * If provided, these override the local state.
+   */
+  includeRegularSeason?: boolean;
+  includePlayoffs?: boolean;}
 
 // =========================================================================
 // COMPONENT
@@ -86,6 +91,8 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
   showSeasonFilters = false,
   defaultIncludeRegularSeason = true,
   defaultIncludePlayoffs = false,
+  includeRegularSeason: includeRegularSeasonProp,
+  includePlayoffs: includePlayoffsProp,
 }) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: defaultSort?.key ?? 'statValue',
@@ -94,10 +101,14 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
 
   const [selectedRow, setSelectedRow] = useState<WeeklyStatRow | null>(null);
 
-  const [includeRegularSeason, setIncludeRegularSeason] = useState<boolean>(
+  const [includeRegularSeasonState, setIncludeRegularSeasonState] = useState<boolean>(
     defaultIncludeRegularSeason
   );
-  const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(defaultIncludePlayoffs);
+  const [includePlayoffsState, setIncludePlayoffsState] = useState<boolean>(defaultIncludePlayoffs);
+
+  // Use props if provided, otherwise use local state
+  const includeRegularSeason = includeRegularSeasonProp !== undefined ? includeRegularSeasonProp : includeRegularSeasonState;
+  const includePlayoffs = includePlayoffsProp !== undefined ? includePlayoffsProp : includePlayoffsState;
 
   // IMPORTANT: determine playoffs using BOTH week and secondWeek (if present)
   const isPlayoffRow = (r: WeeklyStatRow): boolean => {
@@ -110,7 +121,10 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
   };
 
   const visibleRows = useMemo(() => {
-    if (!showSeasonFilters) return rows;
+    // If parent is controlling filters (props provided), always filter
+    const shouldFilter = showSeasonFilters || (includeRegularSeasonProp !== undefined && includePlayoffsProp !== undefined);
+    
+    if (!shouldFilter) return rows;
 
     // If neither is selected, show nothing.
     if (!includeRegularSeason && !includePlayoffs) return [];
@@ -120,7 +134,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
       if (playoff) return includePlayoffs;
       return includeRegularSeason;
     });
-  }, [rows, showSeasonFilters, includeRegularSeason, includePlayoffs]);
+  }, [rows, showSeasonFilters, includeRegularSeason, includePlayoffs, includeRegularSeasonProp, includePlayoffsProp]);
 
   // Build per-year min/max for highlighting (use *visibleRows* so highlights match filtered view)
   const yearExtremes = useMemo(() => {
@@ -247,7 +261,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
               <input
                 type="checkbox"
                 checked={includeRegularSeason}
-                onChange={(e) => setIncludeRegularSeason(e.target.checked)}
+                onChange={(e) => setIncludeRegularSeasonState(e.target.checked)}
               />{' '}
               Include Regular Season
             </label>
@@ -256,7 +270,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
               <input
                 type="checkbox"
                 checked={includePlayoffs}
-                onChange={(e) => setIncludePlayoffs(e.target.checked)}
+                onChange={(e) => setIncludePlayoffsState(e.target.checked)}
               />{' '}
               Include Playoffs
             </label>
@@ -276,7 +290,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
             <input
               type="checkbox"
               checked={includeRegularSeason}
-              onChange={(e) => setIncludeRegularSeason(e.target.checked)}
+              onChange={(e) => setIncludeRegularSeasonState(e.target.checked)}
             />{' '}
             Include Regular Season
           </label>
@@ -285,7 +299,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
             <input
               type="checkbox"
               checked={includePlayoffs}
-              onChange={(e) => setIncludePlayoffs(e.target.checked)}
+              onChange={(e) => setIncludePlayoffsState(e.target.checked)}
             />{' '}
             Include Playoffs
           </label>
@@ -346,8 +360,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
                       {row.teamName} ({row.yearsPlayed})
                     </td>
 
-                    {/* per-year best/worst highlight is applied to the YEAR cell */}
-                    <td className={getYearCellClassName(row)}>{row.year}</td>
+                    <td>{row.year}</td>
 
                     <td>{row.week || '-'}</td>
                     <td>{row.opponentName || '-'}</td>

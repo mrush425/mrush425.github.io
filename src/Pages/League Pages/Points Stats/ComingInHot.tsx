@@ -37,7 +37,7 @@ const buildComingInHotWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] =
 
     const week = 1;
 
-    const stats: SidebetStat[] = SidebetMethods.ComingInHot(league);
+    const stats: SidebetStat[] = SidebetMethods.ComingInHot(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -96,7 +96,12 @@ const buildComingInHotWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] =
 // COMPONENT
 // =========================================================================
 
-const ComingInHot: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
+const ComingInHot: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({ 
+  data, 
+  minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
+}) => {
   const weeklyRows = useMemo(() => {
     return buildComingInHotWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
   }, [data, minYears]);
@@ -109,6 +114,8 @@ const ComingInHot: React.FC<RecordComponentProps & { minYears?: number }> = ({ d
       defaultSort={{ key: 'statValue', direction: 'descending' }} // higher points = better
       bestDirection="high"
       allowDeselect={true}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };

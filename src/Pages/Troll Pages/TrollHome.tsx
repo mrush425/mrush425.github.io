@@ -4,6 +4,7 @@ import SleeperUser from '../../Interfaces/SleeperUser';
 import yearTrollData from '../../Data/yearTrollData.json';
 import { calculateYearPoints, calculateYearPointsAgainst } from '../../Helper Files/PointCalculations';
 import { getUserSeasonPlace } from '../League Pages/OtherStats/PlaceStats';
+import { calculatePlayoffRecord, displayRecord } from '../../Helper Files/RecordCalculations';
 import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
 
 interface TrollHomeProps {
@@ -57,6 +58,9 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     let totalTies = 0;
     let totalFpts = 0;
     let totalFptsAgainst = 0;
+    let playoffWins = 0;
+    let playoffLosses = 0;
+    let playoffTies = 0;
     const bowlRecords: { [key: string]: BowlRecord } = JSON.parse(JSON.stringify(bowlMap));
     const opponentRecords: { [key: string]: OpponentRecord } = {};
 
@@ -91,6 +95,12 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         totalTies += roster.settings.ties || 0;
         totalFpts += yearPoints;
         totalFptsAgainst += yearPointsAgainst;
+
+        // Calculate playoff record for this season
+        const [pWins, pLosses, pTies] = calculatePlayoffRecord(user as SleeperUser, league);
+        playoffWins += pWins;
+        playoffLosses += pLosses;
+        playoffTies += pTies;
 
         // Calculate opponent records (regular season only)
         if (league.matchupInfo) {
@@ -227,6 +237,10 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       totalFptsAgainst: totalFptsAgainst.toFixed(2),
       avgPointsPerGame,
       avgPointsAgainstPerGame,
+      playoffWins,
+      playoffLosses,
+      playoffTies,
+      playoffRecord: displayRecord(playoffWins, playoffLosses, playoffTies),
       bestSeason,
       worstSeason,
       championships,
@@ -359,20 +373,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
           </div>
         )}
 
-        {/* Bowl Records Section */}
-        <div className="bowl-section">
-          <h3>Bowl Records</h3>
-          <div className="bowl-grid">
-            {['Troll Bowl', 'Bengal Bowl', 'Koozie Bowl', 'Toilet Bowl', 'Diarrhea Bowl', 'Butler Bowl'].map((bowlName) => (
-              <div key={bowlName} className="bowl-item">
-                <div className="bowl-name">{bowlName}</div>
-                <div className="bowl-record-display">{stats.bowlRecords[bowlName].wins}-{stats.bowlRecords[bowlName].losses}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Best & Worst Season Section */}
+        {/* Best & Worst Season Section - Moved before Playoff Stats */}
         {stats.bestSeason && (
           <div className="season-section">
             <div className="season-grid">
@@ -399,6 +400,28 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
             </div>
           </div>
         )}
+
+        {/* Playoff Stats Section */}
+        <div className="playoff-section">
+          <h3>Playoff Stats</h3>
+          <div className="playoff-stats-grid">
+            <div className="playoff-stat-item">
+              <span className="playoff-stat-label">Playoff Record</span>
+              <span className="playoff-stat-value">{stats.playoffRecord}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bowl Records Section - Header removed as requested */}
+        <div className="bowl-section">\n          <div className="bowl-grid">
+            {['Troll Bowl', 'Bengal Bowl', 'Koozie Bowl', 'Toilet Bowl', 'Diarrhea Bowl', 'Butler Bowl'].map((bowlName) => (
+              <div key={bowlName} className="bowl-item">
+                <div className="bowl-name">{bowlName}</div>
+                <div className="bowl-record-display">{stats.bowlRecords[bowlName].wins}-{stats.bowlRecords[bowlName].losses}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="season-breakdown">

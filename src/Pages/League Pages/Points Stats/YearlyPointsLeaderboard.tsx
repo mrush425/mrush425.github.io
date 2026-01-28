@@ -325,6 +325,7 @@ const YearlyPointsLeaderboard: React.FC<RecordComponentProps & { minYears?: numb
               allLeagues={data}
               userId={selectedRow.userId}
               season={selectedRow.year}
+              excludePlayoffs={true}
             />
           ) : (
             <div className="notImplementedMessage">

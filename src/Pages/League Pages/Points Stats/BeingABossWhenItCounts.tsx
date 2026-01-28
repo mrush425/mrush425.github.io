@@ -60,7 +60,7 @@ const buildBossWhenItCountsWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRo
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const stats: SidebetStat[] = SidebetMethods.BossWhenItCounts(league);
+    const stats: SidebetStat[] = SidebetMethods.BossWhenItCounts(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -131,9 +131,11 @@ const buildBossWhenItCountsWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRo
 // COMPONENT
 // =========================================================================
 
-const BossWhenItCounts: React.FC<RecordComponentProps & { minYears?: number }> = ({
+const BossWhenItCounts: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({
   data,
   minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
 }) => {
   const weeklyRows = useMemo(() => {
     return buildBossWhenItCountsWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
@@ -146,6 +148,8 @@ const BossWhenItCounts: React.FC<RecordComponentProps & { minYears?: number }> =
       emptyMessage={`No Boss When It Counts data found (min years: ${minYears}).`}
       defaultSort={{ key: 'statValue', direction: 'descending' }} // higher points = better
       allowDeselect={true}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };

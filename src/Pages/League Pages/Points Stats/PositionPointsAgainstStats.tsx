@@ -106,8 +106,10 @@ const PositionPointsAgainstStats: React.FC<
     position: string;
     metricLabel: string;
     minYears?: number;
+    includeRegularSeason?: boolean;
+    includePlayoffs?: boolean;
   }
-> = ({ data, position, metricLabel, minYears = 0 }) => {
+> = ({ data, position, metricLabel, minYears = 0, includeRegularSeason = true, includePlayoffs = false }) => {
   const [mode, setMode] = useState<Mode>('average');
 
   const [selectedAverageUserId, setSelectedAverageUserId] = useState<string | null>(null);
@@ -128,7 +130,7 @@ const PositionPointsAgainstStats: React.FC<
         const yearsPlayed = yearsPlayedMap.get(userId) ?? 0;
         if (yearsPlayed < minYears) return;
 
-        const pts = SidebetMethods.UserPointsAgainstByPosition(position, u as SleeperUser, league);
+        const pts = SidebetMethods.UserPointsAgainstByPosition(position, u as SleeperUser, league, undefined, includeRegularSeason, includePlayoffs);
         const games = getRegularSeasonGamesPlayed(league, userId);
 
         const prev = totals.get(userId) ?? { totalPoints: 0, totalGames: 0 };
@@ -179,7 +181,7 @@ const PositionPointsAgainstStats: React.FC<
       if (!user) return;
 
       const year = Number.parseInt(league.season);
-      const pts = SidebetMethods.UserPointsAgainstByPosition(position, user as SleeperUser, league);
+      const pts = SidebetMethods.UserPointsAgainstByPosition(position, user as SleeperUser, league, undefined, includeRegularSeason, includePlayoffs);
 
       rows.push({
         year: Number.isFinite(year) ? year : 0,
@@ -189,7 +191,7 @@ const PositionPointsAgainstStats: React.FC<
 
     rows.sort((a, b) => b.year - a.year);
     return rows;
-  }, [data, position, selectedAverageUserId]);
+  }, [data, position, selectedAverageUserId, includeRegularSeason, includePlayoffs]);
 
   // ---------------------------------------------------------------------
   // SINGLE YEAR MODE (✅ now Avg/Game + Total)
@@ -213,7 +215,9 @@ const PositionPointsAgainstStats: React.FC<
           position,
           u as SleeperUser,
           league,
-          acc
+          acc,
+          includeRegularSeason,
+          includePlayoffs
         );
 
         const games = getRegularSeasonGamesPlayed(league, userId);
@@ -240,7 +244,7 @@ const PositionPointsAgainstStats: React.FC<
     // default sort: highest Avg/Game
     rows.sort((a, b) => b.avgPerGame - a.avgPerGame);
     return rows;
-  }, [data, position, yearsPlayedMap, minYears]);
+  }, [data, position, yearsPlayedMap, minYears, includeRegularSeason, includePlayoffs]);
 
   // Per-year extremes for SINGLE YEAR highlighting:
   // now based on Avg/Game (since that’s the primary stat)

@@ -7,6 +7,8 @@ import LeagueData from '../../Interfaces/LeagueData';
 import RegularSeasonPoints from './Points Stats/RegularSeasonPoints'; 
 import YearlyPointsLeaderboard from './Points Stats/YearlyPointsLeaderboard';
 import PlayoffTeamsAveragePoints from './Points Stats/PlayoffTeamsAveragePoints';
+import PlayoffAveragePointsPerGame from './Points Stats/PlayoffAveragePointsPerGame';
+import YearlyPlayoffAveragePointsPerGame from './Points Stats/YearlyPlayoffAveragePointsPerGame';
 import WeeklyPointsLeaderboard from './Points Stats/WeeklyPointsLeaderboard';
 import Heartbreaker from './Points Stats/Heartbreaker';
 import GetWreckd from './Points Stats/GetWreckd';
@@ -20,6 +22,7 @@ import GetRunOver from './Points Stats/GetRunOver';
 import ReceivingLosses from './Points Stats/ReceivingLosses';
 import KilledByATightEnd from './Points Stats/KilledByATightEnd';
 import BlueBalls from './Points Stats/BlueBalls';
+import WeeklyScoreAverages from './Points Stats/WeeklyScoreAverages';
 
 
 
@@ -31,6 +34,8 @@ import BlueBalls from './Points Stats/BlueBalls';
 export interface PointComponentProps {
     data: LeagueData[];
     minYears?: number; // Optional filter for minimum years played
+    includeRegularSeason?: boolean; // Optional filter for including regular season weeks
+    includePlayoffs?: boolean; // Optional filter for including playoff weeks
 }
 
 // Define the structure for an item in your dropdown list
@@ -47,8 +52,11 @@ export interface PointStatItem {
 const POINT_COMPONENTS: PointStatItem[] = [ 
     { displayName: 'Average Points Per Game (APG)', Component: RegularSeasonPoints }, 
     { displayName: 'Yearly Average Points Per Game', Component: YearlyPointsLeaderboard },
+    { displayName: 'Playoff Average Points Per Game', Component: PlayoffAveragePointsPerGame },
+    { displayName: 'Yearly Playoff Average Points Per Game', Component: YearlyPlayoffAveragePointsPerGame },
     { displayName: 'Playoff Teams Average Points', Component: PlayoffTeamsAveragePoints },
     { displayName: 'Weekly Points Leaderboard', Component: WeeklyPointsLeaderboard }, // Example placeholder
+    { displayName: 'Weekly Score Averages', Component: WeeklyScoreAverages },
     { displayName: 'Heartbreaker', Component: Heartbreaker },
     { displayName: 'GetWreckd', Component: GetWreckd }, 
     { displayName: 'Better Lucky Than Good', Component: BetterLuckyThanGood },
@@ -74,8 +82,10 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
     // Navigation State
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
-    // FILTER STATE: Default to 3 years
-    const [minYears, setMinYears] = useState<number>(3); 
+    // FILTER STATE: Default to 0 years (checkbox unchecked)
+    const [minYears, setMinYears] = useState<number>(0);
+    const [includeRegularSeason, setIncludeRegularSeason] = useState<boolean>(true);
+    const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(true); 
 
     // Use POINT_COMPONENTS directly
     const items = useMemo(() => POINT_COMPONENTS, []); 
@@ -172,24 +182,64 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                 {/* 2. HEADER (Second element) */}
                 <h3>{header}</h3>
                 
-                {/* 3. FILTER CHECKBOX (NEW POSITION: Third element) */}
-                <div className="pointsFilter filter-style"> 
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={minYears === 3}
-                            style={{ marginRight: '6px' }} 
-                            onChange={(e) => handleFilterChange(e.target.checked)}
-                        />
-                        Filter teams with fewer than {minYears === 3 ? '3' : '1'} years played
-                    </label>
+                {/* 3. FILTER CHECKBOXES (NEW POSITION: Third element) */}
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    <div className="pointsFilter filter-style"> 
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={minYears === 3}
+                                style={{ marginRight: '6px' }} 
+                                onChange={(e) => handleFilterChange(e.target.checked)}
+                            />
+                            Filter teams with fewer than 3 years played
+                        </label>
+                    </div>
+                    {(selectedItem?.displayName.includes('Weekly') || 
+                      selectedItem?.displayName === 'Heartbreaker' ||
+                      selectedItem?.displayName === 'GetWreckd' ||
+                      selectedItem?.displayName === 'Better Lucky Than Good' ||
+                      selectedItem?.displayName === 'Being a Boss When it Counts' ||
+                      selectedItem?.displayName === 'Coming in Hot' ||
+                      selectedItem?.displayName === 'Maybe Next Time' ||
+                      selectedItem?.displayName === 'Kicked In Da Ballz' ||
+                      selectedItem?.displayName === 'Connar Effect' ||
+                      selectedItem?.displayName === 'Get Run Over' ||
+                      selectedItem?.displayName === 'Receiving Losses' ||
+                      selectedItem?.displayName === 'Killed By a Tight End' ||
+                      selectedItem?.displayName === 'Blue Balls') && (
+                        <>
+                            <div className="pointsFilter filter-style"> 
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={includeRegularSeason}
+                                        style={{ marginRight: '6px' }} 
+                                        onChange={(e) => setIncludeRegularSeason(e.target.checked)}
+                                    />
+                                    Include Regular Season
+                                </label>
+                            </div>
+                            <div className="pointsFilter filter-style"> 
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={includePlayoffs}
+                                        style={{ marginRight: '6px' }} 
+                                        onChange={(e) => setIncludePlayoffs(e.target.checked)}
+                                    />
+                                    Include Playoffs
+                                </label>
+                            </div>
+                        </>
+                    )}
                 </div>
                 
             </div>
             
             <div className="pointsContainer"> 
-                {/* The selected component receives the league data and the minYears filter */}
-                <SelectedComponent data={data} minYears={minYears} />
+                {/* The selected component receives the league data and the filter props */}
+                <SelectedComponent data={data} minYears={minYears} includeRegularSeason={includeRegularSeason} includePlayoffs={includePlayoffs} />
             </div>
         </div>
     );

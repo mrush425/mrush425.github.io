@@ -17,6 +17,8 @@ export interface WeeklyMatchupsPaneProps {
 
   /** Optional: hide header row entirely */
   hideHeader?: boolean;
+  /** Optional: exclude playoff weeks */
+  excludePlayoffs?: boolean;
 }
 
 const safeTeamNameFromUser = (u: any) =>
@@ -32,6 +34,7 @@ const WeeklyMatchupsPane: React.FC<WeeklyMatchupsPaneProps> = ({
   userId,
   season,
   hideHeader = false,
+  excludePlayoffs = false,
 }) => {
   const rows = useMemo<WeeklyMatchupRow[]>(() => {
     const league = allLeagues.find((l) => Number.parseInt(l.season) === season);
@@ -54,10 +57,17 @@ const WeeklyMatchupsPane: React.FC<WeeklyMatchupsPaneProps> = ({
       if (u?.user_id) ownerToTeamName.set(u.user_id, safeTeamNameFromUser(u));
     });
 
+    const playoffStartWeek = league.settings?.playoff_week_start || Infinity;
+
     const out: WeeklyMatchupRow[] = [];
 
     league.matchupInfo.forEach((weekBlock: any) => {
       const week = weekBlock.week;
+
+      // Skip playoff weeks if excludePlayoffs is true
+      if (excludePlayoffs && week >= playoffStartWeek) {
+        return;
+      }
 
       const teamMatchup = weekBlock.matchups?.find((m: any) => m.roster_id === teamRosterId);
       if (!teamMatchup) return;
@@ -82,7 +92,7 @@ const WeeklyMatchupsPane: React.FC<WeeklyMatchupsPaneProps> = ({
     });
 
     return out.sort((a, b) => a.week - b.week);
-  }, [allLeagues, userId, season]);
+  }, [allLeagues, userId, season, excludePlayoffs]);
 
   return (
     <div className="detail-pane">

@@ -41,8 +41,8 @@ const OtherStats: React.FC<LeagueProps> = ({ data }) => {
     // Navigation State
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
-    // FILTER STATE: Default to 3 years
-    const [minYears, setMinYears] = useState<number>(3); 
+    // FILTER STATE: Default to 0 years (checkbox unchecked)
+    const [minYears, setMinYears] = useState<number>(0); 
 
     const items = useMemo(() => STAT_COMPONENTS, []);
 

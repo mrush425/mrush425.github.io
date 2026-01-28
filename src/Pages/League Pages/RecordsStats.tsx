@@ -5,6 +5,7 @@ import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import LeagueData from '../../Interfaces/LeagueData'; 
 import { RecordStatItem } from '../../Interfaces/RecordStatItem'; 
 import RegularSeasonRecords from './Records Stats/RegularSeasonRecords';
+import PlayoffRecords from './Records Stats/PlayoffRecords';
 import WaffleStats from './Records Stats/WaffleStats';
 import PlayoffOddsByRecord from './Records Stats/PlayoffOddsByRecord';
 import IndividualSeasonRecords from './Records Stats/IndividualSeasonRecords';
@@ -13,6 +14,7 @@ import IndividualSeasonRecords from './Records Stats/IndividualSeasonRecords';
 // Placeholder for your statistical components
 const STAT_COMPONENTS: RecordStatItem[] = [
     { displayName: 'Regular Season Records', Component: RegularSeasonRecords }, 
+    { displayName: 'Playoff Records', Component: PlayoffRecords },
     { displayName: 'Individual Season Records', Component: IndividualSeasonRecords },
     { displayName: 'The Waffle', Component: WaffleStats}, 
     { displayName: 'Playoff Odds by Record', Component: PlayoffOddsByRecord },
@@ -30,8 +32,8 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
     // Navigation State
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
-    // NEW FILTER STATE: Default to 3 years
-    const [minYears, setMinYears] = useState<number>(3); 
+    // NEW FILTER STATE: Default to 0 years (checkbox unchecked)
+    const [minYears, setMinYears] = useState<number>(0); 
 
     const items = useMemo(() => STAT_COMPONENTS, []);
 
@@ -134,7 +136,7 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
                             style={{ marginRight: '6px' }} 
                             onChange={(e) => handleFilterChange(e.target.checked)}
                         />
-                        Filter teams with fewer than {minYears === 3 ? '3' : '1'} years played
+                        Filter teams with fewer than 3 years played
                     </label>
                 </div>
                 

@@ -53,7 +53,7 @@ const buildGetWreckdWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] => 
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 
-    const stats: SidebetStat[] = SidebetMethods.GetWreckd(league);
+    const stats: SidebetStat[] = SidebetMethods.GetWreckd(league, true, true);
 
     stats.forEach((s) => {
       const user = s.user;
@@ -94,7 +94,12 @@ const buildGetWreckdWeeklyRows = (allLeagues: LeagueData[]): WeeklyStatRow[] => 
 // COMPONENT
 // =========================================================================
 
-const GetWreckd: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
+const GetWreckd: React.FC<RecordComponentProps & { minYears?: number; includeRegularSeason?: boolean; includePlayoffs?: boolean }> = ({ 
+  data, 
+  minYears = 0,
+  includeRegularSeason,
+  includePlayoffs,
+}) => {
   const weeklyRows = useMemo(() => {
     return buildGetWreckdWeeklyRows(data).filter((r) => r.yearsPlayed >= minYears);
   }, [data, minYears]);
@@ -106,6 +111,8 @@ const GetWreckd: React.FC<RecordComponentProps & { minYears?: number }> = ({ dat
       emptyMessage={`No GetWreckd data found (min years: ${minYears}).`}
       defaultSort={{ key: 'statValue', direction: 'descending' }} // bigger blowout = more wreckd
       allowDeselect={true}
+      includeRegularSeason={includeRegularSeason}
+      includePlayoffs={includePlayoffs}
     />
   );
 };
