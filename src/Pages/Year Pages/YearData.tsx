@@ -125,10 +125,15 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                     const method = (SidebetMethods as any)[sidebet.methodName]?.bind(SidebetMethods);
         
                     if (method) {
+                      // Special handling for playoff-only stats like "Being a Boss When it Counts"
+                      const isPlayoffOnly = sidebet.methodName === 'BossWhenItCounts';
+                      const includeRegularSeason = !isPlayoffOnly;
+                      const includePlayoffs = isPlayoffOnly;
+                      
                       if (sidebet.isAsync) {
-                        result = await method(data);
+                        result = await method(data, includeRegularSeason, includePlayoffs);
                       } else {
-                        result = method(data);
+                        result = method(data, includeRegularSeason, includePlayoffs);
                       }
                     }
                   } catch (error) {

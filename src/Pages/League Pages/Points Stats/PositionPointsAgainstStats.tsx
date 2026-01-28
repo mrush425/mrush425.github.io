@@ -289,7 +289,7 @@ const PositionPointsAgainstStats: React.FC<
   return (
     <div className="regular-season-points">
       {/* MODE TOGGLE */}
-      <div style={{ marginBottom: 10 }}>
+      <div style={{ marginBottom: 10, textAlign: 'center' }}>
         <label style={{ marginRight: 12 }}>
           <input
             type="radio"

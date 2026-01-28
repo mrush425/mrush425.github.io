@@ -85,7 +85,7 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
     // FILTER STATE: Default to 0 years (checkbox unchecked)
     const [minYears, setMinYears] = useState<number>(0);
     const [includeRegularSeason, setIncludeRegularSeason] = useState<boolean>(true);
-    const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(true); 
+    const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(false); 
 
     // Use POINT_COMPONENTS directly
     const items = useMemo(() => POINT_COMPONENTS, []); 
@@ -105,6 +105,21 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
             setActiveIndex(index);
         }
     };
+
+    // Reset filters when component changes
+    useEffect(() => {
+        const selectedDisplayName = items[activeIndex]?.displayName;
+        
+        // "Being a Boss When it Counts" is playoffs-only
+        if (selectedDisplayName === 'Being a Boss When it Counts') {
+            setIncludeRegularSeason(false);
+            setIncludePlayoffs(true);
+        } else {
+            // Default for most stats: regular season only
+            setIncludeRegularSeason(true);
+            setIncludePlayoffs(false);
+        }
+    }, [activeIndex, items]);
 
     const changeViewByDelta = (delta: 1 | -1) => {
         if (items.length === 0) return;
@@ -199,8 +214,6 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                       selectedItem?.displayName === 'Heartbreaker' ||
                       selectedItem?.displayName === 'GetWreckd' ||
                       selectedItem?.displayName === 'Better Lucky Than Good' ||
-                      selectedItem?.displayName === 'Being a Boss When it Counts' ||
-                      selectedItem?.displayName === 'Coming in Hot' ||
                       selectedItem?.displayName === 'Maybe Next Time' ||
                       selectedItem?.displayName === 'Kicked In Da Ballz' ||
                       selectedItem?.displayName === 'Connar Effect' ||

@@ -143,9 +143,41 @@
   font-weight: 600;
 }
 
-.matchup-ppg {
-  font-size: 13px;
+.matchup-points-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.matchup-points-for,
+.matchup-points-against {
+  text-align: center;
+  flex: 1;
+}
+
+.matchup-points-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   color: #a0a0a0;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.matchup-points-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.matchup-points-separator {
+  font-size: 20px;
+  color: #666;
+  font-weight: 700;
 }
 
 /* Bowl Section */
@@ -174,11 +206,47 @@
   text-align: center;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bowl-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--bowl-color) 0%, transparent 100%);
 }
 
 .bowl-item:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
+}
+
+.bowl-item.bowl-gold {
+  --bowl-color: #ffd700;
+}
+
+.bowl-item.bowl-silver {
+  --bowl-color: #c0c0c0;
+}
+
+.bowl-item.bowl-bronze {
+  --bowl-color: #cd7f32;
+}
+
+.bowl-item.bowl-purple {
+  --bowl-color: #a855f7;
+}
+
+.bowl-item.bowl-brown {
+  --bowl-color: #92400e;
+}
+
+.bowl-item.bowl-gray {
+  --bowl-color: #6b7280;
 }
 
 .bowl-name {
@@ -235,46 +303,167 @@
   --season-accent: #f97316;
 }
 
-.season-title {
-  font-size: 12px;
+.season-badge {
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  color: #a0a0a0;
-  margin-bottom: 8px;
+  color: var(--season-accent);
   font-weight: 700;
+  margin-bottom: 12px;
 }
 
 .season-year {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
-.season-stats {
+.season-stat-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.season-stats span {
-  font-size: 14px;
-  color: #fff;
+.season-stat-line:last-child {
+  border-bottom: none;
 }
 
-.season-place {
-  color: #a0a0a0;
+.season-stat-label {
   font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  font-weight: 600;
 }
 
-.season-points {
-  font-size: 28px;
+.season-stat-value {
+  font-size: 20px;
   font-weight: 700;
   color: var(--season-accent);
 }
 
-/* Season Breakdown Table */
+/* Collapsible Section */
+.collapsible-section {
+  margin-bottom: 20px;
+}
+
+.collapsible-header {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.collapsible-header:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.collapsible-header h3 {
+  margin: 0;
+  color: #e0e0e0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.collapse-icon {
+  font-size: 14px;
+  color: #a0a0a0;
+  transition: transform 0.3s ease;
+}
+
+.collapsible-content {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.collapsible-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.collapsible-content table thead {
+  background: transparent;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.collapsible-content table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  font-weight: 700;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.collapsible-content table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+  position: relative;
+  padding-right: 28px;
+}
+
+.collapsible-content table th.sortable:hover {
+  color: #e0e0e0;
+}
+
+.collapsible-content table th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.4;
+}
+
+.collapsible-content table th.sorted-asc::after {
+  border-bottom: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+.collapsible-content table th.sorted-desc::after {
+  border-top: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+.collapsible-content table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.collapsible-content table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.collapsible-content table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Season Breakdown (legacy, can be kept for compatibility) */
 .season-breakdown {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);

@@ -37,7 +37,14 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
       const method = (SidebetMethods as any)[sidebet.methodName]?.bind(SidebetMethods);
 
       if (method) {
-        const result = sidebet.isAsync ? await method(data) : method(data);
+        // Special handling for playoff-only stats like "Being a Boss When it Counts"
+        const isPlayoffOnly = sidebet.methodName === 'BossWhenItCounts';
+        const includeRegularSeason = !isPlayoffOnly;
+        const includePlayoffs = isPlayoffOnly;
+        
+        const result = sidebet.isAsync 
+          ? await method(data, includeRegularSeason, includePlayoffs) 
+          : method(data, includeRegularSeason, includePlayoffs);
         setSidebetStats(result || []);
         setIsImplemented(true);
       } else {
