@@ -113,10 +113,24 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
   const renderCell = (cell: CellCounts) => {
     const total = cell.made + cell.missed;
     if (total === 0) return <>-</>;
+    
+    const percentage = (cell.made / total) * 100;
+    let colorClass = '';
+    
+    if (percentage >= 90) {
+      colorClass = 'playoff-odds-very-high';
+    } else if (percentage >= 70) {
+      colorClass = 'playoff-odds-high';
+    } else if (percentage < 10) {
+      colorClass = 'playoff-odds-very-low';
+    } else if (percentage < 30) {
+      colorClass = 'playoff-odds-low';
+    }
+    
     return (
-      <>
+      <span className={colorClass}>
         {cell.made}-{cell.missed} ({pct(cell.made, total)}%)
-      </>
+      </span>
     );
   };
 
@@ -127,21 +141,21 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
   return (
     <div className="playoff-odds-by-record">
 
-      <table className="leagueStatsTable">
+      <table className="leagueStatsTable playoff-odds-table">
         <thead>
           <tr>
-            <th className="table-col-1">Losses</th>
-            <th className="table-col-1">Wins 0</th>
-            <th className="table-col-1">1</th>
-            <th className="table-col-1">2</th>
-            <th className="table-col-1">3</th>
-            <th className="table-col-1">4</th>
-            <th className="table-col-1">5</th>
-            <th className="table-col-1">6</th>
-            <th className="table-col-1">7</th>
-            <th className="table-col-1">8</th>
-            <th className="table-col-1">9</th>
-            <th className="table-col-1">10+</th>
+            <th className="playoff-odds-header">Losses</th>
+            <th className="playoff-odds-col">Wins 0</th>
+            <th className="playoff-odds-col">1</th>
+            <th className="playoff-odds-col">2</th>
+            <th className="playoff-odds-col">3</th>
+            <th className="playoff-odds-col">4</th>
+            <th className="playoff-odds-col">5</th>
+            <th className="playoff-odds-col">6</th>
+            <th className="playoff-odds-col">7</th>
+            <th className="playoff-odds-col">8</th>
+            <th className="playoff-odds-col">9</th>
+            <th className="playoff-odds-col">10+</th>
           </tr>
         </thead>
 
@@ -150,11 +164,11 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
             const lb = labelKey(lossBucket);
             return (
               <tr key={lb} className={rowIdx % 2 === 0 ? 'even-row' : 'odd-row'}>
-                <td>{lb}</td>
+                <td className="playoff-odds-row-header">{lb}</td>
                 {W_BUCKETS.map((winBucket) => {
                   const wb = labelKey(winBucket);
                   const cell = grid[lb]?.[wb] ?? { made: 0, missed: 0 };
-                  return <td key={`${lb}-${wb}`}>{renderCell(cell)}</td>;
+                  return <td key={`${lb}-${wb}`} className="playoff-odds-cell">{renderCell(cell)}</td>;
                 })}
               </tr>
             );

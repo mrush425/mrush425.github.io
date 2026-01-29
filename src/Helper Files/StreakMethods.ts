@@ -181,3 +181,60 @@ export function getUserLongestStreak(
   finalize();
   return best;
 }
+
+/**
+ * Returns the user's current active streak (win or loss).
+ * - Only looks at completed seasons + completed weeks of in-progress season
+ * - Returns null if no streak exists, or if the most recent game was a tie
+ */
+export function getCurrentStreak(userId: string, leagues: LeagueData[]): {
+  type: StreakType;
+  length: number;
+  start: StreakRangePoint;
+  end: StreakRangePoint;
+} | null {
+  const weekly = buildUserWeekResults(userId, leagues);
+  if (weekly.length === 0) return null;
+
+  // Start from the most recent week and go backwards
+  let streakType: StreakType | null = null;
+  let length = 0;
+  let end: StreakRangePoint | null = null;
+  let start: StreakRangePoint | null = null;
+
+  for (let i = weekly.length - 1; i >= 0; i--) {
+    const r = weekly[i];
+
+    // If we encounter a tie, streak ends
+    if (r.outcome === 'T') {
+      break;
+    }
+
+    if (streakType === null) {
+      // First game in streak
+      streakType = r.outcome === 'W' ? 'win' : 'loss';
+      end = { year: r.year, week: r.week, label: formatWeekLabel(r.week, r.year) };
+      start = { year: r.year, week: r.week, label: formatWeekLabel(r.week, r.year) };
+      length = 1;
+    } else {
+      // Check if this game continues the streak
+      const expectedOutcome = streakType === 'win' ? 'W' : 'L';
+      if (r.outcome === expectedOutcome) {
+        length++;
+        start = { year: r.year, week: r.week, label: formatWeekLabel(r.week, r.year) };
+      } else {
+        // Different outcome, streak ends
+        break;
+      }
+    }
+  }
+
+  if (!streakType || !start || !end || length === 0) return null;
+
+  return {
+    type: streakType,
+    length,
+    start,
+    end,
+  };
+}

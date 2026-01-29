@@ -5,6 +5,8 @@ import yearTrollData from '../../Data/yearTrollData.json';
 import { calculateYearPoints, calculateYearPointsAgainst } from '../../Helper Files/PointCalculations';
 import { getUserSeasonPlace } from '../League Pages/OtherStats/PlaceStats';
 import { calculatePlayoffRecord, displayRecord } from '../../Helper Files/RecordCalculations';
+import { getUserLongestStreak, getCurrentStreak } from '../../Helper Files/StreakMethods';
+import { calculateMoneyStats } from '../../Helper Files/MoneyMethods';
 import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
 
 interface TrollHomeProps {
@@ -19,6 +21,7 @@ interface TrollSeasonRecord {
   losses: number;
   ties: number;
   fpts: number;
+  fptsAgainst: number;
   seasonPlace: number | undefined;
   finalPlace: number | undefined;
 }
@@ -93,6 +96,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
           losses: roster.settings.losses,
           ties: roster.settings.ties || 0,
           fpts: yearPoints,
+          fptsAgainst: yearPointsAgainst,
           seasonPlace: seasonPlace,
           finalPlace: finalPlace,
         });
@@ -224,6 +228,13 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     const avgPointsPerGame = totalGames > 0 ? (totalFpts / totalGames).toFixed(2) : '0.00';
     const avgPointsAgainstPerGame = totalGames > 0 ? (totalFptsAgainst / totalGames).toFixed(2) : '0.00';
     
+    // Calculate average places
+    const seasonPlacesWithValue = seasonRecords.filter(s => s.seasonPlace !== undefined).map(s => s.seasonPlace!);
+    const avgSeasonPlace = seasonPlacesWithValue.length > 0 ? (seasonPlacesWithValue.reduce((a, b) => a + b, 0) / seasonPlacesWithValue.length).toFixed(1) : 'N/A';
+    
+    const finalPlacesWithValue = seasonRecords.filter(s => s.finalPlace !== undefined).map(s => s.finalPlace!);
+    const avgFinalPlace = finalPlacesWithValue.length > 0 ? (finalPlacesWithValue.reduce((a, b) => a + b, 0) / finalPlacesWithValue.length).toFixed(1) : 'N/A';
+    
     const playoffGames = playoffWins + playoffLosses + playoffTies;
     const playoffWinPercentage = playoffGames > 0 ? ((playoffWins / playoffGames) * 100).toFixed(1) : '0.0';
     const avgPlayoffPoints = playoffGames > 0 ? (playoffTotalPoints / playoffGames).toFixed(2) : '0.00';
@@ -235,6 +246,14 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       seasonRecords.length > 0 ? seasonRecords.reduce((a, b) => (a.fpts < b.fpts ? a : b)) : null;
     const championships = seasonRecords.filter((s) => s.finalPlace === 1).length;
     const butlerCount = seasonRecords.filter((s) => s.finalPlace === 12).length;
+
+    // Calculate streak data
+    const longestWinStreaks = getUserLongestStreak(userId, 'win', leagueData);
+    const longestLossStreaks = getUserLongestStreak(userId, 'loss', leagueData);
+    const currentStreak = getCurrentStreak(userId, leagueData);
+
+    // Calculate money stats
+    const moneyStats = calculateMoneyStats(userId, leagueData);
 
     // Find best opponent matchup (highest win percentage, tiebreaker: most points scored)
     // Only include opponents played 4+ times
@@ -273,6 +292,8 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       totalFptsAgainst: totalFptsAgainst.toFixed(2),
       avgPointsPerGame,
       avgPointsAgainstPerGame,
+      avgSeasonPlace,
+      avgFinalPlace,
       playoffWins,
       playoffLosses,
       playoffTies,
@@ -292,6 +313,10 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       bestOpponent,
       worstOpponent,
       opponentRecords,
+      longestWinStreaks,
+      longestLossStreaks,
+      currentStreak,
+      moneyStats,
     };
   }, [userId, leagueData]);
 
@@ -415,12 +440,35 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
               <span className="stat-secondary">({stats.totalFptsAgainst} total)</span>
             </div>
             <div className="stat-item">
+              <span className="stat-label">Avg Reg Place</span>
+              <span className="stat-value">{stats.avgSeasonPlace}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Avg Final Place</span>
+              <span className="stat-value">{stats.avgFinalPlace}</span>
+            </div>
+            <div className="stat-item">
               <span className="stat-label">Championships</span>
               <span className="stat-value">{stats.championships}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Seasons</span>
               <span className="stat-value">{stats.yearsPlayed}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Money Paid In</span>
+              <span className="stat-value">${stats.moneyStats.totalMoneyPaidIn}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Money Earned</span>
+              <span className="stat-value">${stats.moneyStats.totalMoneyEarned}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Net</span>
+              <span className="stat-value" style={{ color: stats.moneyStats.netMoneyEarned >= 0 ? '#4ade80' : '#ef4444' }}>
+                {stats.moneyStats.netMoneyEarned >= 0 ? '+' : ''}{stats.moneyStats.netMoneyEarned.toFixed(2)}
+              </span>
+              <span className="stat-secondary">({(stats.moneyStats.netMoneyEarned / stats.yearsPlayed).toFixed(2)}/year)</span>
             </div>
           </div>
         </div>
@@ -438,7 +486,10 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                 </div>
                 <div className="season-stat-line">
                   <span className="season-stat-label">Points</span>
-                  <span className="season-stat-value">{stats.bestSeason.fpts.toFixed(2)}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <span className="season-stat-value">{(stats.bestSeason.fpts / (stats.bestSeason.wins + stats.bestSeason.losses + stats.bestSeason.ties)).toFixed(2)}</span>
+                    <span style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 500 }}>({stats.bestSeason.fpts.toFixed(2)})</span>
+                  </div>
                 </div>
                 <div className="season-stat-line">
                   <span className="season-stat-label">Place</span>
@@ -455,11 +506,81 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                   </div>
                   <div className="season-stat-line">
                     <span className="season-stat-label">Points</span>
-                    <span className="season-stat-value">{stats.worstSeason.fpts.toFixed(2)}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                      <span className="season-stat-value">{(stats.worstSeason.fpts / (stats.worstSeason.wins + stats.worstSeason.losses + stats.worstSeason.ties)).toFixed(2)}</span>
+                      <span style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 500 }}>({stats.worstSeason.fpts.toFixed(2)})</span>
+                    </div>
                   </div>
                   <div className="season-stat-line">
                     <span className="season-stat-label">Place</span>
                     <span className="season-stat-value">{stats.worstSeason.finalPlace !== undefined ? stats.worstSeason.finalPlace : 'N/A'}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Streak Section */}
+        {(stats.longestWinStreaks.length > 0 || stats.longestLossStreaks.length > 0 || stats.currentStreak) && (
+          <div className="streak-section">
+            <div className="streak-grid">
+              {/* Record Streaks Card */}
+              {(stats.longestWinStreaks.length > 0 || stats.longestLossStreaks.length > 0) && (
+                <div className="streak-card records">
+                  <div className="streak-badge">Record Streaks</div>
+                  {stats.longestWinStreaks.length > 0 && (
+                    <div className="streak-record-item win">
+                      <div className="streak-record-type">Longest Win Streak</div>
+                      <div className="streak-record-length">{stats.longestWinStreaks[0].length}</div>
+                      {stats.longestWinStreaks.map((streak, idx) => (
+                        <div key={idx} className="streak-record-range">
+                          {streak.start.label} → {streak.end.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {stats.longestLossStreaks.length > 0 && (
+                    <div className="streak-record-item loss">
+                      <div className="streak-record-type">Longest Losing Streak</div>
+                      <div className="streak-record-length">{stats.longestLossStreaks[0].length}</div>
+                      {stats.longestLossStreaks.map((streak, idx) => (
+                        <div key={idx} className="streak-record-range">
+                          {streak.start.label} → {streak.end.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Current Streak Card */}
+              {stats.currentStreak && (
+                <div className={`streak-card current ${stats.currentStreak.type}`}>
+                  <div className="streak-badge">Current Streak</div>
+                  <div className="current-streak-type">
+                    {stats.currentStreak.type === 'win' ? 'Winning Streak' : 'Losing Streak'}
+                  </div>
+                  <div className="current-streak-length">{stats.currentStreak.length}</div>
+                  
+                  {/* Progress Bar */}
+                  <div className="streak-progress-container">
+                    <div className="streak-progress-labels">
+                      <span className="streak-progress-label">Current</span>
+                      <span className="streak-progress-label">Record: {stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 0) : (stats.longestLossStreaks[0]?.length || 0)}</span>
+                    </div>
+                    <div className="streak-progress-bar">
+                      <div 
+                        className="streak-progress-fill" 
+                        style={{ 
+                          width: `${Math.min(100, (stats.currentStreak.length / (stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 1) : (stats.longestLossStreaks[0]?.length || 1))) * 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="current-streak-date">
+                    Started: {stats.currentStreak.start.label}
                   </div>
                 </div>
               )}
@@ -478,28 +599,67 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
           </div>
           {isSeasonBySeasonExpanded && (
             <div className="collapsible-content">
-              <table>
-                <thead>
-                  <tr>
-                    <th onClick={() => handleSort('season')} className={`sortable ${sortColumn === 'season' ? `sorted-${sortDirection}` : ''}`}>Year</th>
-                    <th onClick={() => handleSort('record')} className={`sortable ${sortColumn === 'record' ? `sorted-${sortDirection}` : ''}`}>W-L-T</th>
-                    <th onClick={() => handleSort('points')} className={`sortable ${sortColumn === 'points' ? `sorted-${sortDirection}` : ''}`}>Points</th>
-                    <th onClick={() => handleSort('seasonPlace')} className={`sortable ${sortColumn === 'seasonPlace' ? `sorted-${sortDirection}` : ''}`}>Reg Season</th>
-                    <th onClick={() => handleSort('finalPlace')} className={`sortable ${sortColumn === 'finalPlace' ? `sorted-${sortDirection}` : ''}`}>Overall</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedSeasons.map((season) => (
-                    <tr key={season.season}>
-                      <td>{season.season}</td>
-                      <td>{season.wins}-{season.losses}-{season.ties}</td>
-                      <td>{((season.fpts) / (season.wins + season.losses + season.ties)).toFixed(2)} ({season.fpts.toFixed(2)})</td>
-                      <td>{season.seasonPlace !== undefined ? season.seasonPlace : 'N/A'}</td>
-                      <td>{season.finalPlace !== undefined ? season.finalPlace : 'N/A'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {stats.seasonRecords.length > 0 && (() => {
+                const winPcts = stats.seasonRecords.map(s => s.wins / (s.wins + s.losses + s.ties));
+                const ppgs = stats.seasonRecords.map(s => s.fpts / (s.wins + s.losses + s.ties));
+                const ppasgs = stats.seasonRecords.map(s => s.fptsAgainst / (s.wins + s.losses + s.ties));
+                const seasonPlaces = stats.seasonRecords.filter(s => s.seasonPlace !== undefined).map(s => s.seasonPlace!);
+                const finalPlaces = stats.seasonRecords.filter(s => s.finalPlace !== undefined).map(s => s.finalPlace!);
+                
+                const maxWinPct = Math.max(...winPcts);
+                const minWinPct = Math.min(...winPcts);
+                const maxPpg = Math.max(...ppgs);
+                const minPpg = Math.min(...ppgs);
+                const maxPpasg = Math.max(...ppasgs);
+                const minPpasg = Math.min(...ppasgs);
+                const minSeasonPlace = seasonPlaces.length > 0 ? Math.min(...seasonPlaces) : undefined;
+                const maxSeasonPlace = seasonPlaces.length > 0 ? Math.max(...seasonPlaces) : undefined;
+                const minFinalPlace = finalPlaces.length > 0 ? Math.min(...finalPlaces) : undefined;
+                const maxFinalPlace = finalPlaces.length > 0 ? Math.max(...finalPlaces) : undefined;
+                
+                return (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th onClick={() => handleSort('season')} className={`sortable ${sortColumn === 'season' ? `sorted-${sortDirection}` : ''}`}>Year</th>
+                        <th onClick={() => handleSort('record')} className={`sortable ${sortColumn === 'record' ? `sorted-${sortDirection}` : ''}`}>W-L-T</th>
+                        <th onClick={() => handleSort('points')} className={`sortable ${sortColumn === 'points' ? `sorted-${sortDirection}` : ''}`}>Points</th>
+                        <th onClick={() => handleSort('pointsAgainst')} className={`sortable ${sortColumn === 'pointsAgainst' ? `sorted-${sortDirection}` : ''}`}>Points Against</th>
+                        <th onClick={() => handleSort('seasonPlace')} className={`sortable ${sortColumn === 'seasonPlace' ? `sorted-${sortDirection}` : ''}`}>Reg Season</th>
+                        <th onClick={() => handleSort('finalPlace')} className={`sortable ${sortColumn === 'finalPlace' ? `sorted-${sortDirection}` : ''}`}>Overall</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.seasonRecords.map((season) => {
+                        const winPct = season.wins / (season.wins + season.losses + season.ties);
+                        const ppg = season.fpts / (season.wins + season.losses + season.ties);
+                        const ppasg = season.fptsAgainst / (season.wins + season.losses + season.ties);
+                        
+                        return (
+                          <tr key={season.season}>
+                            <td>{season.season}</td>
+                            <td style={{ color: winPct === maxWinPct ? '#22c55e' : winPct === minWinPct ? '#ef4444' : 'inherit' }}>
+                              {season.wins}-{season.losses}-{season.ties} ({(winPct * 100).toFixed(1)}%)
+                            </td>
+                            <td style={{ color: ppg === maxPpg ? '#22c55e' : ppg === minPpg ? '#ef4444' : 'inherit' }}>
+                              {ppg.toFixed(2)} ({season.fpts.toFixed(2)})
+                            </td>
+                            <td style={{ color: ppasg === maxPpasg ? '#ef4444' : ppasg === minPpasg ? '#22c55e' : 'inherit' }}>
+                              {ppasg.toFixed(2)} ({season.fptsAgainst.toFixed(2)})
+                            </td>
+                            <td style={{ color: season.seasonPlace !== undefined && season.seasonPlace === minSeasonPlace ? '#22c55e' : season.seasonPlace !== undefined && season.seasonPlace === maxSeasonPlace ? '#ef4444' : 'inherit' }}>
+                              {season.seasonPlace !== undefined ? season.seasonPlace : 'N/A'}
+                            </td>
+                            <td style={{ color: season.finalPlace !== undefined && season.finalPlace === minFinalPlace ? '#22c55e' : season.finalPlace !== undefined && season.finalPlace === maxFinalPlace ? '#ef4444' : 'inherit' }}>
+                              {season.finalPlace !== undefined ? season.finalPlace : 'N/A'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              })()}
             </div>
           )}
         </div>
@@ -565,26 +725,53 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
           </div>
           {isHeadToHeadExpanded && (
             <div className="collapsible-content">
-              <table>
-                <thead>
-                  <tr>
-                    <th onClick={() => handleOpponentSort('opponent')} className={`sortable ${sortOpponentColumn === 'opponent' ? `sorted-${sortOpponentDirection}` : ''}`}>Opponent</th>
-                    <th onClick={() => handleOpponentSort('record')} className={`sortable ${sortOpponentColumn === 'record' ? `sorted-${sortOpponentDirection}` : ''}`}>W-L-T</th>
-                    <th onClick={() => handleOpponentSort('points')} className={`sortable ${sortOpponentColumn === 'points' ? `sorted-${sortOpponentDirection}` : ''}`}>Points</th>
-                    <th onClick={() => handleOpponentSort('pointsAgainst')} className={`sortable ${sortOpponentColumn === 'pointsAgainst' ? `sorted-${sortOpponentDirection}` : ''}`}>Points Against</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedOpponents.map((opponent) => (
-                    <tr key={opponent.opponentId}>
-                      <td>{opponent.opponentName}</td>
-                      <td>{opponent.wins}-{opponent.losses}</td>
-                      <td>{(opponent.pointsFor / (opponent.wins + opponent.losses)).toFixed(2)}</td>
-                      <td>{(opponent.pointsAgainst / (opponent.wins + opponent.losses)).toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {sortedOpponents.length > 0 && (() => {
+                const winPcts = sortedOpponents.map(o => o.wins / (o.wins + o.losses));
+                const pointsPerGame = sortedOpponents.map(o => o.pointsFor / (o.wins + o.losses));
+                const pointsAgainstPerGame = sortedOpponents.map(o => o.pointsAgainst / (o.wins + o.losses));
+                
+                const maxWinPct = Math.max(...winPcts);
+                const minWinPct = Math.min(...winPcts);
+                const maxPointsPerGame = Math.max(...pointsPerGame);
+                const minPointsPerGame = Math.min(...pointsPerGame);
+                const maxPointsAgainstPerGame = Math.max(...pointsAgainstPerGame);
+                const minPointsAgainstPerGame = Math.min(...pointsAgainstPerGame);
+                
+                return (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th onClick={() => handleOpponentSort('opponent')} className={`sortable ${sortOpponentColumn === 'opponent' ? `sorted-${sortOpponentDirection}` : ''}`}>Opponent</th>
+                        <th onClick={() => handleOpponentSort('record')} className={`sortable ${sortOpponentColumn === 'record' ? `sorted-${sortOpponentDirection}` : ''}`}>W-L-T</th>
+                        <th onClick={() => handleOpponentSort('points')} className={`sortable ${sortOpponentColumn === 'points' ? `sorted-${sortOpponentDirection}` : ''}`}>Points</th>
+                        <th onClick={() => handleOpponentSort('pointsAgainst')} className={`sortable ${sortOpponentColumn === 'pointsAgainst' ? `sorted-${sortOpponentDirection}` : ''}`}>Points Against</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedOpponents.map((opponent) => {
+                        const winPct = opponent.wins / (opponent.wins + opponent.losses);
+                        const ppg = opponent.pointsFor / (opponent.wins + opponent.losses);
+                        const papg = opponent.pointsAgainst / (opponent.wins + opponent.losses);
+                        
+                        return (
+                          <tr key={opponent.opponentId}>
+                            <td>{opponent.opponentName}</td>
+                            <td style={{ color: winPct === maxWinPct ? '#22c55e' : winPct === minWinPct ? '#ef4444' : 'inherit' }}>
+                              {opponent.wins}-{opponent.losses} ({(winPct * 100).toFixed(1)}%)
+                            </td>
+                            <td style={{ color: ppg === maxPointsPerGame ? '#22c55e' : ppg === minPointsPerGame ? '#ef4444' : 'inherit' }}>
+                              {ppg.toFixed(2)}
+                            </td>
+                            <td style={{ color: papg === maxPointsAgainstPerGame ? '#ef4444' : papg === minPointsAgainstPerGame ? '#22c55e' : 'inherit' }}>
+                              {papg.toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              })()}
             </div>
           )}
         </div>

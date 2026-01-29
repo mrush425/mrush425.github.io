@@ -346,6 +346,164 @@
   color: var(--season-accent);
 }
 
+/* Streak Section */
+.streak-section {
+  margin-bottom: 0;
+  margin-top: 40px;
+}
+
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.streak-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.streak-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--streak-accent) 0%, transparent 100%);
+}
+
+.streak-card.records {
+  --streak-accent: #8b5cf6;
+}
+
+.streak-card.current.win {
+  --streak-accent: #4ade80;
+}
+
+.streak-card.current.loss {
+  --streak-accent: #ef4444;
+}
+
+.streak-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--streak-accent);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* Record Streaks (in records card) */
+.streak-record-item {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.streak-record-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.streak-record-item:first-child {
+  padding-top: 0;
+}
+
+.streak-record-type {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.streak-record-length {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.streak-record-item.win .streak-record-length {
+  color: #4ade80;
+}
+
+.streak-record-item.loss .streak-record-length {
+  color: #ef4444;
+}
+
+.streak-record-range {
+  font-size: 12px;
+  color: #a0a0a0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Current Streak Card */
+.current-streak-type {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.current-streak-length {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--streak-accent);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.streak-progress-container {
+  margin-bottom: 16px;
+}
+
+.streak-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.streak-progress-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0a0;
+  font-weight: 600;
+}
+
+.streak-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.streak-progress-fill {
+  height: 100%;
+  background: var(--streak-accent);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.current-streak-date {
+  font-size: 11px;
+  color: #a0a0a0;
+  text-align: center;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
 /* Collapsible Section */
 .collapsible-section {
   margin-bottom: 20px;

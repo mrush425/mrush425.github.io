@@ -14,6 +14,9 @@ import DraftChoiceVsPlace from './OtherStats/DraftChoiceVsPlace';
 import PlaceStats from './OtherStats/PlaceStats'; 
 import StreakComponent from './OtherStats/StreakComponent';
 import HelmetMaster from './OtherStats/HelmetMaster';
+import MoneyStats from './OtherStats/MoneyStats';
+import ChargerStats from './Records Stats/ChargerStats';
+import VikingStats from './Records Stats/VikingStats';
 
 
 
@@ -21,10 +24,13 @@ import HelmetMaster from './OtherStats/HelmetMaster';
 const STAT_COMPONENTS: OtherStatItem[] = [
     // 2. INSERT THE NEW COMPONENT
     { displayName: 'League Placement Stats', Component: PlaceStats },
+    { displayName: 'Money Stats', Component: MoneyStats },
     { displayName: 'Draft Position vs. Place', Component: DraftPositionVsPlace },
     { displayName: 'Draft Choice vs. Place', Component: DraftChoiceVsPlace },
     { displayName: 'Win/Lose Streaks', Component: StreakComponent },
-    { displayName: 'Helmet Master', Component: HelmetMaster }
+    { displayName: 'Helmet Master', Component: HelmetMaster },
+    { displayName: 'The Charger', Component: ChargerStats },
+    { displayName: 'The Viking', Component: VikingStats }
     
     // Example of future components (using a mock component for now if needed, 
     // otherwise, replace/remove all mock references)

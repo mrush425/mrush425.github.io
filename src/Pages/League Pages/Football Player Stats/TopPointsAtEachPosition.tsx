@@ -13,52 +13,187 @@ const TopPointsAtEachPosition: React.FC<TopPointsAtEachPositionProps> = ({ data 
     return FootballPlayerStatsMethods.MaxPointsByPosition(data, allPositions);
   }, [data]);
 
+  const getPlayerImageUrl = (playerId: string, position: string) => {
+    const isDefense = position === 'DEF';
+    if (isDefense) {
+      return `https://sleepercdn.com/images/team_logos/nfl/${playerId.toLowerCase()}.png`;
+    }
+    return `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`;
+  };
+
+  const getFallbackImageUrl = (position: string) => {
+    return position === 'DEF'
+      ? 'https://sleepercdn.com/images/fallback_team_logo.png'
+      : 'https://sleepercdn.com/images/fallback_player_image.png';
+  };
+
+  const getPositionColor = (position: string) => {
+    const colors: Record<string, string> = {
+      QB: '#ff2d55',
+      RB: '#00c7be',
+      WR: '#007aff',
+      TE: '#ff9500',
+      K: '#5856d6',
+      DEF: '#34c759',
+    };
+    return colors[position] || '#8e8e93';
+  };
+
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
       {results.length === 0 ? (
         <div style={{ textAlign: 'center', color: '#a0a0a0', marginTop: '20px' }}>
           No data available
         </div>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              marginTop: '20px',
-            }}
-          >
-            <thead>
-              <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderBottom: '2px solid rgba(255, 255, 255, 0.1)' }}>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Position</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Player</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Points</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Owner</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Opponent</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Year</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Week</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((result, idx) => (
-                <tr
-                  key={`${result.playerId}-${result.year}-${result.week}`}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '24px',
+            marginTop: '20px',
+          }}
+        >
+          {results.map((result, idx) => (
+            <div
+              key={`${result.playerId}-${result.year}-${result.week}-${idx}`}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '12px',
+                padding: '20px',
+                border: '2px solid rgba(255, 255, 255, 0.1)',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = getPositionColor(result.position);
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              {/* Position Badge */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  backgroundColor: getPositionColor(result.position),
+                  color: '#fff',
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                {result.position}
+              </div>
+
+              {/* Player Image */}
+              <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                <img
+                  src={getPlayerImageUrl(result.playerId, result.position)}
+                  onError={(e) =>
+                    ((e.target as HTMLImageElement).src = getFallbackImageUrl(result.position))
+                  }
+                  alt={result.playerName}
                   style={{
-                    backgroundColor: idx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.02)',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: `3px solid ${getPositionColor(result.position)}`,
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  }}
+                />
+              </div>
+
+              {/* Player Name */}
+              <h3
+                style={{
+                  color: '#e0e0e0',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  margin: '0 0 8px 0',
+                  lineHeight: '1.3',
+                }}
+              >
+                {result.playerName}
+              </h3>
+
+              {/* Points */}
+              <div
+                style={{
+                  textAlign: 'center',
+                  fontSize: '36px',
+                  fontWeight: 'bold',
+                  color: getPositionColor(result.position),
+                  margin: '12px 0',
+                }}
+              >
+                {result.points.toFixed(2)}
+                <span style={{ fontSize: '16px', color: '#a0a0a0', marginLeft: '4px' }}>
+                  pts
+                </span>
+              </div>
+
+              {/* Divider */}
+              <div
+                style={{
+                  height: '1px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  margin: '16px 0',
+                }}
+              />
+
+              {/* Details */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.position}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.playerName}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.points.toFixed(2)}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.owner}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.opponent}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.year}</td>
-                  <td style={{ padding: '12px 16px', color: '#e0e0e0', fontSize: '14px' }}>{result.week}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Owner</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
+                    {result.owner}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>vs</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
+                    {result.opponent}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Game</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
+                    Week {result.week}, {result.year}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
