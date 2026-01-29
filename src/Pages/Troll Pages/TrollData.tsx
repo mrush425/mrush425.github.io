@@ -4,6 +4,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import TrollNavBar from '../../Navigation/TrollNavBar';
 import TrollHome from './TrollHome';
 import TrollMatchups from './Matchups';
+import BestPlayers from './BestPlayers';
 import '../../Stylesheets/Troll Stylesheets/TrollData.css';
 
 interface TrollDataProps {
@@ -31,6 +32,7 @@ const TrollData: React.FC<TrollDataProps> = ({ data }) => {
         <Routes>
           <Route path="/" element={<TrollHome userId={trollId} userName={trollName} leagueData={data} />} />
           <Route path="/matchups" element={<TrollMatchups userId={trollId} userName={trollName} leagueData={data} />} />
+          <Route path="/best-players" element={<BestPlayers userId={trollId} leagueData={data} />} />
         </Routes>
       </div>
     </div>
