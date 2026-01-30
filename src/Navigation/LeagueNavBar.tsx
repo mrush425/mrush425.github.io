@@ -10,21 +10,26 @@ interface LeagueNavBar {
 
 const LeagueNavBar: React.FC<LeagueNavBar> = ({ data }) => {
   return (
-    <div className="navbar-container mt-3 mb-3"> {/* Use mt-3 for margin-top */}
+    <div className="navbar-container mt-3 mb-3">
       <Link to={`/league-stats`} className="btn-custom btn btn-sm mr-2">
-        League Stats Home
+        <span className="btn-full">League Stats Home</span>
+        <span className="btn-abbrev">Home</span>
       </Link>
       <Link to={`/league-stats/league-records`} className="btn-custom btn btn-sm mr-2">
-        Records Stats
+        <span className="btn-full">Records Stats</span>
+        <span className="btn-abbrev">Records</span>
       </Link>
       <Link to={`/league-stats/league-points`} className="btn-custom btn btn-sm mr-2">
-        Points Stats
+        <span className="btn-full">Points Stats</span>
+        <span className="btn-abbrev">Points</span>
       </Link>
       <Link to={`/league-stats/league-other-stats`} className="btn-custom btn btn-sm mr-2">
-        Other Stats
+        <span className="btn-full">Other Stats</span>
+        <span className="btn-abbrev">Other</span>
       </Link>
       <Link to={`/league-stats/football-player-stats`} className="btn-custom btn btn-sm mr-2">
-        Football Player Stats
+        <span className="btn-full">Football Player Stats</span>
+        <span className="btn-abbrev">Players</span>
       </Link>
     </div>
   );

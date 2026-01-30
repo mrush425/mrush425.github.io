@@ -107,9 +107,22 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  flex-shrink: 0;
+  text-decoration: none;
+  min-width: 50px;
+}
+
+/* Abbreviated text for mobile */
+.navbar-container .btn-custom .btn-abbrev {
+  display: none;
+}
+
+.navbar-container .btn-custom .btn-full {
+  display: inline;
 }
 
 .navbar-container .btn-custom::before {
@@ -173,4 +186,14 @@
     padding: 6px 10px;
     font-size: 11px;
     letter-spacing: 0.3px;
-  }}
+  }
+  
+  /* Show abbreviated text on mobile */
+  .navbar-container .btn-custom .btn-full {
+    display: none;
+  }
+  
+  .navbar-container .btn-custom .btn-abbrev {
+    display: inline;
+  }
+}

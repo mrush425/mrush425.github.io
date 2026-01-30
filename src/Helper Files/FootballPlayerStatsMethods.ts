@@ -1,7 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import yearTrollData from '../Data/yearTrollData.json';
-import { getUserSeasonPlace } from './HelperMethods';
+import { getUserSeasonPlace, getOverallPlace } from './HelperMethods';
 
 // =============================================================================
 // TYPES / EXPORTS
@@ -27,6 +27,8 @@ export interface JamarcusRusselStatResult {
   gamesPlayed: number;
   owner: string;
   year: number;
+  seasonPlace?: number;
+  overallPlace?: number;
 }
 
 interface JamarcusRusselPlayerStat {
@@ -134,6 +136,8 @@ class FootballPlayerStatsMethods {
         if (!playerStat) return undefined;
 
         const owner = user.metadata?.team_name || user.display_name || playerDataEntry.player_name || 'Unknown';
+        const seasonPlace = getUserSeasonPlace(user.user_id, league);
+        const overallPlace = getOverallPlace(user.user_id, season);
 
         const pointsPerGame = playerStat.points / gamesPlayed;
 
@@ -146,6 +150,8 @@ class FootballPlayerStatsMethods {
           gamesPlayed,
           owner,
           year: Number(season),
+          seasonPlace,
+          overallPlace,
         };
 
         return result;
@@ -189,6 +195,8 @@ class FootballPlayerStatsMethods {
         if (!playerStat) return undefined;
 
         const owner = user.metadata?.team_name || user.display_name || playerDataEntry.player_name || 'Unknown';
+        const seasonPlace = getUserSeasonPlace(user.user_id, league);
+        const overallPlace = getOverallPlace(user.user_id, season);
 
         const pointsPerGame = playerStat.points / gamesPlayed;
 
@@ -201,6 +209,8 @@ class FootballPlayerStatsMethods {
           gamesPlayed,
           owner,
           year: Number(season),
+          seasonPlace,
+          overallPlace,
         };
 
         return result;

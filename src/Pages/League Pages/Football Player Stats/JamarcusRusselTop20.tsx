@@ -106,6 +106,23 @@ const JamarcusRusselTop20: React.FC<JamarcusRusselTop20Props> = ({ data }) => {
                 style={{
                   position: 'absolute',
                   top: '12px',
+                  left: '12px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: '#fff',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                #{idx + 1}
+              </div>
+
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
                   right: '12px',
                   backgroundColor: getPositionColor(result.position),
                   color: '#fff',
@@ -149,6 +166,17 @@ const JamarcusRusselTop20: React.FC<JamarcusRusselTop20Props> = ({ data }) => {
               >
                 {result.playerName}
               </h3>
+
+              <div
+                style={{
+                  textAlign: 'center',
+                  fontSize: '12px',
+                  color: '#a0a0a0',
+                  marginBottom: '12px',
+                }}
+              >
+                {result.year}
+              </div>
 
               <div
                 style={{
@@ -204,9 +232,21 @@ const JamarcusRusselTop20: React.FC<JamarcusRusselTop20Props> = ({ data }) => {
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Season</span>
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Season Place</span>
                   <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
-                    {result.year}
+                    {result.seasonPlace ? `#${result.seasonPlace}` : 'N/A'}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Overall Place</span>
+                  <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
+                    {result.overallPlace ? `#${result.overallPlace}` : 'N/A'}
                   </span>
                 </div>
               </div>
