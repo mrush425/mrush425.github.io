@@ -1,25 +1,33 @@
-import React, { useMemo, useState } from 'react';
-import LeagueData from '../../Interfaces/LeagueData';
-import FootballPlayerStatsMethods from '../../Helper Files/FootballPlayerStatsMethods';
+import React, { useEffect, useMemo, useState } from 'react';
+import LeagueData from '../../../Interfaces/LeagueData';
+import FootballPlayerStatsMethods, { JamarcusRusselStatResult } from '../../../Helper Files/FootballPlayerStatsMethods';
 
-interface BestPlayersProps {
-  userId: string;
-  leagueData: LeagueData[];
+interface JamarcusRusselTop20Props {
+  data: LeagueData[];
 }
 
-const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
-  const [mode, setMode] = useState<'starting' | 'bench'>('starting');
-  const allPositions = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+const JamarcusRusselTop20: React.FC<JamarcusRusselTop20Props> = ({ data }) => {
+  const [results, setResults] = useState<JamarcusRusselStatResult[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const results = useMemo(() => {
-    if (mode === 'starting') {
-      // Return starting lineup performances
-      return FootballPlayerStatsMethods.MaxPointsByPosition(leagueData, allPositions, userId);
-    } else {
-      // Return bench performances
-      return FootballPlayerStatsMethods.MaxPointsByPositionBench(leagueData, allPositions, userId);
-    }
-  }, [userId, leagueData, mode]);
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+
+    FootballPlayerStatsMethods.JamarcusRusselTop20(data)
+      .then((res) => {
+        if (!isMounted) return;
+        setResults(res);
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [data]);
 
   const getPlayerImageUrl = (playerId: string, position: string) => {
     const isDefense = position === 'DEF';
@@ -47,34 +55,18 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
     return colors[position] || '#8e8e93';
   };
 
-  return (
-    <div style={{ padding: '0' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '32px', fontSize: '2.5rem', fontWeight: 'bold' }}>Best Player Performances</h1>
-      {/* Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px', gap: '16px' }}>
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-          <input
-            type="radio"
-            name="performance-mode"
-            value="starting"
-            checked={mode === 'starting'}
-            onChange={() => setMode('starting')}
-          />
-          <span>Best Starting Performance</span>
-        </label>
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-          <input
-            type="radio"
-            name="performance-mode"
-            value="bench"
-            checked={mode === 'bench'}
-            onChange={() => setMode('bench')}
-          />
-          <span>Best Bench Performance</span>
-        </label>
-      </div>
+  const titleText = useMemo(() => {
+    return 'Jamarcus Russell (Top 20 - Lowest Half PPR Points)';
+  }, []);
 
-      {results.length === 0 ? (
+  return (
+    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
+      <h4 style={{ textAlign: 'center', color: '#a0a0a0', marginBottom: '12px' }}>{titleText}</h4>
+      {loading ? (
+        <div style={{ textAlign: 'center', color: '#a0a0a0', marginTop: '20px' }}>
+          Loading...
+        </div>
+      ) : results.length === 0 ? (
         <div style={{ textAlign: 'center', color: '#a0a0a0', marginTop: '20px' }}>
           No data available
         </div>
@@ -89,7 +81,7 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
         >
           {results.map((result, idx) => (
             <div
-              key={`${result.playerId}-${result.year}-${result.week}-${idx}`}
+              key={`${result.playerId}-${result.year}-${idx}`}
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.03)',
                 borderRadius: '12px',
@@ -110,7 +102,6 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                 e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
               }}
             >
-              {/* Position Badge */}
               <div
                 style={{
                   position: 'absolute',
@@ -128,7 +119,6 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                 {result.position}
               </div>
 
-              {/* Player Image */}
               <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                 <img
                   src={getPlayerImageUrl(result.playerId, result.position)}
@@ -147,7 +137,6 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                 />
               </div>
 
-              {/* Player Name */}
               <h3
                 style={{
                   color: '#e0e0e0',
@@ -161,23 +150,32 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                 {result.playerName}
               </h3>
 
-              {/* Points */}
               <div
                 style={{
                   textAlign: 'center',
-                  fontSize: '36px',
+                  fontSize: '32px',
                   fontWeight: 'bold',
                   color: getPositionColor(result.position),
                   margin: '12px 0',
                 }}
               >
-                {result.points.toFixed(2)}
-                <span style={{ fontSize: '16px', color: '#a0a0a0', marginLeft: '4px' }}>
-                  pts
+                {result.pointsPerGame.toFixed(2)}
+                <span style={{ fontSize: '14px', color: '#a0a0a0', marginLeft: '4px' }}>
+                  PPG
                 </span>
               </div>
 
-              {/* Divider */}
+              <div
+                style={{
+                  textAlign: 'center',
+                  fontSize: '12px',
+                  color: '#a0a0a0',
+                  marginBottom: '12px',
+                }}
+              >
+                ({result.points.toFixed(2)} pts in {result.gamesPlayed} games)
+              </div>
+
               <div
                 style={{
                   height: '1px',
@@ -186,7 +184,6 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                 }}
               />
 
-              {/* Details */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div
                   style={{
@@ -195,9 +192,9 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>vs</span>
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Owner</span>
                   <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
-                    {result.opponent}
+                    {result.owner}
                   </span>
                 </div>
                 <div
@@ -207,9 +204,9 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Game</span>
+                  <span style={{ color: '#a0a0a0', fontSize: '14px' }}>Season</span>
                   <span style={{ color: '#e0e0e0', fontSize: '14px', fontWeight: '500' }}>
-                    Week {result.week}, {result.year}
+                    {result.year}
                   </span>
                 </div>
               </div>
@@ -221,4 +218,4 @@ const BestPlayers: React.FC<BestPlayersProps> = ({ userId, leagueData }) => {
   );
 };
 
-export default BestPlayers;
+export default JamarcusRusselTop20;

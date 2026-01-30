@@ -1,5 +1,6 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
+import yearTrollData from '../Data/yearTrollData.json';
 import { getUserSeasonPlace } from './HelperMethods';
 
 // =============================================================================
@@ -17,11 +18,203 @@ export interface MaxPointsByPositionResult {
   week: number;
 }
 
+export interface JamarcusRusselStatResult {
+  position: string;
+  playerName: string;
+  playerId: string;
+  points: number;
+  pointsPerGame: number;
+  gamesPlayed: number;
+  owner: string;
+  year: number;
+}
+
+interface JamarcusRusselPlayerStat {
+  position: string;
+  playerName: string;
+  playerId: string;
+  points: number;
+  gamesPlayed: number;
+}
+
+const jamarcusRusselStatCache = new Map<string, Promise<JamarcusRusselPlayerStat | undefined>>();
+
 // =============================================================================
 // FOOTBALL PLAYER STATS METHODS
 // =============================================================================
 
 class FootballPlayerStatsMethods {
+  private static async fetchJamarcusRusselPlayerStat(
+    season: string,
+    playerId: string
+  ): Promise<JamarcusRusselPlayerStat | undefined> {
+    const cacheKey = `${season}-${playerId}`;
+    const cached = jamarcusRusselStatCache.get(cacheKey);
+    if (cached) return cached;
+
+    const fetchPromise = (async () => {
+      try {
+        const response = await fetch(
+          `https://api.sleeper.com/stats/nfl/player/${playerId}?season_type=regular&season=${season}`
+        );
+
+        if (!response.ok) {
+          console.error(`Failed to fetch player stats for player ID ${playerId}: HTTP ${response.status}`);
+          return undefined;
+        }
+
+        const playerStat = await response.json();
+        const halfPPRPoints = playerStat?.stats?.pts_half_ppr;
+        if (halfPPRPoints === undefined || halfPPRPoints === null) {
+          console.warn(`No valid stats found for player ID ${playerId} in season ${season}.`);
+          return undefined;
+        }
+
+        const playerInfo = (playerData as any)[playerId];
+        const playerName =
+          playerStat?.player?.full_name ||
+          `${playerStat?.player?.first_name || ''} ${playerStat?.player?.last_name || ''}`.trim() ||
+          playerInfo?.full_name ||
+          `${playerInfo?.first_name || ''} ${playerInfo?.last_name || ''}`.trim() ||
+          'Unknown';
+        const position = playerStat?.player?.position || playerInfo?.position || 'N/A';
+
+        // Calculate games played by counting weeks with stats
+        let gamesPlayed = 0;
+        if (playerStat?.stats_by_week && typeof playerStat.stats_by_week === 'object') {
+          gamesPlayed = Object.values(playerStat.stats_by_week).filter((week: any) => week && Object.keys(week).length > 0).length;
+        }
+        // Fallback to 17 games if we can't determine
+        if (gamesPlayed === 0) {
+          gamesPlayed = 17;
+        }
+
+        return {
+          playerId,
+          playerName,
+          position,
+          points: Number(halfPPRPoints),
+          gamesPlayed,
+        };
+      } catch (error) {
+        console.error(`Error fetching player stats for player ID ${playerId} in season ${season}:`, error);
+        return undefined;
+      }
+    })();
+
+    jamarcusRusselStatCache.set(cacheKey, fetchPromise);
+    return fetchPromise;
+  }
+
+  static async JamarcusRusselTop20(data: LeagueData[]): Promise<JamarcusRusselStatResult[]> {
+    const results: JamarcusRusselStatResult[] = [];
+
+    const tasks = data.flatMap((league) => {
+      const season = league.season;
+      const yearDataEntry = yearTrollData.find((yd: any) => yd.year === Number.parseFloat(season));
+      if (!yearDataEntry) {
+        console.warn(`No yearTrollData found for season ${season}.`);
+        return [];
+      }
+
+      const gamesPlayed = league.settings.playoff_week_start + 2;
+
+      return league.users.map(async (user) => {
+        const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === user.user_id);
+        if (!playerDataEntry) {
+          return undefined;
+        }
+
+        const playerId = playerDataEntry.first_round_draft_pick_sleeper_id;
+        if (!playerId) {
+          return undefined;
+        }
+
+        const playerStat = await this.fetchJamarcusRusselPlayerStat(season, String(playerId));
+        if (!playerStat) return undefined;
+
+        const owner = user.metadata?.team_name || user.display_name || playerDataEntry.player_name || 'Unknown';
+
+        const pointsPerGame = playerStat.points / gamesPlayed;
+
+        const result: JamarcusRusselStatResult = {
+          playerId: playerStat.playerId,
+          playerName: playerStat.playerName,
+          position: playerStat.position,
+          points: playerStat.points,
+          pointsPerGame,
+          gamesPlayed,
+          owner,
+          year: Number(season),
+        };
+
+        return result;
+      });
+    });
+
+    const resolved = await Promise.all(tasks);
+    resolved.forEach((result) => {
+      if (result) results.push(result);
+    });
+
+    results.sort((a, b) => a.pointsPerGame - b.pointsPerGame);
+    return results.slice(0, 20);
+  }
+
+  static async BestFirstRoundersTop20(data: LeagueData[]): Promise<JamarcusRusselStatResult[]> {
+    const results: JamarcusRusselStatResult[] = [];
+
+    const tasks = data.flatMap((league) => {
+      const season = league.season;
+      const yearDataEntry = yearTrollData.find((yd: any) => yd.year === Number.parseFloat(season));
+      if (!yearDataEntry) {
+        console.warn(`No yearTrollData found for season ${season}.`);
+        return [];
+      }
+
+      const gamesPlayed = league.settings.playoff_week_start + 2;
+
+      return league.users.map(async (user) => {
+        const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === user.user_id);
+        if (!playerDataEntry) {
+          return undefined;
+        }
+
+        const playerId = playerDataEntry.first_round_draft_pick_sleeper_id;
+        if (!playerId) {
+          return undefined;
+        }
+
+        const playerStat = await this.fetchJamarcusRusselPlayerStat(season, String(playerId));
+        if (!playerStat) return undefined;
+
+        const owner = user.metadata?.team_name || user.display_name || playerDataEntry.player_name || 'Unknown';
+
+        const pointsPerGame = playerStat.points / gamesPlayed;
+
+        const result: JamarcusRusselStatResult = {
+          playerId: playerStat.playerId,
+          playerName: playerStat.playerName,
+          position: playerStat.position,
+          points: playerStat.points,
+          pointsPerGame,
+          gamesPlayed,
+          owner,
+          year: Number(season),
+        };
+
+        return result;
+      });
+    });
+
+    const resolved = await Promise.all(tasks);
+    resolved.forEach((result) => {
+      if (result) results.push(result);
+    });
+
+    results.sort((a, b) => b.pointsPerGame - a.pointsPerGame);
+    return results.slice(0, 20);
+  }
   /**
    * Get the highest scoring performance by a player at each position.
    * Can optionally filter by a specific user (for Troll pages).

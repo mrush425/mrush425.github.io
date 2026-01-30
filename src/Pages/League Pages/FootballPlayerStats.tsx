@@ -7,6 +7,8 @@ import MostPointsByPosition from './Football Player Stats/MostPointsByPosition';
 import TopPointsAtEachPosition from './Football Player Stats/TopPointsAtEachPosition';
 import MostPointsByPositionBench from './Football Player Stats/MostPointsByPositionBench';
 import TopPointsAtEachPositionBench from './Football Player Stats/TopPointsAtEachPositionBench'; 
+import JamarcusRusselTop20 from './Football Player Stats/JamarcusRusselTop20';
+import BestFirstRoundersTop20 from './Football Player Stats/BestFirstRoundersTop20';
 
 // =========================================================================
 // TYPE DEFINITIONS
@@ -34,6 +36,8 @@ const FOOTBALL_PLAYER_COMPONENTS: FootballPlayerStatItem[] = [
     { displayName: 'Most Points By Position', Component: MostPointsByPosition },
     { displayName: 'Top Points At Each Position (Bench)', Component: TopPointsAtEachPositionBench },
     { displayName: 'Most Points By Position (Bench)', Component: MostPointsByPositionBench },
+    { displayName: 'Jamarcus Russell (Top 20)', Component: JamarcusRusselTop20 },
+    { displayName: 'Best First Rounders (Top 20)', Component: BestFirstRoundersTop20 },
 ];
 
 
