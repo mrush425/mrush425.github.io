@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import MatchupDisplay from '../../Components/MatchupDisplay';
+import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../Helper Files/PointCalculations';
+import { getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import '../../Stylesheets/Troll Stylesheets/Matchups.css';
 
 interface TrollMatchupsProps {
@@ -78,6 +80,12 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
       const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
       if (userRoster && opponentRoster && league.matchupInfo && userUser) {
+        // Get seeds to check for bye weeks
+        const userSeed = getUserSeasonPlace(userId, league);
+        const opponentSeed = getUserSeasonPlace(selectedOpponentId, league);
+        const userHasByeInFirstWeek = [1, 2, 7, 8].includes(userSeed);
+        const opponentHasByeInFirstWeek = [1, 2, 7, 8].includes(opponentSeed);
+        
         // Find matchups where both players are in same week
         const matchupsByWeek: { [key: number]: any[] } = {};
         league.matchupInfo.forEach((info) => {
@@ -90,6 +98,13 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
         // Check each week's matchups
         Object.entries(matchupsByWeek).forEach(([weekStr, weekMatchups]) => {
           const week = Number(weekStr);
+          const isPlayoff = week >= playoffStartWeek;
+          
+          // Skip first playoff week if either player has a bye
+          if (isPlayoff && week === playoffStartWeek && (userHasByeInFirstWeek || opponentHasByeInFirstWeek)) {
+            return;
+          }
+          
           const userMatchup = weekMatchups.find((m: any) => m.roster_id === userRoster.roster_id);
           const opponentMatchup = weekMatchups.find(
             (m: any) => m.roster_id === opponentRoster.roster_id && m.matchup_id === userMatchup?.matchup_id
@@ -98,7 +113,6 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
           if (userMatchup && opponentMatchup) {
             const userPoints = userMatchup.points || 0;
             const oppPoints = opponentMatchup.points || 0;
-            const isPlayoff = week >= playoffStartWeek;
             const currentStats = isPlayoff ? playoffStats : stats;
             const currentWeekly = isPlayoff ? playoffWeekly : weekly;
 
@@ -142,38 +156,63 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
     : 'Select an opponent';
 
   // Calculate overall averages for user and opponent
-  const { userOverallAvg, opponentOverallAvg } = useMemo(() => {
-    if (!selectedOpponentId) return { userOverallAvg: 0, opponentOverallAvg: 0 };
+  const { userOverallAvg, opponentOverallAvg, userPlayoffAvg, opponentPlayoffAvg } = useMemo(() => {
+    if (!selectedOpponentId) return { userOverallAvg: 0, opponentOverallAvg: 0, userPlayoffAvg: 0, opponentPlayoffAvg: 0 };
 
-    let userTotalPoints = 0;
-    let userTotalGames = 0;
-    let opponentTotalPoints = 0;
-    let opponentTotalGames = 0;
+    let userRegularPoints = 0;
+    let userRegularGames = 0;
+    let opponentRegularPoints = 0;
+    let opponentRegularGames = 0;
+    let userPlayoffPointsTotal = 0;
+    let userPlayoffGamesTotal = 0;
+    let opponentPlayoffPointsTotal = 0;
+    let opponentPlayoffGamesTotal = 0;
 
     leagueData.forEach((league) => {
       const userRoster = league.rosters.find((r) => r.owner_id === userId);
       const opponentRoster = league.rosters.find((r) => r.owner_id === selectedOpponentId);
+      const playoffStartWeek = league.settings.playoff_week_start || Infinity;
+      const userInLeague = league.users.find((u) => u.user_id === userId);
+      const opponentInLeague = league.users.find((u) => u.user_id === selectedOpponentId);
 
+      // Calculate regular season averages
       if (league.matchupInfo) {
         league.matchupInfo.forEach((info) => {
           const userMatchup = info.matchups.find((m: any) => m.roster_id === userRoster?.roster_id);
           const opponentMatchup = info.matchups.find((m: any) => m.roster_id === opponentRoster?.roster_id);
+          const isPlayoff = info.week >= playoffStartWeek;
 
-          if (userMatchup) {
-            userTotalPoints += userMatchup.points || 0;
-            userTotalGames++;
-          }
-          if (opponentMatchup) {
-            opponentTotalPoints += opponentMatchup.points || 0;
-            opponentTotalGames++;
+          if (!isPlayoff) {
+            if (userMatchup) {
+              userRegularPoints += userMatchup.points || 0;
+              userRegularGames++;
+            }
+            if (opponentMatchup) {
+              opponentRegularPoints += opponentMatchup.points || 0;
+              opponentRegularGames++;
+            }
           }
         });
+      }
+
+      // Calculate playoff averages using the proper functions that account for byes
+      if (userInLeague) {
+        const { points, gamesPlayed } = calculatePlayoffPoints(userInLeague, league);
+        userPlayoffPointsTotal += points;
+        userPlayoffGamesTotal += gamesPlayed;
+      }
+      if (opponentInLeague) {
+        const { points, gamesPlayed } = calculatePlayoffPoints(opponentInLeague, league);
+        opponentPlayoffPointsTotal += points;
+        opponentPlayoffGamesTotal += gamesPlayed;
       }
     });
 
     return {
-      userOverallAvg: userTotalGames > 0 ? userTotalPoints / userTotalGames : 0,
-      opponentOverallAvg: opponentTotalGames > 0 ? opponentTotalPoints / opponentTotalGames : 0,
+      userOverallAvg: userRegularGames > 0 ? userRegularPoints / userRegularGames : 0,
+      opponentOverallAvg: opponentRegularGames > 0 ? opponentRegularPoints / opponentRegularGames : 0,
+      userPlayoffAvg: userPlayoffGamesTotal > 0 ? userPlayoffPointsTotal / userPlayoffGamesTotal : 0,
+      opponentPlayoffAvg: opponentPlayoffGamesTotal > 0 ? opponentPlayoffPointsTotal / opponentPlayoffGamesTotal : 0,
     };
   }, [userId, selectedOpponentId, leagueData]);
 
@@ -241,7 +280,7 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
                         <div className="win-rate-label">Win Percentage</div>
                         <div className="win-rate-track">
                           <div className="win-rate-midline" />
-                          <div className="win-rate-fill" style={{ width: `${winRate}%` }}>
+                          <div className={`win-rate-fill ${winRate >= 50 ? 'winning' : 'losing'}`} style={{ width: `${winRate}%` }}>
                             <span className="win-rate-value">{winRate.toFixed(1)}%</span>
                           </div>
                         </div>
@@ -379,7 +418,7 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
                         <div className="win-rate-label">Win Percentage</div>
                         <div className="win-rate-track">
                           <div className="win-rate-midline" />
-                          <div className="win-rate-fill playoff" style={{ width: `${winRate}%` }}>
+                          <div className={`win-rate-fill playoff ${winRate >= 50 ? 'winning' : 'losing'}`} style={{ width: `${winRate}%` }}>
                             <span className="win-rate-value">{winRate.toFixed(1)}%</span>
                           </div>
                         </div>
@@ -407,7 +446,7 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
                             </div>
                           </div>
                           <span className="points-compare-sub">
-                            H2H Avg: <span style={{ color: userH2HAvg > userOverallAvg ? '#4ade80' : userH2HAvg < userOverallAvg ? '#ef4444' : 'inherit' }}>{userH2HAvg.toFixed(2)}</span> | Overall: {userOverallAvg.toFixed(2)}
+                            H2H Avg: <span style={{ color: userH2HAvg > userPlayoffAvg ? '#4ade80' : userH2HAvg < userPlayoffAvg ? '#ef4444' : 'inherit' }}>{userH2HAvg.toFixed(2)}</span> | Overall: {userPlayoffAvg.toFixed(2)}
                           </span>
                         </div>
                         <div className="points-compare-row">
@@ -418,7 +457,7 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
                             </div>
                           </div>
                           <span className="points-compare-sub">
-                            H2H Avg: <span style={{ color: opponentH2HAvg < opponentOverallAvg ? '#4ade80' : opponentH2HAvg > opponentOverallAvg ? '#ef4444' : 'inherit' }}>{opponentH2HAvg.toFixed(2)}</span> | Overall: {opponentOverallAvg.toFixed(2)}
+                            H2H Avg: <span style={{ color: opponentH2HAvg < opponentPlayoffAvg ? '#4ade80' : opponentH2HAvg > opponentPlayoffAvg ? '#ef4444' : 'inherit' }}>{opponentH2HAvg.toFixed(2)}</span> | Overall: {opponentPlayoffAvg.toFixed(2)}
                           </span>
                         </div>
                       </div>

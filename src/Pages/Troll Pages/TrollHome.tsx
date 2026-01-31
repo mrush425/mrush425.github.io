@@ -940,48 +940,89 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         {(stats.bestOpponent || stats.worstOpponent) && (
           <div className="matchup-section" style={{ marginTop: '40px' }}>
             <div className="matchup-grid">
-              {stats.bestOpponent && (
-                <div className="matchup-card best">
-                  <div className="matchup-badge">Favorite Victim</div>
-                  <div className="matchup-opponent">{stats.bestOpponent.opponentName}</div>
-                  <div className="matchup-record-line">
-                    <span className="matchup-record">{stats.bestOpponent.wins}-{stats.bestOpponent.losses}</span>
-                    <span className="matchup-winpct">({((stats.bestOpponent.wins / (stats.bestOpponent.wins + stats.bestOpponent.losses)) * 100).toFixed(1)}%)</span>
-                  </div>
-                  <div className="matchup-points-line">
-                    <div className="matchup-points-for">
-                      <div className="matchup-points-label">PPG</div>
-                      <div className="matchup-points-value">{(stats.bestOpponent.pointsFor / (stats.bestOpponent.wins + stats.bestOpponent.losses)).toFixed(1)}</div>
+              {stats.bestOpponent && (() => {
+                const totalGames = stats.bestOpponent.wins + stats.bestOpponent.losses;
+                const winRate = (stats.bestOpponent.wins / totalGames) * 100;
+                const ppg = stats.bestOpponent.pointsFor / totalGames;
+                const ppgAgainst = stats.bestOpponent.pointsAgainst / totalGames;
+                const avgDiff = ppg - ppgAgainst;
+                
+                return (
+                  <div className="matchup-card best">
+                    <div className="matchup-card-header">
+                      <div className="matchup-card-icon">🎯</div>
+                      <h3 className="matchup-card-title">Favorite Victim</h3>
                     </div>
-                    <div className="matchup-points-separator">-</div>
-                    <div className="matchup-points-against">
-                      <div className="matchup-points-label">PPG Against</div>
-                      <div className="matchup-points-value">{(stats.bestOpponent.pointsAgainst / (stats.bestOpponent.wins + stats.bestOpponent.losses)).toFixed(1)}</div>
+                    <div className="matchup-opponent">{stats.bestOpponent.opponentName}</div>
+                    <div className="matchup-record-line">
+                      <span className="matchup-record">{stats.bestOpponent.wins}-{stats.bestOpponent.losses}</span>
+                      <span className="matchup-winpct">({winRate.toFixed(1)}%)</span>
+                    </div>
+                    <div className="matchup-dominance-bar">
+                      <div className="dominance-track">
+                        <div className="dominance-fill best" style={{ width: `${winRate}%` }}>
+                          <span className="dominance-emoji">💪</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="matchup-points-line">
+                      <div className="matchup-points-for">
+                        <div className="matchup-points-label">PPG</div>
+                        <div className="matchup-points-value">{ppg.toFixed(1)}</div>
+                      </div>
+                      <div className="matchup-points-separator">
+                        <span style={{ fontSize: '14px', color: avgDiff > 0 ? '#4ade80' : '#ef4444' }}>+{avgDiff.toFixed(1)}</span>
+                      </div>
+                      <div className="matchup-points-against">
+                        <div className="matchup-points-label">PPG Against</div>
+                        <div className="matchup-points-value">{ppgAgainst.toFixed(1)}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              {stats.worstOpponent && (
-                <div className="matchup-card worst">
-                  <div className="matchup-badge">White Whale</div>
-                  <div className="matchup-opponent">{stats.worstOpponent.opponentName}</div>
-                  <div className="matchup-record-line">
-                    <span className="matchup-record">{stats.worstOpponent.wins}-{stats.worstOpponent.losses}</span>
-                    <span className="matchup-winpct">({((stats.worstOpponent.wins / (stats.worstOpponent.wins + stats.worstOpponent.losses)) * 100).toFixed(1)}%)</span>
-                  </div>
-                  <div className="matchup-points-line">
-                    <div className="matchup-points-for">
-                      <div className="matchup-points-label">PPG</div>
-                      <div className="matchup-points-value">{(stats.worstOpponent.pointsFor / (stats.worstOpponent.wins + stats.worstOpponent.losses)).toFixed(1)}</div>
+                );
+              })()}
+              {stats.worstOpponent && (() => {
+                const totalGames = stats.worstOpponent.wins + stats.worstOpponent.losses;
+                const lossRate = (stats.worstOpponent.losses / totalGames) * 100;
+                const winRate = (stats.worstOpponent.wins / totalGames) * 100;
+                const ppg = stats.worstOpponent.pointsFor / totalGames;
+                const ppgAgainst = stats.worstOpponent.pointsAgainst / totalGames;
+                const avgDiff = ppg - ppgAgainst;
+                
+                return (
+                  <div className="matchup-card worst">
+                    <div className="matchup-card-header">
+                      <div className="matchup-card-icon">🐋</div>
+                      <h3 className="matchup-card-title">White Whale</h3>
                     </div>
-                    <div className="matchup-points-separator">-</div>
-                    <div className="matchup-points-against">
-                      <div className="matchup-points-label">PPG Against</div>
-                      <div className="matchup-points-value">{(stats.worstOpponent.pointsAgainst / (stats.worstOpponent.wins + stats.worstOpponent.losses)).toFixed(1)}</div>
+                    <div className="matchup-opponent">{stats.worstOpponent.opponentName}</div>
+                    <div className="matchup-record-line">
+                      <span className="matchup-record">{stats.worstOpponent.wins}-{stats.worstOpponent.losses}</span>
+                      <span className="matchup-winpct">({winRate.toFixed(1)}%)</span>
+                    </div>
+                    <div className="matchup-dominance-bar">
+                      <div className="dominance-track">
+                        <div className="dominance-fill worst" style={{ width: `${winRate}%` }}>
+                          <span className="dominance-emoji">😰</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="matchup-points-line">
+                      <div className="matchup-points-for">
+                        <div className="matchup-points-label">PPG</div>
+                        <div className="matchup-points-value">{ppg.toFixed(1)}</div>
+                      </div>
+                      <div className="matchup-points-separator">
+                        <span style={{ fontSize: '14px', color: avgDiff < 0 ? '#ef4444' : '#4ade80' }}>{avgDiff.toFixed(1)}</span>
+                      </div>
+                      <div className="matchup-points-against">
+                        <div className="matchup-points-label">PPG Against</div>
+                        <div className="matchup-points-value">{ppgAgainst.toFixed(1)}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         )}
