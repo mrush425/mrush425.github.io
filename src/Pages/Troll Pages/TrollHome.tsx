@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import yearTrollData from '../../Data/yearTrollData.json';
-import { calculateYearPoints, calculateYearPointsAgainst } from '../../Helper Files/PointCalculations';
+import { calculateYearPoints, calculateYearPointsAgainst, calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../Helper Files/PointCalculations';
 import { getUserSeasonPlace } from '../League Pages/OtherStats/PlaceStats';
 import { 
   calculatePlayoffRecord, 
@@ -119,27 +119,11 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         playoffLosses += pLosses;
         playoffTies += pTies;
 
-        // Calculate playoff points and points against
-        if (league.matchupInfo) {
-          const playoffStartWeek = league.settings.playoff_week_start || Infinity;
-          
-          league.matchupInfo.forEach((weekInfo) => {
-            if (weekInfo.week >= playoffStartWeek) {
-              const userMatchup = weekInfo.matchups.find((m: any) => m.roster_id === roster.roster_id);
-              if (userMatchup) {
-                playoffTotalPoints += userMatchup.points || 0;
-                
-                // Find opponent's points
-                const oppMatchup = weekInfo.matchups.find((m: any) => 
-                  m.matchup_id === userMatchup.matchup_id && m.roster_id !== roster.roster_id
-                );
-                if (oppMatchup) {
-                  playoffTotalPointsAgainst += oppMatchup.points || 0;
-                }
-              }
-            }
-          });
-        }
+        // Calculate playoff points and points against using proper functions that account for bye weeks
+        const { points: playoffPoints, gamesPlayed } = calculatePlayoffPoints(user as SleeperUser, league);
+        const { points: playoffPointsAgainst } = calculatePlayoffPointsAgainst(user as SleeperUser, league);
+        playoffTotalPoints += playoffPoints;
+        playoffTotalPointsAgainst += playoffPointsAgainst;
 
         // Calculate opponent records (regular season only)
         if (league.matchupInfo) {
