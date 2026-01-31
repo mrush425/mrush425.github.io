@@ -4,7 +4,14 @@ import SleeperUser from '../../Interfaces/SleeperUser';
 import yearTrollData from '../../Data/yearTrollData.json';
 import { calculateYearPoints, calculateYearPointsAgainst } from '../../Helper Files/PointCalculations';
 import { getUserSeasonPlace } from '../League Pages/OtherStats/PlaceStats';
-import { calculatePlayoffRecord, displayRecord } from '../../Helper Files/RecordCalculations';
+import { 
+  calculatePlayoffRecord, 
+  displayRecord,
+  getRecordAgainstLeague,
+  getLeagueRecordAtSchedule,
+  getRecordInTop50,
+  recordAgainstWinningTeams
+} from '../../Helper Files/RecordCalculations';
 import { getUserLongestStreak, getCurrentStreak } from '../../Helper Files/StreakMethods';
 import { calculateMoneyStats } from '../../Helper Files/MoneyMethods';
 import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
@@ -255,6 +262,65 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     // Calculate money stats
     const moneyStats = calculateMoneyStats(userId, leagueData);
 
+    // Calculate advanced stats across all years
+    let vsEveryoneWins = 0;
+    let vsEveryoneLosses = 0;
+    let vsEveryoneTies = 0;
+    let atScheduleWins = 0;
+    let atScheduleLosses = 0;
+    let atScheduleTies = 0;
+    let top50Wins = 0;
+    let top50Losses = 0;
+    let top50Ties = 0;
+    let vsWinningWins = 0;
+    let vsWinningLosses = 0;
+    let vsWinningTies = 0;
+
+    leagueData.forEach((league) => {
+      const user = league.users.find((u) => u.user_id === userId);
+      if (user) {
+        const [vew, vel, vet] = getRecordAgainstLeague(user as SleeperUser, league);
+        vsEveryoneWins += vew;
+        vsEveryoneLosses += vel;
+        vsEveryoneTies += vet;
+
+        const [asw, asl, ast] = getLeagueRecordAtSchedule(user as SleeperUser, league);
+        atScheduleWins += asw;
+        atScheduleLosses += asl;
+        atScheduleTies += ast;
+
+        const [t50w, t50l, t50t] = getRecordInTop50(user as SleeperUser, league);
+        top50Wins += t50w;
+        top50Losses += t50l;
+        top50Ties += t50t;
+
+        const [vww, vwl, vwt] = recordAgainstWinningTeams(user as SleeperUser, league);
+        vsWinningWins += vww;
+        vsWinningLosses += vwl;
+        vsWinningTies += vwt;
+      }
+    });
+
+    const vsEveryoneRecord = displayRecord(vsEveryoneWins, vsEveryoneLosses, vsEveryoneTies);
+    const vsEveryoneWinPct = (vsEveryoneWins + vsEveryoneLosses + vsEveryoneTies) > 0 
+      ? ((vsEveryoneWins / (vsEveryoneWins + vsEveryoneLosses + vsEveryoneTies)) * 100).toFixed(1) 
+      : '0.0';
+
+    const atScheduleRecord = displayRecord(atScheduleWins, atScheduleLosses, atScheduleTies);
+    const atScheduleWinPct = (atScheduleWins + atScheduleLosses + atScheduleTies) > 0
+      ? ((atScheduleWins / (atScheduleWins + atScheduleLosses + atScheduleTies)) * 100).toFixed(1)
+      : '0.0';
+
+    const top50Record = displayRecord(top50Wins, top50Losses, top50Ties);
+    const top50WinPct = (top50Wins + top50Losses + top50Ties) > 0
+      ? ((top50Wins / (top50Wins + top50Losses + top50Ties)) * 100).toFixed(1)
+      : '0.0';
+
+    const vsWinningRecord = displayRecord(vsWinningWins, vsWinningLosses, vsWinningTies);
+    const vsWinningWinPct = (vsWinningWins + vsWinningLosses + vsWinningTies) > 0
+      ? ((vsWinningWins / (vsWinningWins + vsWinningLosses + vsWinningTies)) * 100).toFixed(1)
+      : '0.0';
+
     // Find best opponent matchup (highest win percentage, tiebreaker: most points scored)
     // Only include opponents played 4+ times
     const oppArray = Object.values(opponentRecords).filter((opp) => opp.wins + opp.losses >= 4);
@@ -317,6 +383,14 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       longestLossStreaks,
       currentStreak,
       moneyStats,
+      vsEveryoneRecord,
+      vsEveryoneWinPct,
+      atScheduleRecord,
+      atScheduleWinPct,
+      top50Record,
+      top50WinPct,
+      vsWinningRecord,
+      vsWinningWinPct,
     };
   }, [userId, leagueData]);
 
@@ -421,54 +495,224 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       <div className="troll-stats-overview">
         <h2>{userName}'s Career Overview</h2>
         
-        {/* Career Stats Section */}
-        <div className="stats-section">
-          <div className="stat-group">
-            <div className="stat-item">
-              <span className="stat-label">Record</span>
-              <span className="stat-value">{stats.totalWins}-{stats.totalLosses}-{stats.totalTies}</span>
-              <span className="stat-secondary">({stats.winPercentage}%)</span>
+        {/* Hero Stats - Top 4 Key Metrics */}
+        <div className="hero-stats-grid">
+          <div className="hero-stat-card">
+            <div className="hero-stat-icon">🏆</div>
+            <div className="hero-stat-value">{stats.championships}</div>
+            <div className="hero-stat-label">Championship{stats.championships !== 1 ? 's' : ''}</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="hero-stat-icon">📊</div>
+            <div className="hero-stat-value">{stats.totalWins}-{stats.totalLosses}</div>
+            <div className="hero-stat-label">Career Record</div>
+            <div className="hero-stat-subtext">{stats.winPercentage}% Win Rate</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="hero-stat-icon">⚡</div>
+            <div className="hero-stat-value">{stats.avgPointsPerGame}</div>
+            <div className="hero-stat-label">PPG Average</div>
+            <div className="hero-stat-subtext">{stats.totalFpts} total</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="hero-stat-icon">🎮</div>
+            <div className="hero-stat-value">{stats.yearsPlayed}</div>
+            <div className="hero-stat-label">Seasons</div>
+            <div className="hero-stat-subtext">{stats.totalWins + stats.totalLosses + stats.totalTies} games</div>
+          </div>
+        </div>
+
+        {/* Bowl Records Section */}
+        <div className="bowl-section">
+          <div className="bowl-grid">
+            {[
+              { name: 'Troll Bowl', color: 'gold' },
+              { name: 'Bengal Bowl', color: 'silver' },
+              { name: 'Koozie Bowl', color: 'bronze' },
+              { name: 'Toilet Bowl', color: 'purple' },
+              { name: 'Diarrhea Bowl', color: 'brown' },
+              { name: 'Butler Bowl', color: 'gray' }
+            ].map((bowl) => (
+              <div key={bowl.name} className={`bowl-item bowl-${bowl.color}`}>
+                <div className="bowl-name">{bowl.name}</div>
+                <div className="bowl-record-display">{stats.bowlRecords[bowl.name].wins}-{stats.bowlRecords[bowl.name].losses}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Stats Grid */}
+        <div className="main-content-grid">
+          {/* Career Statistics */}
+          <div className="content-section">
+            <h3 className="section-title">Career Statistics</h3>
+            <div className="stats-section">
+              <div className="stat-cards-grid">
+                <div className="stat-card">
+                  <div className="stat-card-icon">🥇</div>
+                  <div className="stat-card-value">{stats.avgSeasonPlace}</div>
+                  <div className="stat-card-label">Avg Reg Place</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-icon">🏅</div>
+                  <div className="stat-card-value">{stats.avgFinalPlace}</div>
+                  <div className="stat-card-label">Avg Final Place</div>
+                </div>
+              </div>
+              <div className="stat-comparison">
+                <div className="stat-comparison-label">Points</div>
+                <div className="stat-comparison-bars">
+                  {(() => {
+                    const pointsFor = parseFloat(stats.avgPointsPerGame);
+                    const pointsAgainst = parseFloat(stats.avgPointsAgainstPerGame);
+                    const maxPoints = Math.max(pointsFor, pointsAgainst, 1);
+
+                    return (
+                      <>
+                        <div className="comparison-bar-item">
+                          <span className="comparison-label">For</span>
+                          <div className="comparison-bar for">
+                            <div
+                              className="comparison-bar-fill"
+                              style={{ width: `${(pointsFor / maxPoints) * 100}%` }}
+                            >
+                              <span className="comparison-value">{stats.avgPointsPerGame}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="comparison-bar-item">
+                          <span className="comparison-label">Against</span>
+                          <div className="comparison-bar against">
+                            <div
+                              className="comparison-bar-fill"
+                              style={{ width: `${(pointsAgainst / maxPoints) * 100}%` }}
+                            >
+                              <span className="comparison-value">{stats.avgPointsAgainstPerGame}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
             </div>
-            <div className="stat-item">
-              <span className="stat-label">Total Points</span>
-              <span className="stat-value">{stats.avgPointsPerGame}</span>
-              <span className="stat-secondary">({stats.totalFpts} total)</span>
+          </div>
+
+          {/* Financial Summary */}
+          <div className="content-section">
+            <h3 className="section-title">Financial Summary</h3>
+            <div className="stats-section">
+              <div className="financial-overview">
+                <div className="net-profit-card">
+                  <div className="net-profit-header">Net Profit/Loss</div>
+                  <div className={`net-profit-amount ${(stats.moneyStats.totalMoneyEarned - stats.moneyStats.totalMoneyPaidIn) >= 0 ? 'profit' : 'loss'}`}>
+                    ${(stats.moneyStats.totalMoneyEarned - stats.moneyStats.totalMoneyPaidIn) >= 0 ? '+' : ''}{stats.moneyStats.totalMoneyEarned - stats.moneyStats.totalMoneyPaidIn}
+                  </div>
+                  <div className="net-profit-percentage">
+                    {stats.moneyStats.totalMoneyPaidIn > 0 
+                      ? `${(((stats.moneyStats.totalMoneyEarned - stats.moneyStats.totalMoneyPaidIn) / stats.moneyStats.totalMoneyPaidIn) * 100).toFixed(1)}% ROI`
+                      : 'N/A'}
+                  </div>
+                  <div className="net-profit-subtext">
+                    ${((stats.moneyStats.totalMoneyEarned - stats.moneyStats.totalMoneyPaidIn) / stats.yearsPlayed).toFixed(0)}/year
+                  </div>
+                </div>
+                
+                <div className="money-flow-cards">
+                  <div className="money-flow-card paid-in">
+                    <div className="money-flow-icon">📤</div>
+                    <div className="money-flow-content">
+                      <div className="money-flow-label">Paid In</div>
+                      <div className="money-flow-amount">${stats.moneyStats.totalMoneyPaidIn}</div>
+                    </div>
+                  </div>
+                  <div className="money-flow-card earned">
+                    <div className="money-flow-icon">💰</div>
+                    <div className="money-flow-content">
+                      <div className="money-flow-label">Earned</div>
+                      <div className="money-flow-amount">${stats.moneyStats.totalMoneyEarned}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="stat-item">
-              <span className="stat-label">Points Against</span>
-              <span className="stat-value">{stats.avgPointsAgainstPerGame}</span>
-              <span className="stat-secondary">({stats.totalFptsAgainst} total)</span>
+          </div>
+
+          {/* Advanced Metrics */}
+          <div className="content-section">
+            <h3 className="section-title">Advanced Metrics</h3>
+            <div className="stats-section">
+              <div className="advanced-stats-list">
+                <div className="advanced-stat-item">
+                  <div className="advanced-stat-header">
+                    <span className="advanced-stat-label">vs Everyone</span>
+                    <span className="advanced-stat-record">{stats.vsEveryoneRecord}</span>
+                  </div>
+                  <div className="win-percentage-bar">
+                    <div className="win-percentage-fill" style={{ width: `${stats.vsEveryoneWinPct}%` }}>
+                      <span className="win-percentage-text">{stats.vsEveryoneWinPct}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="advanced-stat-item">
+                  <div className="advanced-stat-header">
+                    <span className="advanced-stat-label">Everyone Vs Schedule</span>
+                    <span className="advanced-stat-record">{stats.atScheduleRecord}</span>
+                  </div>
+                  <div className="win-percentage-bar">
+                    <div className="win-percentage-fill" style={{ width: `${stats.atScheduleWinPct}%` }}>
+                      <span className="win-percentage-text">{stats.atScheduleWinPct}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="advanced-stat-item">
+                  <div className="advanced-stat-header">
+                    <span className="advanced-stat-label">vs Winning Teams</span>
+                    <span className="advanced-stat-record">{stats.vsWinningRecord}</span>
+                  </div>
+                  <div className="win-percentage-bar">
+                    <div className="win-percentage-fill" style={{ width: `${stats.vsWinningWinPct}%` }}>
+                      <span className="win-percentage-text">{stats.vsWinningWinPct}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="stat-item">
-              <span className="stat-label">Avg Reg Place</span>
-              <span className="stat-value">{stats.avgSeasonPlace}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Avg Final Place</span>
-              <span className="stat-value">{stats.avgFinalPlace}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Championships</span>
-              <span className="stat-value">{stats.championships}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Seasons</span>
-              <span className="stat-value">{stats.yearsPlayed}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Money Paid In</span>
-              <span className="stat-value">${stats.moneyStats.totalMoneyPaidIn}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Money Earned</span>
-              <span className="stat-value">${stats.moneyStats.totalMoneyEarned}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Net</span>
-              <span className="stat-value" style={{ color: stats.moneyStats.netMoneyEarned >= 0 ? '#4ade80' : '#ef4444' }}>
-                {stats.moneyStats.netMoneyEarned >= 0 ? '+' : ''}{stats.moneyStats.netMoneyEarned.toFixed(2)}
-              </span>
-              <span className="stat-secondary">({(stats.moneyStats.netMoneyEarned / stats.yearsPlayed).toFixed(2)}/year)</span>
+          </div>
+
+          {/* Playoff Performance */}
+          <div className="content-section">
+            <h3 className="section-title">Playoff Performance</h3>
+            <div className="stats-section">
+              <div className="playoff-stats-visual">
+                <div className="playoff-record-display">
+                  <div className="playoff-record-large">{stats.playoffRecord}</div>
+                  <div className="playoff-win-rate">
+                    <div className="circular-progress" style={{ 
+                      background: `conic-gradient(#60a5fa 0% ${stats.playoffWinPercentage}%, rgba(255,255,255,0.1) ${stats.playoffWinPercentage}% 100%)` 
+                    }}>
+                      <div className="circular-progress-inner">
+                        <span className="circular-progress-text">{stats.playoffWinPercentage}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="playoff-points-grid">
+                  <div className="playoff-points-item">
+                    <div className="playoff-points-icon">⚡</div>
+                    <div className="playoff-points-value">{stats.avgPlayoffPoints}</div>
+                    <div className="playoff-points-label">PPG</div>
+                    <div className="playoff-points-total">{stats.playoffTotalPoints} total</div>
+                  </div>
+                  <div className="playoff-points-item">
+                    <div className="playoff-points-icon">🛡️</div>
+                    <div className="playoff-points-value">{stats.avgPlayoffPointsAgainst}</div>
+                    <div className="playoff-points-label">PPG Against</div>
+                    <div className="playoff-points-total">{stats.playoffTotalPointsAgainst} total</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -488,7 +732,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                   <span className="season-stat-label">Points</span>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                     <span className="season-stat-value">{(stats.bestSeason.fpts / (stats.bestSeason.wins + stats.bestSeason.losses + stats.bestSeason.ties)).toFixed(2)}</span>
-                    <span style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 500 }}>({stats.bestSeason.fpts.toFixed(2)})</span>
+                    <span style={{ fontSize: '14px', color: '#a0a0a0', fontWeight: 500 }}>({stats.bestSeason.fpts.toFixed(2)})</span>
                   </div>
                 </div>
                 <div className="season-stat-line">
@@ -508,7 +752,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                     <span className="season-stat-label">Points</span>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                       <span className="season-stat-value">{(stats.worstSeason.fpts / (stats.worstSeason.wins + stats.worstSeason.losses + stats.worstSeason.ties)).toFixed(2)}</span>
-                      <span style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 500 }}>({stats.worstSeason.fpts.toFixed(2)})</span>
+                      <span style={{ fontSize: '14px', color: '#a0a0a0', fontWeight: 500 }}>({stats.worstSeason.fpts.toFixed(2)})</span>
                     </div>
                   </div>
                   <div className="season-stat-line">
@@ -528,59 +772,87 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
               {/* Record Streaks Card */}
               {(stats.longestWinStreaks.length > 0 || stats.longestLossStreaks.length > 0) && (
                 <div className="streak-card records">
-                  <div className="streak-badge">Record Streaks</div>
-                  {stats.longestWinStreaks.length > 0 && (
-                    <div className="streak-record-item win">
-                      <div className="streak-record-type">Longest Win Streak</div>
-                      <div className="streak-record-length">{stats.longestWinStreaks[0].length}</div>
-                      {stats.longestWinStreaks.map((streak, idx) => (
-                        <div key={idx} className="streak-record-range">
-                          {streak.start.label} → {streak.end.label}
+                  <div className="streak-card-header">
+                    <div className="streak-card-icon">📊</div>
+                    <h3 className="streak-card-title">Record Streaks</h3>
+                  </div>
+                  <div className="streak-records-grid">
+                    {stats.longestWinStreaks.length > 0 && (
+                      <div className="streak-record-box win">
+                        <div className="streak-record-icon">🔥</div>
+                        <div className="streak-record-content">
+                          <div className="streak-record-label">Longest Win Streak</div>
+                          <div className="streak-record-number">{stats.longestWinStreaks[0].length}</div>
+                          <div className="streak-record-details">
+                            {stats.longestWinStreaks.map((streak, idx) => (
+                              <div key={idx} className="streak-record-date">
+                                {streak.start.label} → {streak.end.label}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  {stats.longestLossStreaks.length > 0 && (
-                    <div className="streak-record-item loss">
-                      <div className="streak-record-type">Longest Losing Streak</div>
-                      <div className="streak-record-length">{stats.longestLossStreaks[0].length}</div>
-                      {stats.longestLossStreaks.map((streak, idx) => (
-                        <div key={idx} className="streak-record-range">
-                          {streak.start.label} → {streak.end.label}
+                      </div>
+                    )}
+                    {stats.longestLossStreaks.length > 0 && (
+                      <div className="streak-record-box loss">
+                        <div className="streak-record-icon">❄️</div>
+                        <div className="streak-record-content">
+                          <div className="streak-record-label">Longest Loss Streak</div>
+                          <div className="streak-record-number">{stats.longestLossStreaks[0].length}</div>
+                          <div className="streak-record-details">
+                            {stats.longestLossStreaks.map((streak, idx) => (
+                              <div key={idx} className="streak-record-date">
+                                {streak.start.label} → {streak.end.label}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               
               {/* Current Streak Card */}
               {stats.currentStreak && (
-                <div className={`streak-card current ${stats.currentStreak.type}`}>
-                  <div className="streak-badge">Current Streak</div>
-                  <div className="current-streak-type">
-                    {stats.currentStreak.type === 'win' ? 'Winning Streak' : 'Losing Streak'}
+                <div className={`streak-card current-streak ${stats.currentStreak.type}`}>
+                  <div className="streak-card-header">
+                    <div className="streak-card-icon">{stats.currentStreak.type === 'win' ? '⚡' : '💧'}</div>
+                    <h3 className="streak-card-title">Current Streak</h3>
                   </div>
-                  <div className="current-streak-length">{stats.currentStreak.length}</div>
-                  
-                  {/* Progress Bar */}
-                  <div className="streak-progress-container">
-                    <div className="streak-progress-labels">
-                      <span className="streak-progress-label">Current</span>
-                      <span className="streak-progress-label">Record: {stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 0) : (stats.longestLossStreaks[0]?.length || 0)}</span>
+                  <div className="current-streak-display">
+                    <div className="current-streak-badge">
+                      {stats.currentStreak.type === 'win' ? 'Winning' : 'Losing'}
                     </div>
-                    <div className="streak-progress-bar">
+                    <div className="current-streak-count">
+                      <span className="current-streak-number">{stats.currentStreak.length}</span>
+                      <span className="current-streak-text">game{stats.currentStreak.length !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="streak-comparison">
+                    <div className="streak-comparison-header">
+                      <span>Progress to Record</span>
+                      <span className="streak-comparison-record">
+                        {stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 0) : (stats.longestLossStreaks[0]?.length || 0)} games
+                      </span>
+                    </div>
+                    <div className="streak-comparison-bar">
                       <div 
-                        className="streak-progress-fill" 
+                        className="streak-comparison-fill" 
                         style={{ 
                           width: `${Math.min(100, (stats.currentStreak.length / (stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 1) : (stats.longestLossStreaks[0]?.length || 1))) * 100)}%` 
                         }}
-                      />
+                      >
+                        <span className="streak-comparison-percentage">
+                          {Math.round((stats.currentStreak.length / (stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 1) : (stats.longestLossStreaks[0]?.length || 1))) * 100)}%
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="current-streak-date">
-                    Started: {stats.currentStreak.start.label}
+                  <div className="current-streak-started">
+                    Started {stats.currentStreak.start.label}
                   </div>
                 </div>
               )}
@@ -774,47 +1046,6 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
               })()}
             </div>
           )}
-        </div>
-
-        {/* Playoff Stats Section */}
-        <h3 style={{ marginTop: '2rem' }}>Playoff Stats</h3>
-        <div className="stats-section" style={{ marginBottom: '2rem' }}>
-          <div className="stat-group">
-            <div className="stat-item">
-              <span className="stat-label">Playoff Record</span>
-              <span className="stat-value">{stats.playoffRecord}</span>
-              <span className="stat-secondary">({stats.playoffWinPercentage}%)</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Total Points</span>
-              <span className="stat-value">{stats.avgPlayoffPoints}</span>
-              <span className="stat-secondary">({stats.playoffTotalPoints} total)</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Points Against</span>
-              <span className="stat-value">{stats.avgPlayoffPointsAgainst}</span>
-              <span className="stat-secondary">({stats.playoffTotalPointsAgainst} total)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Bowl Records Section - Header removed as requested */}
-        <div className="bowl-section">
-          <div className="bowl-grid">
-            {[
-              { name: 'Troll Bowl', color: 'gold' },
-              { name: 'Bengal Bowl', color: 'silver' },
-              { name: 'Koozie Bowl', color: 'bronze' },
-              { name: 'Toilet Bowl', color: 'purple' },
-              { name: 'Diarrhea Bowl', color: 'brown' },
-              { name: 'Butler Bowl', color: 'gray' }
-            ].map((bowl) => (
-              <div key={bowl.name} className={`bowl-item bowl-${bowl.color}`}>
-                <div className="bowl-name">{bowl.name}</div>
-                <div className="bowl-record-display">{stats.bowlRecords[bowl.name].wins}-{stats.bowlRecords[bowl.name].losses}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
