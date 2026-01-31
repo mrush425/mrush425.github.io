@@ -184,6 +184,8 @@ const YearlyBreakdown: React.FC<YearlyProps> = ({ data, selected }) => {
 const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'wafflePctValue', direction: 'descending' });
   const [selected, setSelected] = useState<WaffleAggregateRecord | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const handleSort = (key: SortKey) => {
     let direction: SortConfig['direction'] = 'ascending';
@@ -224,6 +226,13 @@ const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
     if (!selected && rows.length > 0) setSelected(rows[0]);
   }, [rows, selected]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const sortIndicator = (key: SortKey) => (sortConfig.key === key ? (sortConfig.direction === 'ascending' ? ' \u25B2' : ' \u25BC') : null);
 
   if (rows.length === 0) {
@@ -234,11 +243,20 @@ const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
     );
   }
 
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
+  };
+
   return (
     <div className="regular-season-records">
+      {isMobile && showMobileDetail && (
+        <button onClick={handleBackToList} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
       <div className="two-pane-layout">
         {/* Left: main table */}
-        <div className="main-table-pane">
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
           <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
@@ -261,7 +279,10 @@ const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
                 <tr
                   key={r.userId}
                   className={`${selected?.userId === r.userId ? 'active selected-row' : ''} ${idx % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                  onClick={() => setSelected(prev => (prev?.userId === r.userId ? null : r))}
+                  onClick={() => {
+                    setSelected(prev => (prev?.userId === r.userId ? null : r));
+                    if (isMobile) setShowMobileDetail(true);
+                  }}
                 >
                   <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
                   <td>{`${recordStr(r.waffleWins, r.waffleLosses, r.waffleTies)} (${r.wafflePct})`}</td>
@@ -274,7 +295,7 @@ const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
         </div>
 
         {/* Right: yearly breakdown */}
-        <div className="detail-pane-wrapper">
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
           {selected ? (
             <YearlyBreakdown data={data} selected={selected} />
           ) : (

@@ -114,6 +114,8 @@ const PositionPointsAgainstStats: React.FC<
 
   const [selectedAverageUserId, setSelectedAverageUserId] = useState<string | null>(null);
   const [selectedSingleRow, setSelectedSingleRow] = useState<SingleYearLeftRow | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const yearsPlayedMap = useMemo(() => buildYearsPlayedMap(data), [data]);
 
@@ -282,12 +284,28 @@ const PositionPointsAgainstStats: React.FC<
     }
   }, [mode, averageLeftRows, singleYearLeftRows, selectedAverageUserId, selectedSingleRow]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // ---------------------------------------------------------------------
   // RENDER
   // ---------------------------------------------------------------------
 
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
+  };
+
   return (
     <div className="regular-season-points">
+      {isMobile && showMobileDetail && (
+        <button onClick={handleBackToList} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
       {/* MODE TOGGLE */}
       <div style={{ marginBottom: 10, textAlign: 'center' }}>
         <label style={{ marginRight: 12 }}>
@@ -312,7 +330,7 @@ const PositionPointsAgainstStats: React.FC<
 
       <div className="two-pane-layout">
         {/* LEFT */}
-        <div className="main-table-pane">
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
           {mode === 'average' ? (
             <table className="leagueStatsTable regular-season-table selectable-table">
               <thead>
@@ -330,9 +348,11 @@ const PositionPointsAgainstStats: React.FC<
                     className={`${selectedAverageUserId === r.userId ? 'active selected-row' : ''} ${
                       idx % 2 === 0 ? 'even-row' : 'odd-row'
                     }`}
-                    onClick={() =>
-                      setSelectedAverageUserId((prev) => (prev === r.userId ? null : r.userId))
-                    }
+                    onClick={() => {
+                      const newId = (prev: string | null) => (prev === r.userId ? null : r.userId);
+                      setSelectedAverageUserId(newId);
+                      if (isMobile) setShowMobileDetail(true);
+                    }}
                   >
                     <td className="team-name-cell">
                       {r.teamName} ({r.yearsPlayed})
@@ -363,11 +383,12 @@ const PositionPointsAgainstStats: React.FC<
                       ? 'active selected-row'
                       : ''
                       } ${idx % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                    onClick={() =>
-                      setSelectedSingleRow((prev) =>
-                        prev?.userId === r.userId && prev?.year === r.year ? null : r
-                      )
-                    }
+                    onClick={() => {
+                      const newSelection = (prev: SingleYearLeftRow | null) =>
+                        prev?.userId === r.userId && prev?.year === r.year ? null : r;
+                      setSelectedSingleRow(newSelection);
+                      if (isMobile) setShowMobileDetail(true);
+                    }}
                   >
                     <td className="team-name-cell">
                       {r.teamName} ({r.yearsPlayed})
@@ -383,7 +404,7 @@ const PositionPointsAgainstStats: React.FC<
         </div>
 
         {/* RIGHT */}
-        <div className="detail-pane-wrapper">
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
           {mode === 'average' ? (
             selectedAverageUserId ? (
               <table className="leagueStatsTable detail-table">

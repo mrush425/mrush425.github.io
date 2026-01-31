@@ -135,9 +135,6 @@ const FootballPlayerStats: React.FC<LeagueProps> = ({ data }) => {
                         &#x27a1;
                     </button>
                 </div>
-                
-                {/* 2. HEADER (Second element) */}
-                <h3>{header}</h3>
             </div>
             
             <div className="pointsContainer"> 

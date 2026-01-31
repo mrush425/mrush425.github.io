@@ -288,6 +288,8 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
     
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'avgOverallPlaceValue', direction: 'ascending' });
     const [selectedTeam, setSelectedTeam] = useState<TeamPlaceStat | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
 
     const handleSort = (key: SortKey) => {
         let direction: SortConfig['direction'] = 'ascending'; 
@@ -306,6 +308,7 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
 
     const handleRowClick = (team: TeamPlaceStat) => {
         setSelectedTeam(prev => (prev?.userId === team.userId ? null : team));
+        if (isMobile) setShowMobileDetail(true);
     };
 
     const { sortedRecords, maxMinValues } = useMemo(() => {
@@ -385,6 +388,12 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
         }
     }, [sortedRecords, selectedTeam]);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const getSortIndicator = (key: SortKey) => {
         if (sortConfig.key !== key) return null;
@@ -413,12 +422,21 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
         );
     }
 
+    const handleBackToList = () => {
+        setShowMobileDetail(false);
+    };
+
     return (
         <div className="regular-season-records">
+            {isMobile && showMobileDetail && (
+                <button onClick={handleBackToList} className="mobile-back-button">
+                    ← Back to List
+                </button>
+            )}
             <div className="two-pane-layout">
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
-                <div className="main-table-pane">
+                <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
                     <table className="leagueStatsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
@@ -458,7 +476,7 @@ const PlaceStats: React.FC<PlaceComponentProps> = ({ data, minYears = 0 }) => {
                 </div>
 
                 {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
-                <div className="detail-pane-wrapper">
+                <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
                     {selectedTeam ? (
                         <YearlyPlaceBreakdown data={data} selectedTeam={selectedTeam} />
                     ) : (

@@ -46,6 +46,8 @@ interface OpponentRecord {
   losses: number;
   pointsFor: number;
   pointsAgainst: number;
+  overallAvgFor?: number;
+  overallAvgAgainst?: number;
 }
 
 const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) => {
@@ -305,6 +307,52 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       ? ((vsWinningWins / (vsWinningWins + vsWinningLosses + vsWinningTies)) * 100).toFixed(1)
       : '0.0';
 
+    // Calculate user's overall regular season average
+    const userOverallAvg = totalGames > 0 ? totalFpts / totalGames : 0;
+
+    // Calculate each opponent's overall regular season average
+    leagueData.forEach((league) => {
+      Object.keys(opponentRecords).forEach((oppId) => {
+        const oppUser = league.users.find((u) => u.user_id === oppId);
+        if (oppUser) {
+          const oppRoster = league.rosters.find((r) => r.owner_id === oppId);
+          if (oppRoster && league.matchupInfo) {
+            const playoffStartWeek = league.settings.playoff_week_start || Infinity;
+            let oppTotalPoints = 0;
+            let oppTotalGames = 0;
+
+            league.matchupInfo.forEach((info) => {
+              if (info.week < playoffStartWeek) {
+                const oppMatchup = info.matchups.find((m: any) => m.roster_id === oppRoster.roster_id);
+                if (oppMatchup) {
+                  oppTotalPoints += oppMatchup.points || 0;
+                  oppTotalGames++;
+                }
+              }
+            });
+
+            if (!opponentRecords[oppId].overallAvgAgainst) {
+              opponentRecords[oppId].overallAvgAgainst = 0;
+            }
+            opponentRecords[oppId].overallAvgAgainst! += oppTotalPoints;
+            if (!opponentRecords[oppId].overallAvgFor) {
+              opponentRecords[oppId].overallAvgFor = oppTotalGames;
+            } else {
+              opponentRecords[oppId].overallAvgFor! += oppTotalGames;
+            }
+          }
+        }
+      });
+    });
+
+    // Average out the opponent stats
+    Object.keys(opponentRecords).forEach((oppId) => {
+      const gamesCount = opponentRecords[oppId].overallAvgFor || 0;
+      if (gamesCount > 0) {
+        opponentRecords[oppId].overallAvgAgainst = (opponentRecords[oppId].overallAvgAgainst || 0) / gamesCount;
+      }
+    });
+
     // Find best opponent matchup (highest win percentage, tiebreaker: most points scored)
     // Only include opponents played 4+ times
     const oppArray = Object.values(opponentRecords).filter((opp) => opp.wins + opp.losses >= 4);
@@ -375,6 +423,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       top50WinPct,
       vsWinningRecord,
       vsWinningWinPct,
+      userOverallAvg,
     };
   }, [userId, leagueData]);
 
@@ -953,6 +1002,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                       <div className="matchup-points-for">
                         <div className="matchup-points-label">PPG</div>
                         <div className="matchup-points-value">{ppg.toFixed(1)}</div>
+                        <div className="matchup-points-overall">({stats.userOverallAvg.toFixed(1)})</div>
                       </div>
                       <div className="matchup-points-separator">
                         <span style={{ fontSize: '14px', color: avgDiff > 0 ? '#4ade80' : '#ef4444' }}>+{avgDiff.toFixed(1)}</span>
@@ -960,6 +1010,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                       <div className="matchup-points-against">
                         <div className="matchup-points-label">PPG Against</div>
                         <div className="matchup-points-value">{ppgAgainst.toFixed(1)}</div>
+                        <div className="matchup-points-overall">({(stats.bestOpponent.overallAvgAgainst || 0).toFixed(1)})</div>
                       </div>
                     </div>
                   </div>
@@ -995,6 +1046,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                       <div className="matchup-points-for">
                         <div className="matchup-points-label">PPG</div>
                         <div className="matchup-points-value">{ppg.toFixed(1)}</div>
+                        <div className="matchup-points-overall">({stats.userOverallAvg.toFixed(1)})</div>
                       </div>
                       <div className="matchup-points-separator">
                         <span style={{ fontSize: '14px', color: avgDiff < 0 ? '#ef4444' : '#4ade80' }}>{avgDiff.toFixed(1)}</span>
@@ -1002,6 +1054,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                       <div className="matchup-points-against">
                         <div className="matchup-points-label">PPG Against</div>
                         <div className="matchup-points-value">{ppgAgainst.toFixed(1)}</div>
+                        <div className="matchup-points-overall">({(stats.worstOpponent.overallAvgAgainst || 0).toFixed(1)})</div>
                       </div>
                     </div>
                   </div>

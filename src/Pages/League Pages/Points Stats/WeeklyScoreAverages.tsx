@@ -131,10 +131,9 @@ const WeeklyScoreAverages: React.FC<PointComponentProps> = ({ data }) => {
   return (
     <div className="unified-stats-container">
       <div className="stat-content">
-        <h2 className="stat-title">Weekly Score Averages</h2>
-
         <div className="table-wrapper" style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <table className="stats-table">
+          <div className="table-scroll-container">
+            <table className="stats-table">
             <thead>
               <tr>
                 <th className="sticky-col">Year</th>
@@ -164,7 +163,8 @@ const WeeklyScoreAverages: React.FC<PointComponentProps> = ({ data }) => {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
     </div>

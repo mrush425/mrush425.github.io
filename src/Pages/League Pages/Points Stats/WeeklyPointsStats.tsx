@@ -100,6 +100,8 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
   });
 
   const [selectedRow, setSelectedRow] = useState<WeeklyStatRow | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const [includeRegularSeasonState, setIncludeRegularSeasonState] = useState<boolean>(
     defaultIncludeRegularSeason
@@ -194,6 +196,13 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
     }
   }, [sortedRows, selectedRow]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) => ({
       key,
@@ -282,8 +291,17 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
     );
   }
 
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
+  };
+
   return (
     <div className="regular-season-points">
+      {isMobile && showMobileDetail && (
+        <button onClick={handleBackToList} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
       {showSeasonFilters && (
         <div className="season-filter-row" style={{ marginBottom: 10 }}>
           <label style={{ marginRight: 14 }}>
@@ -308,7 +326,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
 
       <div className="two-pane-layout">
         {/* LEFT PANE */}
-        <div className="main-table-pane">
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
           <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
@@ -353,6 +371,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
                         setSelectedRow(null);
                       } else {
                         setSelectedRow(row);
+                        if (isMobile) setShowMobileDetail(true);
                       }
                     }}
                   >
@@ -374,7 +393,7 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
         </div>
 
         {/* RIGHT PANE */}
-        <div className="detail-pane-wrapper">
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
           {selectedRow && selectedLeague && selectedUser1 && selectedUser2 && selectedRow.week > 0 ? (
             <MatchupDisplay
               user1={selectedUser1}

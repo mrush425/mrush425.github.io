@@ -291,6 +291,8 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
         direction: 'descending',
     });
     const [selectedTeam, setSelectedTeam] = React.useState<TeamPlayoffRecord | null>(null);
+    const [isMobile, setIsMobile] = React.useState(false);
+    const [showMobileDetail, setShowMobileDetail] = React.useState(false);
 
     const { sortedRecords, maxMinValues } = useMemo(() => {
         const records = aggregatePlayoffRecords(data, minYears);
@@ -336,6 +338,13 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
         }
     }, [sortedRecords, selectedTeam]);
 
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const handleSort = (key: SortKey) => {
         let direction: SortConfig['direction'] = 'descending';
         
@@ -348,6 +357,7 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
 
     const handleRowClick = (record: TeamPlayoffRecord) => {
         setSelectedTeam(record);
+        if (isMobile) setShowMobileDetail(true);
     };
 
     const getSortIndicator = (key: SortKey) => {
@@ -382,8 +392,17 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
         );
     }
 
+    const handleBackToList = () => {
+        setShowMobileDetail(false);
+    };
+
     return (
         <div className="regular-season-records">
+            {isMobile && showMobileDetail && (
+                <button onClick={handleBackToList} className="mobile-back-button">
+                    ← Back to List
+                </button>
+            )}
 
                                 <th onClick={() => handleSort('winnersBracketCount')} className="table-col-2 sortable">
                                     Winners-Losers {getSortIndicator('winnersBracketCount')}
@@ -391,7 +410,7 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
             <div className="two-pane-layout">
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
-                <div className="main-table-pane">
+                <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
                     <table className="leagueStatsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
@@ -439,7 +458,7 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
                 </div>
 
                 {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
-                <div className="detail-pane-wrapper">
+                <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
                     {selectedTeam ? (
                         <YearlyPlayoffBreakdown data={data} selectedTeam={selectedTeam} />
                     ) : (

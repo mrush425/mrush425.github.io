@@ -140,8 +140,8 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
 
   return (
     <div className="playoff-odds-by-record">
-
-      <table className="leagueStatsTable playoff-odds-table">
+      <div className="table-scroll-container">
+        <table className="leagueStatsTable playoff-odds-table">
         <thead>
           <tr>
             <th className="playoff-odds-header">Losses</th>
@@ -174,7 +174,8 @@ const PlayoffOddsByRecord: React.FC<RecordComponentProps & { minYears?: number }
             );
           })}
         </tbody>
-      </table>
+        </table>
+      </div>
 
       <div className="notImplementedMessage" style={{ marginTop: '8px' }}>
         Cell format: <b>made-missed (pct%)</b>, counted from each week’s snapshot record; “made” means season place ≤ 6.

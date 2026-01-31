@@ -268,9 +268,9 @@
 .sidebetDropdown {
   flex: 1;
   min-width: 200px;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-primary);
   background: var(--bg-dark-secondary);
   border: 2px solid var(--border-light);

@@ -5,47 +5,307 @@
    ======================================================================== */
 
 .football-player-container {
-  padding: 32px 24px;
-  max-width: 1600px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 40px 20px;
+  animation: fadeIn 0.8s ease-in;
+}
+
+.football-player-header {
+  text-align: center;
+  margin-bottom: 50px;
+  animation: fadeInDown 0.6s ease-out;
 }
 
 .football-player-title {
-  font-size: 28px;
-  color: var(--text-primary);
-  margin-bottom: 32px;
+  font-size: 42px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Main content wrapper */
-div > h2 {
-  text-align: center;
-  font-size: 28px;
-  color: var(--text-primary);
-  margin-bottom: 32px;
-  font-weight: 700;
+.football-player-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
   letter-spacing: 0.5px;
 }
 
-.football-player-championships-table {
-  background: rgba(30, 34, 54, 0.6);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
+.positions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.position-column {
+  background: linear-gradient(135deg, rgba(30, 34, 54, 0.8) 0%, rgba(22, 33, 62, 0.6) 100%);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 12px;
+  padding: 0;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  border-collapse: collapse;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(96, 165, 250, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(96, 165, 250, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Header row styling */
-.football-player-championships-table thead tr {
-  background: linear-gradient(90deg, var(--accent-blue) 0%, var(--bg-dark-secondary) 100%);
-  border-bottom: 2px solid var(--accent-blue);
+.position-column:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), inset 0 0 25px rgba(96, 165, 250, 0.1);
+}
+
+.position-header {
+  padding: 16px;
+  border-bottom: 2px solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.position-title {
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.players-list {
+  padding: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.players-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.players-list::-webkit-scrollbar-track {
+  background: rgba(96, 165, 250, 0.05);
+  border-radius: 3px;
+}
+
+.players-list::-webkit-scrollbar-thumb {
+  background: rgba(96, 165, 250, 0.3);
+  border-radius: 3px;
+}
+
+.players-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(96, 165, 250, 0.5);
+}
+
+.player-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.player-card:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.player-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.championship-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 6px;
+  color: rgba(249, 115, 22, 0.9);
+  margin-bottom: 8px;
+}
+
+.championship-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.year-pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 4px 8px;
+  background: rgba(96, 165, 250, 0.2);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 12px;
+  color: rgba(96, 165, 250, 0.8);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.no-players {
+  text-align: center;
+  padding: 20px 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+  .football-player-title {
+    font-size: 36px;
+  }
+
+  .positions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .football-player-container {
+    padding: 30px 15px;
+  }
+
+  .football-player-title {
+    font-size: 28px;
+  }
+
+  .football-player-subtitle {
+    font-size: 16px;
+  }
+
+  .positions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .position-header {
+    padding: 14px;
+  }
+
+  .position-title {
+    font-size: 18px;
+  }
+
+  .players-list {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .player-card {
+    padding: 10px;
+  }
+
+  .player-name {
+    font-size: 14px;
+  }
+
+  .championship-badge {
+    font-size: 12px;
+  }
+
+  .year-pill {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .football-player-container {
+    padding: 20px 10px;
+  }
+
+  .football-player-header {
+    margin-bottom: 30px;
+  }
+
+  .football-player-title {
+    font-size: 24px;
+  }
+
+  .football-player-subtitle {
+    font-size: 14px;
+  }
+
+  .positions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .position-header {
+    padding: 12px;
+  }
+
+  .position-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .players-list {
+    padding: 12px;
+    max-height: 400px;
+    gap: 8px;
+  }
+
+  .player-card {
+    padding: 8px;
+  }
+
+  .player-name {
+    font-size: 13px;
+  }
+
+  .championship-badge {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .year-pill {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
 }
 
 .football-player-championships-table thead td {

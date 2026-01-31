@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import LeagueData from '../../../Interfaces/LeagueData';
 import FootballPlayerStatsMethods, { MaxPointsByPositionResult } from '../../../Helper Files/FootballPlayerStatsMethods';
 
@@ -11,11 +11,71 @@ const MostPointsByPosition: React.FC<MostPointsByPositionProps> = ({ data }) => 
   const positions = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sortColumn, setSortColumn] = useState<string>('points');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   // Recalculate results whenever selectedPositions changes
   const results = selectedPositions.length > 0 
     ? FootballPlayerStatsMethods.Top50PointsByPosition(data, selectedPositions)
     : [];
+
+  const sortedResults = useMemo(() => {
+    const sorted = [...results];
+    sorted.sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortColumn) {
+        case 'position':
+          aValue = a.position;
+          bValue = b.position;
+          break;
+        case 'playerName':
+          aValue = a.playerName.toLowerCase();
+          bValue = b.playerName.toLowerCase();
+          break;
+        case 'points':
+          aValue = a.points;
+          bValue = b.points;
+          break;
+        case 'owner':
+          aValue = a.owner.toLowerCase();
+          bValue = b.owner.toLowerCase();
+          break;
+        case 'opponent':
+          aValue = a.opponent.toLowerCase();
+          bValue = b.opponent.toLowerCase();
+          break;
+        case 'year':
+          aValue = a.year;
+          bValue = b.year;
+          break;
+        case 'week':
+          aValue = a.week;
+          bValue = b.week;
+          break;
+        default:
+          aValue = a.points;
+          bValue = b.points;
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+    return sorted;
+  }, [results, sortColumn, sortDirection]);
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection(column === 'points' ? 'desc' : 'asc');
+    }
+  };
 
   const handlePositionToggle = (position: string) => {
     setSelectedPositions((prev) => {
@@ -84,7 +144,7 @@ const MostPointsByPosition: React.FC<MostPointsByPositionProps> = ({ data }) => 
       </div>
 
       {/* Results Table */}
-      {selectedPositions.length > 0 && results.length > 0 ? (
+      {selectedPositions.length > 0 && sortedResults.length > 0 ? (
         <div key={refreshKey} style={{ overflowX: 'auto' }}>
           <table
             style={{
@@ -95,17 +155,59 @@ const MostPointsByPosition: React.FC<MostPointsByPositionProps> = ({ data }) => 
           >
             <thead>
               <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderBottom: '2px solid rgba(255, 255, 255, 0.1)' }}>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Position</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Player</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Points</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Owner</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Opponent</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Year</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Week</th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('position')}
+                  className="sortable"
+                >
+                  Position {sortColumn === 'position' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('playerName')}
+                  className="sortable"
+                >
+                  Player {sortColumn === 'playerName' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('points')}
+                  className="sortable"
+                >
+                  Points {sortColumn === 'points' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('owner')}
+                  className="sortable"
+                >
+                  Owner {sortColumn === 'owner' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('opponent')}
+                  className="sortable"
+                >
+                  Opponent {sortColumn === 'opponent' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('year')}
+                  className="sortable"
+                >
+                  Year {sortColumn === 'year' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
+                <th 
+                  style={{ padding: '12px 16px', textAlign: 'left', color: '#a0a0a0', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+                  onClick={() => handleSort('week')}
+                  className="sortable"
+                >
+                  Week {sortColumn === 'week' && (sortDirection === 'asc' ? '▲' : '▼')}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {results.map((result, idx) => (
+              {sortedResults.map((result, idx) => (
                 <tr
                   key={`${refreshKey}-${result.position}-${result.playerId}-${idx}`}
                   style={{

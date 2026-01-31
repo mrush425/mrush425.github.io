@@ -140,10 +140,7 @@ const OtherStats: React.FC<LeagueProps> = ({ data }) => {
                     </button>
                 </div>
                 
-                {/* 2. HEADER */}
-                <h3>{header}</h3>
-                
-                {/* 3. FILTER CHECKBOX */}
+                {/* 2. FILTER CHECKBOX */}
                 <div className="recordsFilter filter-style">
                     <label>
                         <input

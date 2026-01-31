@@ -251,13 +251,13 @@
 /* Responsive Design for Mobile */
 @media (max-width: 768px) {
     .matchup-display-table {
-        font-size: 14px;
+        font-size: 12px;
     }
 
     .matchup-display-table th,
     .matchup-display-table td {
         padding: 8px 6px;
-        font-size: 15px;
+        font-size: 13px;
     }
 
     .player-image,
@@ -285,7 +285,11 @@
     }
 
     .header-row th {
-        font-size: 16px;
+        font-size: 14px;
         padding: 10px 6px;
+    }
+    
+    .second-week-header td {
+        font-size: 13px;
     }
 }

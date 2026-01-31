@@ -269,7 +269,7 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
   );
 };
 

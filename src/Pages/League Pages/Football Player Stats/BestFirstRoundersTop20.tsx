@@ -61,7 +61,6 @@ const BestFirstRoundersTop20: React.FC<BestFirstRoundersTop20Props> = ({ data })
 
   return (
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-      <h4 style={{ textAlign: 'center', color: '#a0a0a0', marginBottom: '12px' }}>{titleText}</h4>
       {loading ? (
         <div style={{ textAlign: 'center', color: '#a0a0a0', marginTop: '20px' }}>
           Loading...

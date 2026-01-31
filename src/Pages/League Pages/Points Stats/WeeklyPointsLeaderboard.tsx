@@ -174,6 +174,8 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
   });
 
   const [selectedRow, setSelectedRow] = useState<GameRow | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const { sortedRows } = useMemo(() => {
     const allRows = buildAllGameRows(data);
@@ -222,6 +224,13 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
     }
   }, [sortedRows, selectedRow]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) => ({
       key,
@@ -256,11 +265,20 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
     ? `${selectedRow.teamName} vs ${selectedRow.opponentName} — Week ${selectedRow.week}, ${selectedRow.year}`
     : null;
 
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
+  };
+
   return (
     <div className="regular-season-points">
+      {isMobile && showMobileDetail && (
+        <button onClick={handleBackToList} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
       <div className="two-pane-layout">
         {/* -------------------- LEFT PANE -------------------- */}
-        <div className="main-table-pane">
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
           <table className="leagueStatsTable regular-season-table selectable-table">
             <thead>
               <tr>
@@ -301,17 +319,18 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
                     ? 'active selected-row'
                     : ''
                     } ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                  onClick={() =>
-                    setSelectedRow((prev) =>
+                  onClick={() => {
+                    const newSelection = (prev: GameRow | null) =>
                       prev &&
                         prev.userId === row.userId &&
                         prev.year === row.year &&
                         prev.week === row.week &&
                         prev.opponentUserId === row.opponentUserId
                         ? null
-                        : row
-                    )
-                  }
+                        : row;
+                    setSelectedRow(newSelection);
+                    if (isMobile) setShowMobileDetail(true);
+                  }}
                 >
                   <td className="team-name-cell">
                     {row.teamName} ({row.yearsPlayed})
@@ -330,7 +349,7 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
         </div>
 
         {/* -------------------- RIGHT PANE -------------------- */}
-        <div className="detail-pane-wrapper">
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
           {selectedRow && selectedLeague ? (
             <MatchupDisplay
               user1={selectedUser1 as any}

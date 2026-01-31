@@ -211,6 +211,8 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
     
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'avgPointsPerGameValue', direction: 'descending' });
     const [selectedTeam, setSelectedTeam] = useState<TeamRegularSeasonPoints | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
 
     // Sorting by teamName is the only column that needs to be manually implemented for the yearsPlayed to be sortable
     const handleSort = (key: SortKey) => {
@@ -228,6 +230,7 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
 
     const handleRowClick = (team: TeamRegularSeasonPoints) => {
         setSelectedTeam(prev => (prev?.userId === team.userId ? null : team));
+        if (isMobile) setShowMobileDetail(true);
     };
 
 
@@ -307,6 +310,13 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
         }
     }, [sortedPoints, selectedTeam]);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
 
     // Removed getSortIndicator for 'yearsPlayed' since it's now part of 'teamName' or implicit.
     const getSortIndicator = (key: SortKey) => {
@@ -342,13 +352,23 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
         );
     }
 
+    const handleBackToList = () => {
+        setShowMobileDetail(false);
+    };
+
     return (
         <div className="regular-season-points">
+            {isMobile && showMobileDetail && (
+                <button onClick={handleBackToList} className="mobile-back-button">
+                    ← Back to List
+                </button>
+            )}
             <div className="two-pane-layout">
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
-                <div className="main-table-pane">
-                    <table className="leagueStatsTable regular-season-table selectable-table">
+                <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
+                    <div className="table-scroll-container">
+                        <table className="leagueStatsTable regular-season-table selectable-table\">
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('teamName')} className="table-col-2 sortable">
@@ -386,10 +406,11 @@ const RegularSeasonPoints: React.FC<RecordComponentProps & { minYears?: number }
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
-                <div className="detail-pane-wrapper">
+                <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
                     {selectedTeam ? (
                         <YearlyPointsBreakdown data={data} selectedTeam={selectedTeam} />
                     ) : (

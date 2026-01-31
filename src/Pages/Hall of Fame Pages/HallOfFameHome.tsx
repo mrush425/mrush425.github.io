@@ -13,64 +13,73 @@ const HallOfFameHome: React.FC<HallOfFameProps> = ({ data }) => {
     }
   };
 
+  // Sort seasons in descending order (newest first)
+  const sortedData = [...data].sort((a, b) => parseInt(b.season) - parseInt(a.season));
+
   return (
     <div>
       <HallOfFameNavBar data={data} />
-      <h2>Welcome to the Hall of Fame</h2>
-      <table className="hall-of-fame-table">
-        <thead>
-          <tr>
-            <th className="header-column"></th>
-            {data.map((league) => (
-              <th key={league.season} className="header-column">
-                {league.season}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="year-column">Champion</td>
-            {data.map((league) => {
-              const championImage = safeImage(`./Champions/${league.season}.jpg`);
-              return (
-                <td key={league.season}>
-                  {championImage ? (
-                    <img
-                      src={championImage}
-                      alt={`${league.season} Champion`}
-                      className="champion-image"
-                    />
-                  ) : (
-                    <span>No Image</span>
-                  )}
-                </td>
-              );
-            })}
-          </tr>
-          <tr>
-            <td className="year-column">Butler</td>
-            {data.map((league) => {
-              const butlerImage = safeImage(`./Butlers/${league.season}.jpg`);
-              return (
-                <td key={league.season}>
-                  {butlerImage ? (
-                    <img
-                      src={butlerImage}
-                      alt={`${league.season} Butler`}
-                      className="butler-image"
-                    />
-                  ) : (
-                    <span>No Image</span>
-                  )}
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
+      <div className="hall-of-fame-container">
+        <div className="hall-of-fame-header">
+          <h2 className="hall-of-fame-title">🏆 League Hall of Fame 🏆</h2>
+        </div>
+
+        <div className="hall-of-fame-grid">
+          {sortedData.map((league, index) => {
+            const championImage = safeImage(`./Champions/${league.season}.jpg`);
+            const butlerImage = safeImage(`./Butlers/${league.season}.jpg`);
+
+            return (
+              <div key={league.season} className="season-card">
+                <div className="season-year">{league.season}</div>
+                
+                <div className="roles-container">
+                  {/* Champion */}
+                  <div className="role-section champion-section">
+                    <div className="role-badge">
+                      <span className="badge-icon">👑</span>
+                      <span className="badge-text">Champion</span>
+                    </div>
+                    <div className="image-wrapper">
+                      {championImage ? (
+                        <img
+                          src={championImage}
+                          alt={`${league.season} Champion`}
+                          className="role-image champion-image"
+                        />
+                      ) : (
+                        <div className="no-image-placeholder">No Image</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Butler */}
+                  <div className="role-section butler-section">
+                    <div className="role-badge">
+                      <span className="badge-icon">🎩</span>
+                      <span className="badge-text">Butler</span>
+                    </div>
+                    <div className="image-wrapper">
+                      {butlerImage ? (
+                        <img
+                          src={butlerImage}
+                          alt={`${league.season} Butler`}
+                          className="role-image butler-image"
+                        />
+                      ) : (
+                        <div className="no-image-placeholder">No Image</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default HallOfFameHome;
+

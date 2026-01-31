@@ -11,7 +11,6 @@ const ChargerDashboard: React.FC<OtherComponentProps & { minYears?: number }> = 
   return (
     <div className="regular-season-records">
       <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '8px' }}>The Charger</h2>
         <div className="notImplementedMessage" style={{ textAlign: 'center' }}>
           <b>Scoring:</b> 3 points for losses &lt;1 point difference, 2 points for &lt;5 point difference, 1 point for &lt;10 point difference
         </div>

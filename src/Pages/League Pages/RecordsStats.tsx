@@ -124,10 +124,7 @@ const RecordsStats: React.FC<LeagueProps> = ({ data }) => {
                     </button>
                 </div>
                 
-                {/* 2. HEADER (Second element) */}
-                <h3>{header}</h3>
-                
-                {/* 3. FILTER CHECKBOX (NEW POSITION: Third element) */}
+                {/* 2. FILTER CHECKBOX (Second element) */}
                 <div className="recordsFilter filter-style">
                     <label>
                         <input

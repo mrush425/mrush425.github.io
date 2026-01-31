@@ -156,6 +156,35 @@
   font-weight: 600;
 }
 
+/* Bowl Highlight Colors */
+.bowl-green {
+  background: rgba(74, 222, 128, 0.25) !important;
+  color: #4ade80 !important;
+  font-weight: 700;
+  border: 2px solid rgba(74, 222, 128, 0.4) !important;
+}
+
+.bowl-blue {
+  background: rgba(96, 165, 250, 0.25) !important;
+  color: #60a5fa !important;
+  font-weight: 700;
+  border: 2px solid rgba(96, 165, 250, 0.4) !important;
+}
+
+.bowl-orange {
+  background: rgba(251, 146, 60, 0.25) !important;
+  color: #fb923c !important;
+  font-weight: 700;
+  border: 2px solid rgba(251, 146, 60, 0.4) !important;
+}
+
+.bowl-red {
+  background: rgba(239, 68, 68, 0.25) !important;
+  color: #ef4444 !important;
+  font-weight: 700;
+  border: 2px solid rgba(239, 68, 68, 0.4) !important;
+}
+
 /* Selectable Table Row Styles */
 .selectable-table tr {
   cursor: pointer;
@@ -210,6 +239,37 @@
   .two-pane-layout {
     gap: 16px;
     padding: 12px;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    margin: 12px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3);
+  }
+
+  .mobile-back-button:hover {
+    background: #4a91e2;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.4);
+  }
+
+  .mobile-back-button:active {
+    transform: translateX(0);
   }
 
   .leagueStatsTable th,

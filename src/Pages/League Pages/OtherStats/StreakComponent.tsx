@@ -18,6 +18,8 @@ const getCurrentYear = (): string => new Date().getFullYear().toString();
 
 const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
   const [streakType, setStreakType] = useState<StreakType>('win');
+  const [sortColumn, setSortColumn] = useState<string>('streakLength');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const rows = useMemo<TeamStreakRow[]>(() => {
     const currentYear = getCurrentYear();
@@ -79,16 +81,52 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
       });
     });
 
-    // Sort: longest streak desc, then team name asc
-    resultRows.sort((a, b) => {
-      if (b.streakLength !== a.streakLength) return b.streakLength - a.streakLength;
-      return a.teamName.localeCompare(b.teamName);
-    });
-
     return resultRows;
   }, [data, minYears, streakType]);
 
-  if (rows.length === 0) {
+  const sortedRows = useMemo(() => {
+    const sorted = [...rows];
+    sorted.sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortColumn) {
+        case 'teamName':
+          aValue = a.teamName.toLowerCase();
+          bValue = b.teamName.toLowerCase();
+          break;
+        case 'yearsPlayed':
+          aValue = a.yearsPlayed;
+          bValue = b.yearsPlayed;
+          break;
+        case 'streakLength':
+          aValue = a.streakLength;
+          bValue = b.streakLength;
+          break;
+        default:
+          aValue = a.streakLength;
+          bValue = b.streakLength;
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+    return sorted;
+  }, [rows, sortColumn, sortDirection]);
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('desc');
+    }
+  };
+
+  if (sortedRows.length === 0) {
     return (
       <div className="regular-season-records">
         <div className="notImplementedMessage">
@@ -142,14 +180,24 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
       <table className="leagueStatsTable compact-table">
         <thead>
           <tr>
-            <th className="table-col-team">Team (Years)</th>
-            <th className="table-col-2">Streak</th>
+            <th 
+              className={`table-col-team sortable ${sortColumn === 'teamName' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('teamName')}
+            >
+              Team (Years)
+            </th>
+            <th 
+              className={`table-col-2 sortable ${sortColumn === 'streakLength' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('streakLength')}
+            >
+              Streak
+            </th>
             <th className="table-col-2">Range(s)</th>
           </tr>
         </thead>
 
         <tbody>
-          {rows.map((r, idx) => (
+          {sortedRows.map((r, idx) => (
             <tr key={r.userId} className={idx % 2 === 0 ? 'even-row' : 'odd-row'}>
               <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
               <td>{r.streakLength === 0 ? '-' : r.streakLength}</td>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
@@ -117,11 +117,64 @@ const HelmetMasterPerfect: React.FC<RecordComponentProps & { minYears?: number }
   data,
   minYears = 0,
 }) => {
+  const [sortColumn, setSortColumn] = useState<string>('year');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
   const rows = useMemo(() => {
     return buildPerfectHelmetMasterRows(data).filter((r) => r.yearsPlayed >= minYears);
   }, [data, minYears]);
 
-  if (rows.length === 0) {
+  const sortedRows = useMemo(() => {
+    const sorted = [...rows];
+    sorted.sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortColumn) {
+        case 'teamName':
+          aValue = a.teamName.toLowerCase();
+          bValue = b.teamName.toLowerCase();
+          break;
+        case 'year':
+          aValue = a.year;
+          bValue = b.year;
+          break;
+        case 'yearsPlayed':
+          aValue = a.yearsPlayed;
+          bValue = b.yearsPlayed;
+          break;
+        case 'nflTeam':
+          aValue = a.nflTeam.toLowerCase();
+          bValue = b.nflTeam.toLowerCase();
+          break;
+        case 'record':
+          aValue = a.record;
+          bValue = b.record;
+          break;
+        default:
+          aValue = a.year;
+          bValue = b.year;
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+    return sorted;
+  }, [rows, sortColumn, sortDirection]);
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection(column === 'year' ? 'desc' : 'asc');
+    }
+  };
+
+  if (sortedRows.length === 0) {
     return (
       <div className="notImplementedMessage">
         No perfect Helmet Master picks found (min years: {minYears}).
@@ -140,15 +193,35 @@ const HelmetMasterPerfect: React.FC<RecordComponentProps & { minYears?: number }
       <table className="leagueStatsTable regular-season-table">
         <thead>
           <tr>
-            <th>Team (Years)</th>
-            <th>Year</th>
-            <th>NFL Team</th>
-            <th>Record</th>
+            <th 
+              className={`sortable ${sortColumn === 'teamName' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('teamName')}
+            >
+              Team (Years)
+            </th>
+            <th 
+              className={`sortable ${sortColumn === 'year' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('year')}
+            >
+              Year
+            </th>
+            <th 
+              className={`sortable ${sortColumn === 'nflTeam' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('nflTeam')}
+            >
+              NFL Team
+            </th>
+            <th 
+              className={`sortable ${sortColumn === 'record' ? `sorted-${sortDirection}` : ''}`}
+              onClick={() => handleSort('record')}
+            >
+              Record
+            </th>
           </tr>
         </thead>
 
         <tbody>
-          {rows.map((r, idx) => (
+          {sortedRows.map((r, idx) => (
             <tr
               key={`${r.userId}-${r.year}-${r.nflTeam}-${idx}`}
               className={idx % 2 === 0 ? 'even-row' : 'odd-row'}

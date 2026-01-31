@@ -277,6 +277,25 @@ input:focus, textarea:focus, select:focus {
     padding: 8px 12px;
     font-size: 12px;
   }
+
+  /* Horizontal scroll container for wide tables on mobile */
+  .table-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 4px;
+  }
+
+  .table-scroll-container table {
+    min-width: 100%;
+    white-space: nowrap;
+  }
+
+  .table-scroll-container table th,
+  .table-scroll-container table td {
+    padding: 10px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 480px) {
@@ -287,8 +306,16 @@ input:focus, textarea:focus, select:focus {
   h2 {
     font-size: 18px;
   }
-  
+
   .glass-section {
     padding: 12px;
   }
+
+  /* Improve scroll container on smaller screens */
+  .table-scroll-container {
+    margin: 0 -12px;
+    padding: 0 12px;
+    border-radius: 0;
+  }
 }
+

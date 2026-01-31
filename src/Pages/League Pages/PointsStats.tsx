@@ -194,10 +194,7 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                     </button>
                 </div>
                 
-                {/* 2. HEADER (Second element) */}
-                <h3>{header}</h3>
-                
-                {/* 3. FILTER CHECKBOXES (NEW POSITION: Third element) */}
+                {/* 2. FILTER CHECKBOXES (Second element) */}
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                     <div className="pointsFilter filter-style"> 
                         <label>

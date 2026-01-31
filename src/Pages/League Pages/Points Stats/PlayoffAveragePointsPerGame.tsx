@@ -214,6 +214,8 @@ const PlayoffAveragePointsPerGame: React.FC<RecordComponentProps & { minYears?: 
         direction: 'descending',
     });
     const [selectedTeam, setSelectedTeam] = React.useState<TeamPlayoffAveragePoints | null>(null);
+    const [isMobile, setIsMobile] = React.useState(false);
+    const [showMobileDetail, setShowMobileDetail] = React.useState(false);
 
     const { sortedTeams, maxMinValues } = useMemo(() => {
         const teams = aggregatePlayoffAveragePoints(data).filter(t => t.yearsPlayed >= minYears);
@@ -261,6 +263,13 @@ const PlayoffAveragePointsPerGame: React.FC<RecordComponentProps & { minYears?: 
         }
     }, [sortedTeams, selectedTeam]);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const handleSort = (key: SortKey) => {
         setSortConfig(prev => ({
             key,
@@ -300,11 +309,20 @@ const PlayoffAveragePointsPerGame: React.FC<RecordComponentProps & { minYears?: 
         );
     }
 
+    const handleBackToList = () => {
+        setShowMobileDetail(false);
+    };
+
     return (
         <div className="playoff-average-points">
+            {isMobile && showMobileDetail && (
+                <button onClick={handleBackToList} className="mobile-back-button">
+                    ← Back to List
+                </button>
+            )}
             <div className="two-pane-layout">
                 {/* LEFT PANE: MAIN TABLE */}
-                <div className="main-table-pane">
+                <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
                     <table className="leagueStatsTable regular-season-table selectable-table">
                         <thead>
                             <tr>
@@ -326,7 +344,10 @@ const PlayoffAveragePointsPerGame: React.FC<RecordComponentProps & { minYears?: 
                                 <tr
                                     key={team.userId}
                                     className={`${selectedTeam?.userId === team.userId ? 'active selected-row' : ''} ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                                    onClick={() => setSelectedTeam(team)}
+                                    onClick={() => {
+                                        setSelectedTeam(team);
+                                        if (isMobile) setShowMobileDetail(true);
+                                    }}
                                 >
                                     <td className="team-name-cell">{team.teamName} ({team.yearsPlayed})</td>
                                     
@@ -344,7 +365,7 @@ const PlayoffAveragePointsPerGame: React.FC<RecordComponentProps & { minYears?: 
                 </div>
 
                 {/* RIGHT PANE: YEARLY BREAKDOWN */}
-                <div className="detail-pane-wrapper">
+                <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
                     {selectedTeam ? (
                         <YearlyPlayoffPointsBreakdown data={data} selectedTeam={selectedTeam} />
                     ) : (

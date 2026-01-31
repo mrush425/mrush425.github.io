@@ -119,6 +119,8 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
   });
 
   const [selectedRow, setSelectedRow] = useState<SeasonRow | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const { filteredSortedRows, maxMin } = useMemo(() => {
     const all = buildSeasonRows(data);
@@ -169,6 +171,20 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
     }
   }, [filteredSortedRows, selectedRow]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) => {
       const defaultDir: SortConfig['direction'] =
@@ -202,11 +218,20 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
     );
   }
 
+  const handleBackToList = () => {
+    setShowMobileDetail(false);
+  };
+
   return (
     <div className="season-records">
+      {isMobile && showMobileDetail && (
+        <button onClick={handleBackToList} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
       <div className="two-pane-layout">
         {/* LEFT TABLE */}
-        <div className="main-table-pane">
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
           <table className="leagueStatsTable selectable-table">
             <thead>
               <tr>
@@ -233,11 +258,12 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
                     ? 'active selected-row'
                     : ''
                     } ${idx % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                  onClick={() =>
+                  onClick={() => {
                     setSelectedRow((prev) =>
                       prev?.userId === r.userId && prev?.season === r.season ? null : r
-                    )
-                  }
+                    );
+                    if (isMobile) setShowMobileDetail(true);
+                  }}
                 >
                   <td className="team-name-cell">
                     {r.teamName} ({r.yearsPlayed})
@@ -257,7 +283,7 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
         </div>
 
         {/* RIGHT PANE */}
-        <div className="detail-pane-wrapper">
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
           {selectedRow ? (
             <WeeklyMatchupsPane
               allLeagues={data}
