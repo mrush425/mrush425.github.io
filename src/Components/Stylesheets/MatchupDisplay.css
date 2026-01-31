@@ -44,7 +44,7 @@
 
 .matchup-display-table th,
 .matchup-display-table td {
-    padding: 7px 6px;
+    padding: 4px 6px;
     border-top: 1px solid rgba(96,165,250,0.10);
     border-bottom: 1px solid rgba(96,165,250,0.10);
     color: #f1f5f9;
@@ -131,7 +131,7 @@
     position: relative; /* Ensure positioning for pseudo-element */
     text-align: center; /* Center the text inside the circle */
     z-index: 1; /* Ensure the text stays above the circle */
-    padding: 14px 4px;
+    padding: 8px 4px;
 }
 
 .matchup-display-table th:nth-child(5),
@@ -143,12 +143,12 @@
 .matchup-display-table th:nth-child(3),
 .matchup-display-table td:nth-child(3) {
     padding-right: 16px;
-    text-align: right;
+    text-align: right !important;
 }
 
 .matchup-display-table th:nth-child(6),
 .matchup-display-table td:nth-child(6) {
-    text-align: right;
+    text-align: right !important;
 }
 
 .matchup-display-table th:nth-child(4)::before,
