@@ -68,10 +68,13 @@
   align-items: center;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 16px rgba(96, 165, 250, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar-container::-webkit-scrollbar {
-  height: 4px;
+  height: 6px;
 }
 
 .navbar-container::-webkit-scrollbar-track {
@@ -80,7 +83,8 @@
 
 .navbar-container::-webkit-scrollbar-thumb {
   background: var(--border-medium);
-  border-radius: 2px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 .navbar-container::-webkit-scrollbar-thumb:hover {

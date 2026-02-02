@@ -81,14 +81,14 @@
 /* Season Year Badge */
 .season-year {
   display: inline-block;
-  background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-purple) 100%);
   color: #fff;
   font-weight: 700;
-  font-size: 18px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
 }
 
 /* Roles Container */
@@ -260,7 +260,7 @@
   }
 
   .season-year {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 16px;
   }
 

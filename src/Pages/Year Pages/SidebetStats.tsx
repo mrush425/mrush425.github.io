@@ -99,8 +99,6 @@ return (
       </button>
     </div>
 
-    <h2>{header + " " + data.season}</h2>
-    <div className="sidebetDescription">{description}</div>
     {!isImplemented ? (
       <div className="notImplementedMessage">Stat not implemented</div>
     ) : (

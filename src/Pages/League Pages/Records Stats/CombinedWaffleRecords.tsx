@@ -182,7 +182,7 @@ const YearlyBreakdown: React.FC<YearlyProps> = ({ data, selected }) => {
 // Main component
 // =============================================================
 const WaffleRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({ data, minYears = 0 }) => {
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'wafflePctValue', direction: 'descending' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'wafflePctValue', direction: 'ascending' });
   const [selected, setSelected] = useState<WaffleAggregateRecord | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileDetail, setShowMobileDetail] = useState(false);

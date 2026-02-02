@@ -234,9 +234,52 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     const avgPlayoffPointsAgainst = playoffGames > 0 ? (playoffTotalPointsAgainst / playoffGames).toFixed(2) : '0.00';
     
     const bestSeason =
-      seasonRecords.length > 0 ? seasonRecords.reduce((a, b) => (a.fpts > b.fpts ? a : b)) : null;
+      seasonRecords.length > 0
+        ? seasonRecords.reduce((best, current) => {
+            // Priority 1: Lower finalPlace is better
+            const bestFinalPlace = best.finalPlace ?? Number.MAX_VALUE;
+            const currentFinalPlace = current.finalPlace ?? Number.MAX_VALUE;
+            if (bestFinalPlace !== currentFinalPlace) {
+              return currentFinalPlace < bestFinalPlace ? current : best;
+            }
+            // Priority 2: If finalPlace is same, compare seasonPlace
+            const bestSeasonPlace = best.seasonPlace ?? Number.MAX_VALUE;
+            const currentSeasonPlace = current.seasonPlace ?? Number.MAX_VALUE;
+            if (bestSeasonPlace !== currentSeasonPlace) {
+              return currentSeasonPlace < bestSeasonPlace ? current : best;
+            }
+            // Priority 3: If both are same, compare average points for
+            const bestGames = best.wins + best.losses + best.ties || 1;
+            const currentGames = current.wins + current.losses + current.ties || 1;
+            const bestAvgPoints = best.fpts / bestGames;
+            const currentAvgPoints = current.fpts / currentGames;
+            return currentAvgPoints > bestAvgPoints ? current : best;
+          })
+        : null;
+    
     const worstSeason =
-      seasonRecords.length > 0 ? seasonRecords.reduce((a, b) => (a.fpts < b.fpts ? a : b)) : null;
+      seasonRecords.length > 0
+        ? seasonRecords.reduce((worst, current) => {
+            // Priority 1: Higher finalPlace is worse
+            const worstFinalPlace = worst.finalPlace ?? Number.MIN_VALUE;
+            const currentFinalPlace = current.finalPlace ?? Number.MIN_VALUE;
+            if (worstFinalPlace !== currentFinalPlace) {
+              return currentFinalPlace > worstFinalPlace ? current : worst;
+            }
+            // Priority 2: If finalPlace is same, compare seasonPlace
+            const worstSeasonPlace = worst.seasonPlace ?? Number.MIN_VALUE;
+            const currentSeasonPlace = current.seasonPlace ?? Number.MIN_VALUE;
+            if (worstSeasonPlace !== currentSeasonPlace) {
+              return currentSeasonPlace > worstSeasonPlace ? current : worst;
+            }
+            // Priority 3: If both are same, compare average points for (least points for is worse)
+            const worstGames = worst.wins + worst.losses + worst.ties || 1;
+            const currentGames = current.wins + current.losses + current.ties || 1;
+            const worstAvgPoints = worst.fpts / worstGames;
+            const currentAvgPoints = current.fpts / currentGames;
+            return currentAvgPoints < worstAvgPoints ? current : worst;
+          })
+        : null;
     const championships = seasonRecords.filter((s) => s.finalPlace === 1).length;
     const butlerCount = seasonRecords.filter((s) => s.finalPlace === 12).length;
 

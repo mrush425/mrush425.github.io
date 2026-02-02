@@ -14,162 +14,229 @@
 
 .football-player-header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
   animation: fadeInDown 0.6s ease-out;
 }
 
 .football-player-title {
   font-size: 42px;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-cyan) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.football-player-subtitle {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 300;
-  letter-spacing: 0.5px;
-}
-
-.positions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
+/* Position Selector */
+.position-selector {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 40px;
+  flex-wrap: wrap;
 }
 
-.position-column {
+.position-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.position-radio input[type="radio"] {
+  cursor: pointer;
+  accent-color: var(--accent-blue);
+}
+
+.position-label {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.position-radio input[type="radio"]:checked + .position-label {
+  background: rgba(96, 165, 250, 0.2);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+/* Sort Selector */
+.sort-selector {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.sort-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.sort-radio input[type="radio"] {
+  cursor: pointer;
+  accent-color: var(--accent-orange);
+}
+
+.sort-label {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sort-radio input[type="radio"]:checked + .sort-label {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+/* Players Card Grid */
+.players-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  animation: fadeIn 0.8s ease;
+}
+
+.player-card-large {
   background: linear-gradient(135deg, rgba(30, 34, 54, 0.8) 0%, rgba(22, 33, 62, 0.6) 100%);
   border: 1px solid rgba(96, 165, 250, 0.2);
   border-radius: 12px;
-  padding: 0;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(96, 165, 250, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.position-column:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), inset 0 0 25px rgba(96, 165, 250, 0.1);
+.player-card-large:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent-blue);
+  box-shadow: 0 16px 48px rgba(96, 165, 250, 0.2), inset 0 0 20px rgba(96, 165, 250, 0.1);
 }
 
-.position-header {
-  padding: 16px;
-  border-bottom: 2px solid;
+.player-card-header {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-}
-
-.position-title {
-  font-size: 20px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.players-list {
   padding: 20px;
-  max-height: 600px;
-  overflow-y: auto;
+  gap: 12px;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.1);
+}
+
+.player-image-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+}
+
+.player-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.player-info {
+  text-align: center;
+}
+
+.player-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 4px 0;
+}
+
+.player-position {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin: 0;
+}
+
+.player-card-body {
+  padding: 20px;
+}
+
+.championship-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.players-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.players-list::-webkit-scrollbar-track {
-  background: rgba(96, 165, 250, 0.05);
-  border-radius: 3px;
-}
-
-.players-list::-webkit-scrollbar-thumb {
-  background: rgba(96, 165, 250, 0.3);
-  border-radius: 3px;
-}
-
-.players-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(96, 165, 250, 0.5);
-}
-
-.player-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 12px;
-  transition: all 0.3s ease;
-}
-
-.player-card:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateX(4px);
-}
-
-.player-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.championship-badge {
+.wins-badge {
   display: inline-block;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 8px 12px;
   background: rgba(249, 115, 22, 0.15);
   border: 1px solid rgba(249, 115, 22, 0.3);
   border-radius: 6px;
   color: rgba(249, 115, 22, 0.9);
-  margin-bottom: 8px;
-}
-
-.championship-years {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.year-pill {
-  display: inline-block;
-  font-size: 11px;
-  padding: 4px 8px;
-  background: rgba(96, 165, 250, 0.2);
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 12px;
-  color: rgba(96, 165, 250, 0.8);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.no-players {
   text-align: center;
-  padding: 20px 10px;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
-  font-style: italic;
 }
 
-.loading-container {
+.championship-years-list {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.year-info {
+  display: flex;
   align-items: center;
-  min-height: 400px;
-  font-size: 18px;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(96, 165, 250, 0.05);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.year {
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.points-badge {
+  font-weight: 600;
+  color: var(--accent-orange);
+  background: rgba(249, 115, 22, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.owner {
   color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.no-players-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 16px;
 }
 
 @keyframes fadeInDown {
@@ -198,8 +265,8 @@
     font-size: 36px;
   }
 
-  .positions-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  .players-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
   }
 }
@@ -213,42 +280,36 @@
     font-size: 28px;
   }
 
-  .football-player-subtitle {
+  .position-selector {
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .position-label {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .players-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .player-card-header {
+    padding: 16px;
+  }
+
+  .player-image-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .player-card-name {
     font-size: 16px;
   }
 
-  .positions-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-  }
-
-  .position-header {
-    padding: 14px;
-  }
-
-  .position-title {
-    font-size: 18px;
-  }
-
-  .players-list {
-    padding: 15px;
-    gap: 10px;
-  }
-
-  .player-card {
-    padding: 10px;
-  }
-
-  .player-name {
-    font-size: 14px;
-  }
-
-  .championship-badge {
-    font-size: 12px;
-  }
-
-  .year-pill {
-    font-size: 10px;
+  .player-card-body {
+    padding: 16px;
   }
 }
 
@@ -257,54 +318,44 @@
     padding: 20px 10px;
   }
 
-  .football-player-header {
-    margin-bottom: 30px;
-  }
-
   .football-player-title {
     font-size: 24px;
   }
 
-  .football-player-subtitle {
-    font-size: 14px;
+  .position-selector {
+    gap: 8px;
+    margin-bottom: 20px;
   }
 
-  .positions-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  .position-label {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  .players-card-grid {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .position-header {
+  .player-card-header {
     padding: 12px;
   }
 
-  .position-title {
+  .player-image-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .player-card-name {
     font-size: 14px;
-    letter-spacing: 1px;
   }
 
-  .players-list {
+  .player-card-body {
     padding: 12px;
-    max-height: 400px;
-    gap: 8px;
   }
 
-  .player-card {
-    padding: 8px;
-  }
-
-  .player-name {
-    font-size: 13px;
-  }
-
-  .championship-badge {
-    font-size: 11px;
-    padding: 3px 6px;
-  }
-
-  .year-pill {
-    font-size: 9px;
-    padding: 2px 6px;
+  .year-info {
+    font-size: 12px;
   }
 }
 
