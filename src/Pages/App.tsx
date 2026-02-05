@@ -20,6 +20,7 @@ import HallOfFameHome from './Hall of Fame Pages/HallOfFameHome';
 import FootballPlayerChampions from './Hall of Fame Pages/FootballPlayerChampions';
 import ScheduleViewer from './Year Pages/ScheduleViewer';
 import LeagueHome from './League Pages/LeagueHome';
+import BowlHistory from './League Pages/BowlHistory';
 import RecordsStats from './League Pages/RecordsStats';
 import PointsStats from './League Pages/PointsStats';
 import OtherStats from './League Pages/OtherStats';
@@ -86,6 +87,7 @@ return (
             <Route path="/" element={<Home />} />
             {/*Overall League Data*/}
             <Route path="/league-stats" element={<LeagueHome data={leagueData} />} />
+            <Route path="/league-stats/bowl-history" element={<BowlHistory data={leagueData} />} />
             <Route path="/league-stats/league-records" element={<RecordsStats data={leagueData} />} />
             <Route path="/league-stats/league-points" element={<PointsStats data={leagueData} />} />
             <Route path="/league-stats/league-other-stats" element={<OtherStats data={leagueData} />} />

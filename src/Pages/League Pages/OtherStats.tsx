@@ -17,6 +17,7 @@ import HelmetMaster from './OtherStats/HelmetMaster';
 import MoneyStats from './OtherStats/MoneyStats';
 import ChargerStats from './Records Stats/ChargerStats';
 import VikingStats from './Records Stats/VikingStats';
+import { LowScorerStats, NegativePointsStats, KickerBoomStats, DefenseBoomStats, NoClothesStats } from './OtherStats/PlayerBustBoomStats';
 
 
 
@@ -30,12 +31,26 @@ const STAT_COMPONENTS: OtherStatItem[] = [
     { displayName: 'Win/Lose Streaks', Component: StreakComponent },
     { displayName: 'Helmet Master', Component: HelmetMaster },
     { displayName: 'The Charger', Component: ChargerStats },
-    { displayName: 'The Viking', Component: VikingStats }
+    { displayName: 'The Viking', Component: VikingStats },
+    { displayName: 'Low Scorers (<5 pts)', Component: LowScorerStats },
+    { displayName: 'Negative Points', Component: NegativePointsStats },
+    { displayName: 'Kicker Boom (>20 pts)', Component: KickerBoomStats },
+    { displayName: 'Defense Boom (>25 pts)', Component: DefenseBoomStats },
+    { displayName: 'No Clothes (>45 pts)', Component: NoClothesStats }
     
     // Example of future components (using a mock component for now if needed, 
     // otherwise, replace/remove all mock references)
     // { displayName: 'All-Time Awards', Component: MockOtherStatComponent }, 
     // { displayName: 'Playoff History', Component: MockOtherStatComponent }, 
+];
+
+// Stats that should show the minYears filter
+const STATS_WITH_FILTER = [
+    'Low Scorers (<5 pts)',
+    'Negative Points',
+    'Kicker Boom (>20 pts)',
+    'Defense Boom (>25 pts)',
+    'No Clothes (>45 pts)'
 ];
 
 
@@ -89,6 +104,7 @@ const OtherStats: React.FC<LeagueProps> = ({ data }) => {
 
     const selectedItem = items[activeIndex];
     const header = selectedItem?.displayName || 'Other Stats';
+    const showFilter = STATS_WITH_FILTER.includes(header);
     
     const SelectedComponent = selectedItem 
         ? selectedItem.Component 
@@ -141,17 +157,19 @@ const OtherStats: React.FC<LeagueProps> = ({ data }) => {
                 </div>
                 
                 {/* 2. FILTER CHECKBOX */}
-                <div className="recordsFilter filter-style">
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={minYears === 3}
-                            style={{ marginRight: '6px' }} 
-                            onChange={(e) => handleFilterChange(e.target.checked)}
-                        />
-                        Filter teams with fewer than 3 years played
-                    </label>
-                </div>
+                {showFilter && (
+                  <div className="recordsFilter filter-style">
+                      <label>
+                          <input
+                              type="checkbox"
+                              checked={minYears === 3}
+                              style={{ marginRight: '6px' }} 
+                              onChange={(e) => handleFilterChange(e.target.checked)}
+                          />
+                          Filter teams with fewer than 3 years played
+                      </label>
+                  </div>
+                )}
                 
             </div>
             

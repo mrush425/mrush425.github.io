@@ -4,12 +4,14 @@ import React, { useMemo, useState } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import yearTrollData from '../../../Data/yearTrollData.json';
+import { getUserSeasonPlace } from '../../../Helper Files/HelperMethods';
 
 /* =========================================================================
    TYPES
    ========================================================================= */
 
 export type DraftKeyMode = 'draft_position' | 'draft_choice';
+export type PlaceMode = 'overall' | 'season';
 
 interface DraftKeyVsPlaceProps extends OtherComponentProps {
   mode: DraftKeyMode;
@@ -71,7 +73,7 @@ const BOWLS: {
    CORE TABLE BUILD
    ========================================================================= */
 
-const buildTable = (leagueData: LeagueData[], mode: DraftKeyMode) => {
+const buildTable = (leagueData: LeagueData[], mode: DraftKeyMode, placeMode: PlaceMode) => {
   const currentYear = getCurrentYear();
   const leagueSeasons = new Set(leagueData.map(l => l.season));
 
@@ -96,13 +98,25 @@ const buildTable = (leagueData: LeagueData[], mode: DraftKeyMode) => {
   // Build per-year rows
   const yearRows: YearRow[] = years.map((y) => {
     const yd = yearTrollData.find((row: any) => safeNumber(row.year) === y);
+    const league = leagueData.find(l => Number(l.season) === y);
 
     const byCol: Record<number, number | undefined> = {};
     columns.forEach(c => (byCol[c] = undefined));
 
     for (const pd of yd?.data ?? []) {
       const col = safeNumber((pd as any)[mode]);
-      const place = safeNumber((pd as any).place);
+      let place: number | undefined;
+      
+      if (placeMode === 'season' && league) {
+        // Calculate regular season place from standings
+        const userId = (pd as any).sleeper_id;
+        if (userId) {
+          place = getUserSeasonPlace(userId, league);
+        }
+      } else {
+        // Use overall place from yearTrollData
+        place = safeNumber((pd as any).place);
+      }
 
       // Keep first occurrence if collisions ever exist
       if (col !== undefined && place !== undefined && byCol[col] === undefined) {
@@ -142,6 +156,7 @@ const buildTable = (leagueData: LeagueData[], mode: DraftKeyMode) => {
 
 const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
   const [selectedBowls, setSelectedBowls] = useState<Set<BowlKey>>(new Set());
+  const [placeMode, setPlaceMode] = useState<PlaceMode>('overall');
 
   const toggleBowl = (key: BowlKey) => {
     setSelectedBowls(prev => {
@@ -155,18 +170,27 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
 
   const placeToClass = useMemo(() => {
     const map = new Map<number, string>();
-    for (const bowl of BOWLS) {
-      if (!selectedBowls.has(bowl.key)) continue;
-      for (const p of bowl.places) {
-        map.set(p, bowl.className);
+    
+    if (placeMode === 'season') {
+      // For season place, highlight playoff positions (1-6) in green
+      for (let p = 1; p <= 6; p++) {
+        map.set(p, 'bowl-green');
+      }
+    } else {
+      // For overall place, use bowl filters
+      for (const bowl of BOWLS) {
+        if (!selectedBowls.has(bowl.key)) continue;
+        for (const p of bowl.places) {
+          map.set(p, bowl.className);
+        }
       }
     }
     return map;
-  }, [selectedBowls]);
+  }, [selectedBowls, placeMode]);
 
   const { columns, rows } = useMemo(
-    () => buildTable(data as LeagueData[], mode),
-    [data, mode]
+    () => buildTable(data as LeagueData[], mode, placeMode),
+    [data, mode, placeMode]
   );
 
   if (columns.length === 0 || rows.length === 0) {
@@ -181,18 +205,68 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
 
   return (
     <div className="regular-season-records">
+      {/* -------------------- PLACE MODE SELECTOR -------------------- */}
+      <div className="recordsFilter filter-style">
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '16px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <label
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <input
+              type="radio"
+              name="placeMode"
+              value="overall"
+              checked={placeMode === 'overall'}
+              onChange={() => setPlaceMode('overall')}
+            />
+            Overall Place
+          </label>
+          <label
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <input
+              type="radio"
+              name="placeMode"
+              value="season"
+              checked={placeMode === 'season'}
+              onChange={() => setPlaceMode('season')}
+            />
+            Season Place
+          </label>
+        </div>
+      </div>
+
       {/* -------------------- BOWL FILTER -------------------- */}
-<div className="recordsFilter filter-style">
-  <div
-    style={{
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '16px',
-      alignItems: 'center',
-      justifyContent: 'center',   // <-- center horizontally
-      textAlign: 'center',
-    }}
-  >
+      {placeMode === 'overall' && (
+        <div className="recordsFilter filter-style">
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '16px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+            }}
+          >
 
     {BOWLS.map(bowl => (
       <label
@@ -213,26 +287,27 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
       </label>
     ))}
 
-    <button
-      type="button"
-      className="arrowButton"
-      onClick={clearBowls}
-      disabled={selectedBowls.size === 0}
-      style={{ padding: '4px 12px' }}
-    >
-      Clear
-    </button>
-  </div>
-</div>
+            <button
+              type="button"
+              className="arrowButton"
+              onClick={clearBowls}
+              disabled={selectedBowls.size === 0}
+              style={{ padding: '4px 12px' }}
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
 
 
       {/* -------------------- TABLE -------------------- */}
-      <table className="leagueStatsTable regular-season-table">
+      <table className="leagueStatsTable regular-season-table" style={{ tableLayout: 'auto' }}>
         <thead>
           <tr>
-            <th className="table-col-1">Year</th>
+            <th className="table-col-1" style={{ minWidth: '60px', maxWidth: '80px', width: '70px' }}>Year</th>
             {columns.map(col => (
-              <th key={col} className="table-col-2">{col}</th>
+              <th key={col} className="table-col-2" style={{ minWidth: '50px', width: '60px', padding: '12px 8px' }}>{col}</th>
             ))}
           </tr>
         </thead>
@@ -243,14 +318,14 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
               key={row.year}
               className={idx % 2 === 0 ? 'even-row' : 'odd-row'}
             >
-              <td>{row.year}</td>
+              <td style={{ minWidth: '60px', maxWidth: '80px', width: '70px' }}>{row.year}</td>
 
               {columns.map(col => {
                 const v = row.byCol[col];
 
                 if (row.year === 'Σ') {
                   return (
-                    <td key={col}>
+                    <td key={col} style={{ minWidth: '50px', width: '60px', padding: '12px 8px' }}>
                       {v === undefined ? '-' : formatAvg(v)}
                     </td>
                   );
@@ -260,7 +335,7 @@ const DraftKeyVsPlace: React.FC<DraftKeyVsPlaceProps> = ({ data, mode }) => {
                   v !== undefined ? (placeToClass.get(v) ?? '') : '';
 
                 return (
-                  <td key={col} className={highlightClass}>
+                  <td key={col} className={highlightClass} style={{ minWidth: '50px', width: '60px', padding: '12px 8px' }}>
                     {v === undefined ? '-' : v}
                   </td>
                 );

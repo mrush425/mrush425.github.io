@@ -15,6 +15,10 @@ const LeagueNavBar: React.FC<LeagueNavBar> = ({ data }) => {
         <span className="btn-full">League Stats Home</span>
         <span className="btn-abbrev">Home</span>
       </Link>
+      <Link to={`/league-stats/bowl-history`} className="btn-custom btn btn-sm mr-2">
+        <span className="btn-full">Bowl History</span>
+        <span className="btn-abbrev">Bowls</span>
+      </Link>
       <Link to={`/league-stats/league-records`} className="btn-custom btn btn-sm mr-2">
         <span className="btn-full">Records Stats</span>
         <span className="btn-abbrev">Records</span>

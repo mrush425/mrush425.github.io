@@ -282,6 +282,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         : null;
     const championships = seasonRecords.filter((s) => s.finalPlace === 1).length;
     const butlerCount = seasonRecords.filter((s) => s.finalPlace === 12).length;
+    const playoffAppearances = seasonRecords.filter((s) => s.seasonPlace !== undefined && s.seasonPlace <= 6).length;
 
     // Calculate streak data
     const longestWinStreaks = getUserLongestStreak(userId, 'win', leagueData);
@@ -448,6 +449,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       worstSeason,
       championships,
       butlerCount,
+      playoffAppearances,
       yearsPlayed: seasonRecords.length,
       seasonRecords,
       bowlRecords,
@@ -577,6 +579,11 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
             <div className="hero-stat-icon">🏆</div>
             <div className="hero-stat-value">{stats.championships}</div>
             <div className="hero-stat-label">Championship{stats.championships !== 1 ? 's' : ''}</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="hero-stat-icon">🎯</div>
+            <div className="hero-stat-value">{stats.playoffAppearances}</div>
+            <div className="hero-stat-label">Playoff{stats.playoffAppearances !== 1 ? 's' : ''}</div>
           </div>
           <div className="hero-stat-card">
             <div className="hero-stat-icon">📊</div>
