@@ -166,14 +166,15 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
     <div>
       <YearNavBar data={data} />
       <div className="schedule-comparison-container">
-      <table className="schedule-table schedule-comparison-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th><b>Vs Schedule</b></th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="horizontal-scroll">
+        <table className="schedule-table schedule-comparison-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th><b>Vs Schedule</b></th>
+            </tr>
+          </thead>
+          <tbody>
           <tr>
             <td className="diagonal-cell"><b>Team Name</b></td>
             {data.users.map((user, index) => (
@@ -251,8 +252,9 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
               );
             })}
           </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
       </div>
     </div>
   );

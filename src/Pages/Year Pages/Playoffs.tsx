@@ -328,7 +328,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
 
       {isMobile && selectedMatchup ? (
         // Mobile detail view
-        <div className='playoffs-new-container'>
+        <div className='playoffs-new-container horizontal-scroll'>
           <button className='back-button' onClick={() => setSelectedMatchup(null)}>
             ← Back to Bracket
           </button>
@@ -344,7 +344,7 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
         </div>
       ) : (
         // Desktop or mobile bracket view
-        <div className='playoffs-new-container'>
+        <div className='playoffs-new-container horizontal-scroll'>
           <h2 className='playoffs-title'>{`Season ${data.season} Playoffs`}</h2>
 
           <div className='bracket-toggle'>

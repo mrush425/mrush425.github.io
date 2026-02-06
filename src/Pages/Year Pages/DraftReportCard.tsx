@@ -90,21 +90,22 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
             {selectedTeam && (
                 <div>
                     {/* Display table of draft picks for the selected team */}
-                    <table className="team-draft-picks-table">
-                        <thead>
-                            <tr>
-                                <th>Pick No</th>
-                                <th>Player Name</th>
-                                <th>Position Rank</th>
-                                <th>1 After</th>
-                                <th>Rank</th>
-                                <th>2 After</th>
-                                <th>Rank</th>
-                                <th>3 After</th>
-                                <th>Rank</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div className="horizontal-scroll">
+                        <table className="team-draft-picks-table">
+                            <thead>
+                                <tr>
+                                    <th>Pick No</th>
+                                    <th>Player Name</th>
+                                    <th>Position Rank</th>
+                                    <th>1 After</th>
+                                    <th>Rank</th>
+                                    <th>2 After</th>
+                                    <th>Rank</th>
+                                    <th>3 After</th>
+                                    <th>Rank</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
                             {Array.isArray(allPlayerStats) &&
                                 teamDraftPicks.map((pick, index) => {
@@ -175,8 +176,9 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                                         </tr>
                                     );
                                 })}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

@@ -20,6 +20,12 @@ interface LeagueWeek {
   week: number;
 }
 
+interface CenturyClubWeek {
+  year: string;
+  week: number;
+  teamCount: number;
+}
+
 interface HeadToHead {
   team1Id: string;
   team1Name: string;
@@ -171,6 +177,47 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
     });
 
     return { bestLeagueWeek: best, worstLeagueWeek: worst };
+  }, [data, currentYear]);
+
+  // Calculate weeks where entire league scored 100+ (excluding byes)
+  const centuryClubWeeks = useMemo((): CenturyClubWeek[] => {
+    const completedSeasons = data.filter(d => d.season !== currentYear);
+    const clubWeeks: CenturyClubWeek[] = [];
+
+    completedSeasons.forEach((league) => {
+      if (!league.matchupInfo) return;
+      
+      const playoffStartWeek = league.settings.playoff_week_start || Infinity;
+
+      league.matchupInfo.forEach((weekInfo) => {
+        if (weekInfo.week >= playoffStartWeek) return; // Regular season only
+
+        // Count teams that scored 100+ (exclude byes/0 points)
+        let activeTeams = 0;
+        let teams100Plus = 0;
+
+        weekInfo.matchups.forEach((matchup) => {
+          const points = matchup.points || 0;
+          if (points > 0) {
+            activeTeams++;
+            if (points >= 100) {
+              teams100Plus++;
+            }
+          }
+        });
+
+        // If all active teams scored 100+, it's a century club week
+        if (activeTeams > 0 && teams100Plus === activeTeams) {
+          clubWeeks.push({
+            year: league.season,
+            week: weekInfo.week,
+            teamCount: activeTeams
+          });
+        }
+      });
+    });
+
+    return clubWeeks;
   }, [data, currentYear]);
 
   // Calculate head-to-head records for rivalries
@@ -745,6 +792,17 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                 <div className="stat-subdetail">Week {worstLeagueWeek.week}, {worstLeagueWeek.year}</div>
               </div>
             )}
+            <div className="stat-card highlight-gold">
+              <div className="stat-icon">💯</div>
+              <div className="stat-value">{centuryClubWeeks.length}</div>
+              <div className="stat-label">Century Club Weeks</div>
+              <div className="stat-detail">Entire league scored 100+</div>
+              {centuryClubWeeks.length > 0 && centuryClubWeeks.length <= 5 && (
+                <div className="stat-subdetail">
+                  {centuryClubWeeks.map(w => `Wk ${w.week} '${w.year.slice(-2)}`).join(', ')}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -822,13 +880,15 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                 <div className="rivalry-record">
                   {bestRivalry.team1Wins} - {bestRivalry.team2Wins}
                 </div>
-                <div className="stat-subdetail">{bestRivalry.totalGames} meetings</div>
                 <div className="stat-subdetail">
                   {bestRivalry.team1Points > bestRivalry.team2Points 
-                    ? `${bestRivalry.team1Name} +${(bestRivalry.team1Points - bestRivalry.team2Points).toFixed(1)} pts`
+                    ? `+${(bestRivalry.team1Points - bestRivalry.team2Points).toFixed(1)} pts`
                     : bestRivalry.team2Points > bestRivalry.team1Points
-                    ? `${bestRivalry.team2Name} +${(bestRivalry.team2Points - bestRivalry.team1Points).toFixed(1)} pts`
+                    ? `${(bestRivalry.team1Points - bestRivalry.team2Points).toFixed(1)} pts`
                     : 'Even on points'}
+                </div>
+                <div className="stat-subdetail">
+                  {bestRivalry.team1Points.toFixed(1)} - {bestRivalry.team2Points.toFixed(1)}
                 </div>
               </div>
             )}
@@ -844,13 +904,15 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                 <div className="rivalry-record">
                   {biggestWhiteWhale.team1Wins} - {biggestWhiteWhale.team2Wins}
                 </div>
-                <div className="stat-subdetail">{biggestWhiteWhale.totalGames} meetings</div>
                 <div className="stat-subdetail">
                   {biggestWhiteWhale.team1Points > biggestWhiteWhale.team2Points 
-                    ? `${biggestWhiteWhale.team1Name} +${(biggestWhiteWhale.team1Points - biggestWhiteWhale.team2Points).toFixed(1)} pts`
+                    ? `+${(biggestWhiteWhale.team1Points - biggestWhiteWhale.team2Points).toFixed(1)} pts`
                     : biggestWhiteWhale.team2Points > biggestWhiteWhale.team1Points
-                    ? `${biggestWhiteWhale.team2Name} +${(biggestWhiteWhale.team2Points - biggestWhiteWhale.team1Points).toFixed(1)} pts`
+                    ? `${(biggestWhiteWhale.team1Points - biggestWhiteWhale.team2Points).toFixed(1)} pts`
                     : 'Even on points'}
+                </div>
+                <div className="stat-subdetail">
+                  {biggestWhiteWhale.team1Points.toFixed(1)} - {biggestWhiteWhale.team2Points.toFixed(1)}
                 </div>
               </div>
             )}

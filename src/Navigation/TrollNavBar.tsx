@@ -23,9 +23,13 @@ const TrollNavBar: React.FC<TrollNavBarProps> = ({ userId, userName, leagueData 
         <span className="btn-full">Matchups</span>
         <span className="btn-abbrev">Matchups</span>
       </Link>
-      <Link to={`/troll/${userId}/best-players`} className="btn-custom btn btn-sm">
+      <Link to={`/troll/${userId}/best-players`} className="btn-custom btn btn-sm mr-2">
         <span className="btn-full">Best Players</span>
-        <span className="btn-abbrev">Players</span>
+        <span className="btn-abbrev">Best</span>
+      </Link>
+      <Link to={`/troll/${userId}/favorite-players`} className="btn-custom btn btn-sm">
+        <span className="btn-full">Favorite Players</span>
+        <span className="btn-abbrev">Fav</span>
       </Link>
     </div>
   );

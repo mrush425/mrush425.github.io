@@ -241,15 +241,17 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
         </div>
       </div>
 
-      <table className="draft-heatmap-table">
-        <colgroup>
-          {orderedTeamNames.map((_, index) => (
-            <col key={index} style={{ width: '8.333%' }} />
-          ))}
-        </colgroup>
-        <thead>{renderHeaderRow()}</thead>
-        <tbody>{renderTableBody()}</tbody>
-      </table>
+      <div className="horizontal-scroll">
+        <table className="draft-heatmap-table">
+          <colgroup>
+            {orderedTeamNames.map((_, index) => (
+              <col key={index} style={{ width: '8.333%' }} />
+            ))}
+          </colgroup>
+          <thead>{renderHeaderRow()}</thead>
+          <tbody>{renderTableBody()}</tbody>
+        </table>
+      </div>
     </div>
   );
 };

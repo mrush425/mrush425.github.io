@@ -330,9 +330,13 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
               {useLast3Points ? "Run with Average Points" : "Run with Last 3 Game Average Points"}
             </button>
           </div>
-          {renderPlaceTable()}
+          <div className="horizontal-scroll">
+            {renderPlaceTable()}
+          </div>
           <h2 style={{ marginTop: '30px' }}>Win Distribution</h2>
-          {renderWinDistributionTable()}
+          <div className="horizontal-scroll">
+            {renderWinDistributionTable()}
+          </div>
         </>
       )}
     </div>

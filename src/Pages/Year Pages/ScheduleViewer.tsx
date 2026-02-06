@@ -121,7 +121,7 @@ const ScheduleViewer: React.FC<ScheduleViewerProps> = ({ data }) => {
       </div>
   
       {/* First Schedule Table */}
-      <div className="schedule-table-container">
+      <div className="schedule-table-container horizontal-scroll">
         <ScheduleTable scheduleData={schedule1} data={data}/>
       </div>
   
@@ -131,7 +131,7 @@ const ScheduleViewer: React.FC<ScheduleViewerProps> = ({ data }) => {
       </div>
   
       {/* Second Schedule Table */}
-      <div className="schedule-table-container">
+      <div className="schedule-table-container horizontal-scroll">
         <ScheduleTable scheduleData={schedule2} data={data}/>
       </div>
     </div>

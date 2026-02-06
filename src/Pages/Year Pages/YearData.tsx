@@ -273,61 +273,62 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
 
                 {/* Tables Based on Tab */}
                 {(activeTab === 'basic' || activeTab === 'advanced') && (
-                    <table className="records-table">
-                        <thead>
-                            <tr>
-                                <th style={{ cursor: 'pointer', width: '50px' }} onClick={() => handleSort('seasonPlace')}>
-                                    Place
-                                    {sortBy === 'seasonPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                </th>
-                                <th style={{ width: '150px' }}>Team</th>
-                                
-                                {activeTab === 'basic' && (
-                                    <>
-                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('wins')}>
-                                            Record
-                                            {sortBy === 'wins' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fpts')}>
-                                            Points
-                                            {sortBy === 'fpts' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('last3Ave')}>
-                                            Last 3 Avg
-                                            {sortBy === 'last3Ave' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fptsAgainst')}>
-                                            Points Against
-                                            {sortBy === 'fptsAgainst' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                    </>
-                                )}
-                                
-                                {activeTab === 'advanced' && (
-                                    <>
-                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstEveryone')}>
-                                            vs Everyone
-                                            {sortBy === 'winsAgainstEveryone' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAtSchedule')}>
-                                            League Schedule
-                                            {sortBy === 'winsAtSchedule' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsTop50')}>
-                                            Top 50%
-                                            {sortBy === 'winsTop50' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                        <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstWinningTeams')}>
-                                            vs Winning Teams
-                                            {sortBy === 'winsAgainstWinningTeams' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
-                                        </th>
-                                    </>
-                                )}
-                                
-                                <th style={{ width: '40px' }}>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div className="horizontal-scroll">
+                        <table className="records-table">
+                            <thead>
+                                <tr>
+                                    <th style={{ cursor: 'pointer', width: '50px' }} onClick={() => handleSort('seasonPlace')}>
+                                        Place
+                                        {sortBy === 'seasonPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                    </th>
+                                    <th style={{ width: '150px' }}>Team</th>
+                                    
+                                    {activeTab === 'basic' && (
+                                        <>
+                                            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('wins')}>
+                                                Record
+                                                {sortBy === 'wins' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fpts')}>
+                                                Points
+                                                {sortBy === 'fpts' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('last3Ave')}>
+                                                Last 3 Avg
+                                                {sortBy === 'last3Ave' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('fptsAgainst')}>
+                                                Points Against
+                                                {sortBy === 'fptsAgainst' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                        </>
+                                    )}
+                                    
+                                    {activeTab === 'advanced' && (
+                                        <>
+                                            <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstEveryone')}>
+                                                vs Everyone
+                                                {sortBy === 'winsAgainstEveryone' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAtSchedule')}>
+                                                League Schedule
+                                                {sortBy === 'winsAtSchedule' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsTop50')}>
+                                                Top 50%
+                                                {sortBy === 'winsTop50' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                            <th style={{ cursor: 'pointer', width: '150px' }} onClick={() => handleSort('winsAgainstWinningTeams')}>
+                                                vs Winning Teams
+                                                {sortBy === 'winsAgainstWinningTeams' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                            </th>
+                                        </>
+                                    )}
+                                    
+                                    <th style={{ width: '40px' }}>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                             {sortedRosters.map((roster, index) => {
                                 const user = users.find((u) => u.user_id === roster.owner_id);
                                 const seasonPlace = user ? getUserSeasonPlace(user.user_id, data) : null;
@@ -412,33 +413,36 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                                     </React.Fragment>
                                 );
                             })}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {activeTab === 'sidebets' && (
                     <div className="sidebets-section">
-                        <table className="sidebets-table">
-                            <thead>
-                                <tr>
-                                    <th>Sidebet</th>
-                                    <th>Winners</th>
-                                    <th>Stats</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {sidebetsDisplay.map((sidebet, index) => (
-                                    <tr key={index}>
-                                        <td>{sidebet.sidebetName}</td>
-                                        <td><span className="winner-badge">{sidebet.winners.join(", ")}</span></td>
-                                        <td dangerouslySetInnerHTML={{
-                                            __html: sidebet.statDisplays.join("<br>"),
-                                        }}
-                                        ></td>
+                        <div className="horizontal-scroll">
+                            <table className="sidebets-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sidebet</th>
+                                        <th>Winners</th>
+                                        <th>Stats</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {sidebetsDisplay.map((sidebet, index) => (
+                                        <tr key={index}>
+                                            <td>{sidebet.sidebetName}</td>
+                                            <td><span className="winner-badge">{sidebet.winners.join(", ")}</span></td>
+                                            <td dangerouslySetInnerHTML={{
+                                                __html: sidebet.statDisplays.join("<br>"),
+                                            }}
+                                            ></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>

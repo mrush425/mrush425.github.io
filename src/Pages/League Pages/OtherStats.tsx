@@ -15,6 +15,7 @@ import PlaceStats from './OtherStats/PlaceStats';
 import StreakComponent from './OtherStats/StreakComponent';
 import HelmetMaster from './OtherStats/HelmetMaster';
 import MoneyStats from './OtherStats/MoneyStats';
+import FavoritePlayerStats from './OtherStats/FavoritePlayerStats';
 import ChargerStats from './Records Stats/ChargerStats';
 import VikingStats from './Records Stats/VikingStats';
 import { LowScorerStats, NegativePointsStats, KickerBoomStats, DefenseBoomStats, NoClothesStats } from './OtherStats/PlayerBustBoomStats';
@@ -26,6 +27,7 @@ const STAT_COMPONENTS: OtherStatItem[] = [
     // 2. INSERT THE NEW COMPONENT
     { displayName: 'League Placement Stats', Component: PlaceStats },
     { displayName: 'Money Stats', Component: MoneyStats },
+    { displayName: 'Favorite Players', Component: FavoritePlayerStats },
     { displayName: 'Draft Position vs. Place', Component: DraftPositionVsPlace },
     { displayName: 'Draft Choice vs. Place', Component: DraftChoiceVsPlace },
     { displayName: 'Win/Lose Streaks', Component: StreakComponent },

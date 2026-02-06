@@ -223,45 +223,47 @@ const OvertimeComparison: React.FC<OvertimeComparisonProps> = ({ data }) => {
   return (
     <div>
       <YearNavBar data={data} />
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <LineChart
-          width={1200}
-          height={720}
-          margin={{ top: 40, right: 30, left: 20, bottom: 10 }}
-        >
-          <text
-            x={1200 / 2}
-            y={20}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            style={{ fontSize: '18px', fontWeight: 'bold', fill: '#ffffff' }}
+      <div className="horizontal-scroll">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LineChart
+            width={1200}
+            height={720}
+            margin={{ top: 40, right: 30, left: 20, bottom: 10 }}
           >
-            {data.season} Overtime Comparison
-          </text>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            type="number"
-            dataKey="week"
-            label={{ value: 'Week', position: 'insideBottom', offset: 0 }}
-            ticks={Array.from({ length: getLastRegularSeasonWeek() }, (_, index) => index + 1)}
-          />
-          <YAxis type="number" reversed={true} domain={[1, graphData.length + 1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
-          <Tooltip />
-          <Legend content={renderLegend()} /> {/* Custom legend */}
-
-          {graphData.map((userData, index) => (
-            <Line
-              key={userData.user_id}
-              type="linear"
-              dataKey="rank"
-              data={userData.user_week_stats}
-              name={userData.team_name}
-              stroke={getTeamColor(userData.user_id, index)}
-              strokeWidth={2}
-              opacity={hoveredTeam && hoveredTeam !== userData.team_name ? 0.2 : 1}
+            <text
+              x={1200 / 2}
+              y={20}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{ fontSize: '18px', fontWeight: 'bold', fill: '#ffffff' }}
+            >
+              {data.season} Overtime Comparison
+            </text>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              type="number"
+              dataKey="week"
+              label={{ value: 'Week', position: 'insideBottom', offset: 0 }}
+              ticks={Array.from({ length: getLastRegularSeasonWeek() }, (_, index) => index + 1)}
             />
-          ))}
-        </LineChart>
+            <YAxis type="number" reversed={true} domain={[1, graphData.length + 1]} label={{ value: 'Rank', angle: -90, position: 'insideLeft' }} ticks={graphData.map((_, index) => index + 1)} />
+            <Tooltip />
+            <Legend content={renderLegend()} /> {/* Custom legend */}
+
+            {graphData.map((userData, index) => (
+              <Line
+                key={userData.user_id}
+                type="linear"
+                dataKey="rank"
+                data={userData.user_week_stats}
+                name={userData.team_name}
+                stroke={getTeamColor(userData.user_id, index)}
+                strokeWidth={2}
+                opacity={hoveredTeam && hoveredTeam !== userData.team_name ? 0.2 : 1}
+              />
+            ))}
+          </LineChart>
+        </div>
       </div>
     </div>
   );

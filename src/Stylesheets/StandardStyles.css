@@ -200,6 +200,14 @@ table td {
   text-align: left;
 }
 
+/* Horizontal scrolling for wide content */
+.horizontal-scroll {
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
 table tbody tr {
   transition: all 0.2s ease;
 }
