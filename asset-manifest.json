@@ -1,22 +1,24 @@
 {
   "files": {
     "main.css": "/static/css/main.af737671.css",
-    "main.js": "/static/js/main.39fe892d.js",
+    "main.js": "/static/js/main.92d625a0.js",
     "static/js/787.28cb0dcd.chunk.js": "/static/js/787.28cb0dcd.chunk.js",
     "static/media/2022.jpg": "/static/media/2022.d4b97e1a05ce9f6f7a82.jpg",
     "static/media/2023.jpg": "/static/media/2023.50d047db00e6df531a6b.jpg",
     "static/media/2024.jpg": "/static/media/2024.8e84765e08f392d3e3c1.jpg",
+    "static/media/Poop Tucker.png": "/static/media/Poop Tucker.54f8794062f1fecdfa3a.png",
+    "static/media/Poop Watson.png": "/static/media/Poop Watson.2a836c2fc081b31a7ce4.png",
     "static/media/2019.jpg": "/static/media/2019.10763663ae7c63d2d570.jpg",
     "static/media/2021.jpg": "/static/media/2021.bd9cb0c0c198b49b0096.jpg",
     "static/media/2020.jpg": "/static/media/2020.be7a0b27f4400a30f6c6.jpg",
     "static/media/Default Team.png": "/static/media/Default Team.b06bca1178e8f1956210.png",
     "index.html": "/index.html",
     "main.af737671.css.map": "/static/css/main.af737671.css.map",
-    "main.39fe892d.js.map": "/static/js/main.39fe892d.js.map",
+    "main.92d625a0.js.map": "/static/js/main.92d625a0.js.map",
     "787.28cb0dcd.chunk.js.map": "/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.af737671.css",
-    "static/js/main.39fe892d.js"
+    "static/js/main.92d625a0.js"
   ]
 }
