@@ -1,6 +1,6 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId, getUserSeasonPlace } from "./HelperMethods";
+import { findRosterByUserId, isByeWeekForUser, isPlayoffWeek } from "./HelperMethods";
 
 /**
  * Calculates the total fantasy points scored by a specific team for the entire year (season).
@@ -70,21 +70,15 @@ export const calculatePlayoffPoints = (
     if (!roster) {
         return { points: 0, gamesPlayed: 0 };
     }
-
-    const playoffStartWeek = data.settings.playoff_week_start || Infinity;
-    
-    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
-    const seasonPlace = getUserSeasonPlace(user.user_id, data);
-    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
     
     let totalPoints = 0;
     let gamesPlayed = 0;
 
     data.matchupInfo.forEach((weekBlock) => {
-        if (weekBlock.week < playoffStartWeek) return;
+        if (!isPlayoffWeek(data, weekBlock.week)) return;
         
-        // Skip first playoff week if user has a bye
-        if (hasByeInFirstWeek && weekBlock.week === playoffStartWeek) return;
+        // Skip bye week for this user
+        if (isByeWeekForUser(user.user_id, data, weekBlock.week)) return;
 
         const teamMatchup = weekBlock.matchups.find((m) => m.roster_id === roster.roster_id);
         if (!teamMatchup) return;
@@ -122,21 +116,15 @@ export const calculatePlayoffPointsAgainst = (
     if (!roster) {
         return { points: 0, gamesPlayed: 0 };
     }
-
-    const playoffStartWeek = data.settings.playoff_week_start || Infinity;
-    
-    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
-    const seasonPlace = getUserSeasonPlace(user.user_id, data);
-    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
     
     let totalPointsAgainst = 0;
     let gamesPlayed = 0;
 
     data.matchupInfo.forEach((weekBlock) => {
-        if (weekBlock.week < playoffStartWeek) return;
+        if (!isPlayoffWeek(data, weekBlock.week)) return;
         
-        // Skip first playoff week if user has a bye
-        if (hasByeInFirstWeek && weekBlock.week === playoffStartWeek) return;
+        // Skip bye week for this user
+        if (isByeWeekForUser(user.user_id, data, weekBlock.week)) return;
 
         const teamMatchup = weekBlock.matchups.find((m) => m.roster_id === roster.roster_id);
         if (!teamMatchup) return;

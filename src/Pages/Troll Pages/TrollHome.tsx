@@ -14,6 +14,7 @@ import {
 } from '../../Helper Files/RecordCalculations';
 import { getUserLongestStreak, getCurrentStreak } from '../../Helper Files/StreakMethods';
 import { calculateMoneyStats } from '../../Helper Files/MoneyMethods';
+import { buildPointBreakdownRows, BUCKET_LABELS } from '../League Pages/Points Stats/PointBreakdown';
 import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
 
 interface TrollHomeProps {
@@ -57,6 +58,14 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
   const [isHeadToHeadExpanded, setIsHeadToHeadExpanded] = useState(false);
   const [sortOpponentColumn, setSortOpponentColumn] = useState<string>('opponent');
   const [sortOpponentDirection, setSortOpponentDirection] = useState<'asc' | 'desc'>('asc');
+
+  // Point Distribution data for this individual
+  const pointBreakdown = useMemo(() => {
+    const rows = buildPointBreakdownRows(leagueData, true, true, userId);
+    return rows.length > 0
+      ? rows[0]
+      : { buckets: new Array(BUCKET_LABELS.length).fill(0), totalGames: 0, userId, teamName: userName, yearsPlayed: 0 };
+  }, [leagueData, userId, userName]);
 
   const bowlMap: { [key: string]: BowlRecord } = {
     'Troll Bowl': { name: 'Troll Bowl', wins: 0, losses: 0 },
@@ -942,6 +951,35 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
             </div>
           </div>
         )}
+
+        {/* Point Distribution Section */}
+        <div className="point-distribution-section">
+          <h3 className="section-title">Point Distribution</h3>
+          <div className="point-distribution-container">
+            <div className="point-distribution-chart">
+              {BUCKET_LABELS.map((label, i) => {
+                const count = pointBreakdown.buckets[i];
+                const maxCount = Math.max(...pointBreakdown.buckets, 1);
+                const heightPct = (count / maxCount) * 100;
+                return (
+                  <div key={label} className="distribution-bar-container">
+                    <div className="distribution-bar-wrapper">
+                      <span className="distribution-count">{count}</span>
+                      <div
+                        className="distribution-bar"
+                        style={{ height: `${Math.max(heightPct, count > 0 ? 5 : 2)}%` }}
+                      />
+                    </div>
+                    <span className="distribution-label">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="point-distribution-total">
+              <span>{pointBreakdown.totalGames}</span> total games
+            </div>
+          </div>
+        </div>
 
         {/* Season-by-Season Collapsible Section */}
         <div className="collapsible-section" style={{ marginTop: '40px' }}>

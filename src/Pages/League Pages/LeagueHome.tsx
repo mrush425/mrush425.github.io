@@ -3,7 +3,7 @@ import '../../Stylesheets/League Stylesheets/LeagueHome.css';
 import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import yearTrollData from '../../Data/yearTrollData.json';
-import { getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, isByeWeekForUser } from '../../Helper Files/HelperMethods';
 import { getUserLongestStreak } from '../../Helper Files/StreakMethods';
 
 interface WeekScore {
@@ -109,11 +109,8 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
           const user = league.users.find(u => u.user_id === roster?.owner_id);
           if (!roster || !user) return;
 
-          // Check for bye week in playoffs
-          if (isPlayoff && weekInfo.week === playoffStartWeek) {
-            const seasonPlace = getUserSeasonPlace(user.user_id, league);
-            if ([1, 2, 7, 8].includes(seasonPlace)) return; // Skip bye weeks
-          }
+          // Skip bye weeks
+          if (isByeWeekForUser(user.user_id, league, weekInfo.week)) return;
 
           // Make sure they actually played (have an opponent)
           const hasOpponent = weekInfo.matchups.some(

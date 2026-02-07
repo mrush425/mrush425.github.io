@@ -4,7 +4,7 @@ import SleeperUser from '../../../Interfaces/SleeperUser';
 
 import MatchupDisplay from '../../../Components/MatchupDisplay';
 
-import { findRosterByUserId, findUserByRosterId } from '../../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, isPlayoffWeek } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // TYPES
@@ -114,10 +114,8 @@ const WeeklyPointsStats: React.FC<WeeklyPointsStatsProps> = ({
 
   // IMPORTANT: determine playoffs using BOTH week and secondWeek (if present)
   const isPlayoffRow = (r: WeeklyStatRow): boolean => {
-    const start = r.league?.settings?.playoff_week_start ?? Number.POSITIVE_INFINITY;
-
-    const weekIsPlayoff = r.week >= start;
-    const secondWeekIsPlayoff = (r.secondWeek ?? 0) >= start;
+    const weekIsPlayoff = r.league ? isPlayoffWeek(r.league, r.week) : false;
+    const secondWeekIsPlayoff = r.league && r.secondWeek ? isPlayoffWeek(r.league, r.secondWeek) : false;
 
     return weekIsPlayoff || secondWeekIsPlayoff;
   };

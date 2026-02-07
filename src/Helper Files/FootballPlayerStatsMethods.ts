@@ -1,7 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import yearTrollData from '../Data/yearTrollData.json';
-import { getUserSeasonPlace, getOverallPlace, getPlayerName } from './HelperMethods';
+import { getUserSeasonPlace, getOverallPlace, getPlayerName, isByeWeekForUser } from './HelperMethods';
 
 // =============================================================================
 // TYPES / EXPORTS
@@ -233,8 +233,6 @@ class FootballPlayerStatsMethods {
     const positionMaxMap = new Map<string, MaxPointsByPositionResult[]>();
 
     data.forEach((league) => {
-      const playoffStartWeek = league.settings.playoff_week_start;
-      
       league.matchupInfo.forEach((matchupInfo) => {
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
@@ -247,11 +245,8 @@ class FootballPlayerStatsMethods {
           const user = league.users.find((u) => u.user_id === roster?.owner_id);
           if (!roster || !user) return;
 
-          // Skip bye weeks (first playoff week, seeds 1,2,7,8 have byes)
-          if (matchupInfo.week === playoffStartWeek) {
-            const userSeed = getUserSeasonPlace(user.user_id, league);
-            if (userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8) return;
-          }
+          // Skip bye weeks
+          if (isByeWeekForUser(user.user_id, league, matchupInfo.week)) return;
 
           // Find opponent
           const opponentMatchup = matchupInfo.matchups.find(
@@ -320,8 +315,6 @@ class FootballPlayerStatsMethods {
     const allResults: MaxPointsByPositionResult[] = [];
 
     data.forEach((league) => {
-      const playoffStartWeek = league.settings.playoff_week_start;
-      
       league.matchupInfo.forEach((matchupInfo) => {
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
@@ -334,11 +327,8 @@ class FootballPlayerStatsMethods {
           const user = league.users.find((u) => u.user_id === roster?.owner_id);
           if (!roster || !user) return;
 
-          // Skip bye weeks (first playoff week, seeds 1,2,7,8 have byes)
-          if (matchupInfo.week === playoffStartWeek) {
-            const userSeed = getUserSeasonPlace(user.user_id, league);
-            if (userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8) return;
-          }
+          // Skip bye weeks
+          if (isByeWeekForUser(user.user_id, league, matchupInfo.week)) return;
 
           // Find opponent
           const opponentMatchup = matchupInfo.matchups.find(
@@ -392,8 +382,6 @@ class FootballPlayerStatsMethods {
     const positionMaxMap = new Map<string, MaxPointsByPositionResult[]>();
 
     data.forEach((league) => {
-      const playoffStartWeek = league.settings.playoff_week_start;
-      
       league.matchupInfo.forEach((matchupInfo) => {
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
@@ -406,11 +394,8 @@ class FootballPlayerStatsMethods {
           const user = league.users.find((u) => u.user_id === roster?.owner_id);
           if (!roster || !user) return;
 
-          // Skip bye weeks (first playoff week, seeds 1,2,7,8 have byes)
-          if (matchupInfo.week === playoffStartWeek) {
-            const userSeed = getUserSeasonPlace(user.user_id, league);
-            if (userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8) return;
-          }
+          // Skip bye weeks
+          if (isByeWeekForUser(user.user_id, league, matchupInfo.week)) return;
 
           // Find opponent
           const opponentMatchup = matchupInfo.matchups.find(
@@ -480,8 +465,6 @@ class FootballPlayerStatsMethods {
     const allResults: MaxPointsByPositionResult[] = [];
 
     data.forEach((league) => {
-      const playoffStartWeek = league.settings.playoff_week_start;
-      
       league.matchupInfo.forEach((matchupInfo) => {
         matchupInfo.matchups.forEach((matchup) => {
           if (specificUserId) {
@@ -493,17 +476,8 @@ class FootballPlayerStatsMethods {
           const user = league.users.find((u) => u.user_id === roster?.owner_id);
           if (!roster || !user) return;
 
-          // Skip bye weeks (first playoff week, seeds 1,2,7,8 have byes)
-          if (matchupInfo.week === playoffStartWeek) {
-            const userSeed = getUserSeasonPlace(user.user_id, league);
-            if (userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8) return;
-          }
-
-          // Skip bye weeks (first playoff week, seeds 1,2,7,8 have byes)
-          if (matchupInfo.week === playoffStartWeek) {
-            const userSeed = getUserSeasonPlace(user.user_id, league);
-            if (userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8) return;
-          }
+          // Skip bye weeks
+          if (isByeWeekForUser(user.user_id, league, matchupInfo.week)) return;
 
           const opponentMatchup = matchupInfo.matchups.find(
             (m) => m.matchup_id === matchup.matchup_id && m.roster_id !== matchup.roster_id

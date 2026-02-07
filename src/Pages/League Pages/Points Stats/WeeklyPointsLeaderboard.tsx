@@ -3,7 +3,7 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 
-import { getMatchupForWeek, getScoreForWeek } from '../../../Helper Files/HelperMethods';
+import { getMatchupForWeek, getScoreForWeek, getPlayoffStartWeek, isPlayoffWeek } from '../../../Helper Files/HelperMethods';
 
 // ✅ Adjust this import path if MatchupDisplay is not located here.
 // Example alternatives you might need:
@@ -62,26 +62,6 @@ const buildYearsPlayedMap = (data: LeagueData[]): Map<string, number> => {
     });
   });
   return map;
-};
-
-/**
- * Determine the first playoff week. Prefer league.settings.playoff_week_start if present.
- * Fallback: assume playoffs start at week 15.
- */
-const getPlayoffStartWeek = (league: LeagueData): number => {
-  const anySettings = league.settings as any;
-
-  const w =
-    anySettings?.playoff_week_start ??
-    anySettings?.playoff_start_week ??
-    anySettings?.playoff_start ??
-    null;
-
-  const parsed = typeof w === 'number' ? w : Number.parseInt(String(w));
-  if (Number.isFinite(parsed) && parsed > 0) return parsed;
-
-  // Common default: regular season weeks 1-14
-  return 15;
 };
 
 /**
@@ -185,18 +165,14 @@ const RegularSeasonSingleGameLeaderboard: React.FC<RecordComponentProps & { minY
     // Filter out regular season weeks if includeRegularSeason is false
     if (!includeRegularSeason) {
       filtered = filtered.filter((row) => {
-        const league = row.league;
-        const playoffStartWeek = getPlayoffStartWeek(league);
-        return row.week >= playoffStartWeek;
+        return isPlayoffWeek(row.league, row.week);
       });
     }
 
     // Filter out playoff weeks if includePlayoffs is false
     if (!includePlayoffs) {
       filtered = filtered.filter((row) => {
-        const league = row.league;
-        const playoffStartWeek = getPlayoffStartWeek(league);
-        return row.week < playoffStartWeek;
+        return !isPlayoffWeek(row.league, row.week);
       });
     }
 

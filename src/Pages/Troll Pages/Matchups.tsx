@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import MatchupDisplay from '../../Components/MatchupDisplay';
 import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../Helper Files/PointCalculations';
-import { getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, isByeWeekForUser } from '../../Helper Files/HelperMethods';
 import '../../Stylesheets/Troll Stylesheets/Matchups.css';
 
 interface TrollMatchupsProps {
@@ -80,12 +80,6 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
       const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
       if (userRoster && opponentRoster && league.matchupInfo && userUser) {
-        // Get seeds to check for bye weeks
-        const userSeed = getUserSeasonPlace(userId, league);
-        const opponentSeed = getUserSeasonPlace(selectedOpponentId, league);
-        const userHasByeInFirstWeek = [1, 2, 7, 8].includes(userSeed);
-        const opponentHasByeInFirstWeek = [1, 2, 7, 8].includes(opponentSeed);
-        
         // Find matchups where both players are in same week
         const matchupsByWeek: { [key: number]: any[] } = {};
         league.matchupInfo.forEach((info) => {
@@ -100,8 +94,8 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
           const week = Number(weekStr);
           const isPlayoff = week >= playoffStartWeek;
           
-          // Skip first playoff week if either player has a bye
-          if (isPlayoff && week === playoffStartWeek && (userHasByeInFirstWeek || opponentHasByeInFirstWeek)) {
+          // Skip bye week if either player has a bye
+          if (isByeWeekForUser(userId, league, week) || isByeWeekForUser(selectedOpponentId, league, week)) {
             return;
           }
           

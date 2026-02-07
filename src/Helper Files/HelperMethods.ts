@@ -106,6 +106,80 @@ export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
     return sortedData.findIndex((user) => user.owner_id === user_id) + 1;
 }
 
+// =============================================================================
+// PLAYOFF / WEEK INCLUSION HELPERS
+// =============================================================================
+
+/**
+ * Seeds that have a first-round playoff bye.
+ * In our 12-team league: seeds 1,2 (winners bracket top) and 7,8 (losers bracket top).
+ */
+export const BYE_SEEDS = [1, 2, 7, 8];
+
+/**
+ * Returns the playoff start week for the league.
+ * Falls back to Infinity if not set (effectively treating all weeks as regular season).
+ */
+export function getPlayoffStartWeek(league: LeagueData): number {
+    return league.settings.playoff_week_start || Infinity;
+}
+
+/**
+ * Returns true if the given week is a playoff week.
+ */
+export function isPlayoffWeek(league: LeagueData, week: number): boolean {
+    return week >= getPlayoffStartWeek(league);
+}
+
+/**
+ * Returns true if the user has a first-round playoff bye (seeds 1,2,7,8).
+ */
+export function userHasPlayoffBye(userId: string, league: LeagueData): boolean {
+    const seed = getUserSeasonPlace(userId, league);
+    return BYE_SEEDS.includes(seed);
+}
+
+/**
+ * Returns true if the given week is a bye week for the specified user.
+ * Only the first playoff week can be a bye, and only for seeds 1,2,7,8.
+ */
+export function isByeWeekForUser(userId: string, league: LeagueData, week: number): boolean {
+    if (week !== getPlayoffStartWeek(league)) return false;
+    return userHasPlayoffBye(userId, league);
+}
+
+/**
+ * Returns true if a week matches the regular season/playoffs filter
+ * (without user-specific bye week logic).
+ */
+export function weekMatchesFilter(
+    league: LeagueData,
+    week: number,
+    includeRegularSeason: boolean,
+    includePlayoffs: boolean
+): boolean {
+    const playoff = isPlayoffWeek(league, week);
+    if (playoff && !includePlayoffs) return false;
+    if (!playoff && !includeRegularSeason) return false;
+    return true;
+}
+
+/**
+ * Returns true if the specified week should be included for the given user
+ * based on regular season/playoffs filter AND bye week logic.
+ */
+export function shouldIncludeWeek(
+    league: LeagueData,
+    week: number,
+    userId: string,
+    includeRegularSeason: boolean,
+    includePlayoffs: boolean
+): boolean {
+    if (!weekMatchesFilter(league, week, includeRegularSeason, includePlayoffs)) return false;
+    if (isByeWeekForUser(userId, league, week)) return false;
+    return true;
+}
+
 /**
  * Function to retrieve overall place from yearTrollData.
  * Safely converts the value to a number, handling undefined, null, or empty string ("").

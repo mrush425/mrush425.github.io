@@ -1,8 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import DraftPick from '../Interfaces/DraftPick';
-import { getUserSeasonPlace, findRosterByUserId, getPlayerName } from './HelperMethods';
-import Matchup from '../Interfaces/Matchup';
+import { getUserSeasonPlace, findRosterByUserId, getPlayerName, isByeWeekForUser } from './HelperMethods';
 
 // =============================================================================
 // TYPES / EXPORTS
@@ -68,48 +67,6 @@ async function fetchDraftPicks(draftId: string): Promise<DraftPick[]> {
     console.error(`Error fetching draft picks for draft ${draftId}:`, error);
     return [];
   }
-}
-
-/**
- * Determine if a week is a bye week for the user in playoffs
- * During playoff week 1, seeds 1,2 (winners bracket) and 7,8 (losers bracket) have byes
- */
-function isPlayoffByeWeek(league: LeagueData, week: number, userId: string): boolean {
-  const playoffStartWeek = league.settings.playoff_week_start;
-  
-  if (week !== playoffStartWeek) return false;
-  
-  const userSeed = getUserSeasonPlace(userId, league);
-  return userSeed === 1 || userSeed === 2 || userSeed === 7 || userSeed === 8;
-}
-
-/**
- * Determine if a week should be included based on matchup data
- * Returns false for bye weeks where opponent has 0 points or no opponent
- */
-function shouldIncludeWeek(league: LeagueData, week: number, rosterId: number, userId: string): boolean {
-  const playoffStartWeek = league.settings.playoff_week_start;
-  
-  // Skip bye weeks in playoffs
-  if (isPlayoffByeWeek(league, week, userId)) return false;
-  
-  // For playoff weeks, also check if there's a valid opponent (non-zero points)
-  if (week >= playoffStartWeek) {
-    const matchupInfo = league.matchupInfo.find(m => m.week === week);
-    if (!matchupInfo) return false;
-    
-    const userMatchup = matchupInfo.matchups.find(m => m.roster_id === rosterId);
-    if (!userMatchup) return false;
-    
-    const oppMatchup = matchupInfo.matchups.find(
-      m => m.matchup_id === userMatchup.matchup_id && m.roster_id !== rosterId
-    );
-    
-    // If no opponent or opponent has 0 points, it's a bye
-    if (!oppMatchup || oppMatchup.points === 0) return false;
-  }
-  
-  return true;
 }
 
 /**
@@ -255,7 +212,7 @@ export function getFavoritePlayerByLineup(
       if (week > maxWeek) continue;
       
       // Skip bye weeks
-      if (!shouldIncludeWeek(league, week, roster.roster_id, userId)) continue;
+      if (isByeWeekForUser(userId, league, week)) continue;
       
       const userMatchup = matchupInfo.matchups.find(m => m.roster_id === roster.roster_id);
       if (!userMatchup) continue;
@@ -360,7 +317,7 @@ export function getFavoritePlayerByOwnership(
       const week = matchupInfo.week;
       
       if (week > maxWeek) continue;
-      if (!shouldIncludeWeek(league, week, roster.roster_id, userId)) continue;
+      if (isByeWeekForUser(userId, league, week)) continue;
       
       const userMatchup = matchupInfo.matchups.find(m => m.roster_id === roster.roster_id);
       if (!userMatchup) continue;

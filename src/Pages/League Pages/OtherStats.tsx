@@ -19,6 +19,7 @@ import FavoritePlayerStats from './OtherStats/FavoritePlayerStats';
 import ChargerStats from './Records Stats/ChargerStats';
 import VikingStats from './Records Stats/VikingStats';
 import { LowScorerStats, NegativePointsStats, KickerBoomStats, DefenseBoomStats, NoClothesStats } from './OtherStats/PlayerBustBoomStats';
+import CurrentStreaks from './OtherStats/CurrentStreaks';
 
 
 
@@ -31,6 +32,7 @@ const STAT_COMPONENTS: OtherStatItem[] = [
     { displayName: 'Draft Position vs. Place', Component: DraftPositionVsPlace },
     { displayName: 'Draft Choice vs. Place', Component: DraftChoiceVsPlace },
     { displayName: 'Win/Lose Streaks', Component: StreakComponent },
+    { displayName: 'Current Streaks', Component: CurrentStreaks },
     { displayName: 'Helmet Master', Component: HelmetMaster },
     { displayName: 'The Charger', Component: ChargerStats },
     { displayName: 'The Viking', Component: VikingStats },
@@ -52,6 +54,7 @@ const STATS_WITH_FILTER = [
     'Money Stats',
     'Favorite Players',
     'Win/Lose Streaks',
+    'Current Streaks',
     'Helmet Master',
     'The Charger',
     'The Viking',

@@ -3,7 +3,7 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../../Helper Files/PointCalculations';
-import { getUserSeasonPlace, getOverallPlace, findRosterByUserId } from '../../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, getOverallPlace, findRosterByUserId, isByeWeekForUser, isPlayoffWeek } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // TYPE DEFINITIONS
@@ -161,15 +161,11 @@ const getWeeklyPlayoffBreakdown = (data: LeagueData[], userId: string, season: n
 
     const playoffStartWeek = league.settings?.playoff_week_start || Infinity;
     const out: PlayoffWeeklyRow[] = [];
-    
-    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
-    const seasonPlace = getUserSeasonPlace(userId, league);
-    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
 
     // Find all playoff weeks - get max week from matchupInfo
     const playoffWeeks: number[] = [];
     league.matchupInfo.forEach((weekBlock: any) => {
-        if (weekBlock.week >= playoffStartWeek) {
+        if (isPlayoffWeek(league, weekBlock.week)) {
             if (!playoffWeeks.includes(weekBlock.week)) {
                 playoffWeeks.push(weekBlock.week);
             }
@@ -179,8 +175,8 @@ const getWeeklyPlayoffBreakdown = (data: LeagueData[], userId: string, season: n
 
     // Process each playoff week
     playoffWeeks.forEach((week) => {
-        // If this is the first playoff week and user has a bye, mark it as bye
-        if (hasByeInFirstWeek && week === playoffStartWeek) {
+        // If this user has a bye this week, mark it
+        if (isByeWeekForUser(userId, league, week)) {
             out.push({
                 week,
                 opponentName: 'bye',

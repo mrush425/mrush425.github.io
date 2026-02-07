@@ -1,6 +1,6 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId, getUserSeasonPlace } from "./HelperMethods";
+import { findRosterByUserId, getUserSeasonPlace, isByeWeekForUser, getPlayoffStartWeek, isPlayoffWeek } from "./HelperMethods";
 
 export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
     let wins: number = 0;
@@ -296,21 +296,10 @@ export const calculatePlayoffRecord = (user: SleeperUser, data: LeagueData): [wi
         return [0, 0, 0];
     }
 
-    const playoffStartWeek = data.settings.playoff_week_start;
-    
-    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
-    const seasonPlace = getUserSeasonPlace(user.user_id, data);
-    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
-
-    // Filter for playoff weeks only
-    let playoffMatchups = data.matchupInfo.filter(
-        (matchup) => matchup.week >= playoffStartWeek
+    // Filter for playoff weeks only, excluding bye week for this user
+    const playoffMatchups = data.matchupInfo.filter(
+        (matchup) => isPlayoffWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
     );
-    
-    // If user has a bye, skip the first playoff week
-    if (hasByeInFirstWeek) {
-        playoffMatchups = playoffMatchups.filter((matchup) => matchup.week > playoffStartWeek);
-    }
 
     playoffMatchups.forEach((matchup) => {
         const teamMatchup = matchup.matchups.find((m) => m.roster_id === targetRosterId);
@@ -355,21 +344,10 @@ export const getPlayoffRecordAgainstLeague = (user: SleeperUser, data: LeagueDat
         return [0, 0, 0];
     }
 
-    const playoffStartWeek = data.settings.playoff_week_start;
-    
-    // Check if user has a bye in the first playoff week (positions 1, 2, 7, 8)
-    const seasonPlace = getUserSeasonPlace(user.user_id, data);
-    const hasByeInFirstWeek = [1, 2, 7, 8].includes(seasonPlace);
-
-    // Filter for playoff weeks only
-    let playoffMatchups = data.matchupInfo.filter(
-        (matchup) => matchup.week >= playoffStartWeek
+    // Filter for playoff weeks only, excluding bye week for this user
+    const playoffMatchups = data.matchupInfo.filter(
+        (matchup) => isPlayoffWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
     );
-    
-    // If user has a bye, skip the first playoff week
-    if (hasByeInFirstWeek) {
-        playoffMatchups = playoffMatchups.filter((matchup) => matchup.week > playoffStartWeek);
-    }
 
     // For each playoff week, compare user's score against all other teams
     playoffMatchups.forEach((matchup) => {

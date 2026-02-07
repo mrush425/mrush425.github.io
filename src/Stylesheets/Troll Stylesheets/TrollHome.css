@@ -1494,3 +1494,106 @@
   width: 100%;
   margin-bottom: 40px;
 }
+
+/* =========================================================================
+   Point Distribution Bar Chart
+   ========================================================================= */
+
+.point-distribution-section {
+  margin-top: 40px;
+  margin-bottom: 0;
+}
+
+.point-distribution-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px 20px 20px;
+  backdrop-filter: blur(10px);
+}
+
+.point-distribution-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  height: 200px;
+  padding: 0 4px;
+}
+
+.distribution-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+}
+
+.distribution-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  width: 100%;
+}
+
+.distribution-bar {
+  width: 100%;
+  max-width: 50px;
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+  border-radius: 6px 6px 0 0;
+  transition: height 0.5s ease;
+  min-height: 2px;
+}
+
+.distribution-count {
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.distribution-label {
+  font-size: 11px;
+  color: #a0a0a0;
+  margin-top: 10px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.point-distribution-total {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+.point-distribution-total span {
+  color: #60a5fa;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .point-distribution-chart {
+    gap: 3px;
+    height: 160px;
+  }
+
+  .distribution-count {
+    font-size: 10px;
+  }
+
+  .distribution-label {
+    font-size: 9px;
+  }
+
+  .distribution-bar {
+    max-width: 30px;
+  }
+}

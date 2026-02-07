@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import playersData from '../../../Data/players.json';
-import { getPlayerName } from '../../../Helper Files/HelperMethods';
+import { getPlayerName, weekMatchesFilter, isByeWeekForUser } from '../../../Helper Files/HelperMethods';
 
 // Type definitions
 type PositionType = 'QB' | 'RB' | 'WR' | 'TE';
@@ -56,18 +56,17 @@ export const calculateLowScorerStats = (
 
   data.forEach((league) => {
     if (!league.matchupInfo) return;
-    const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
     league.matchupInfo.forEach((weekInfo) => {
-      const isPlayoff = weekInfo.week >= playoffStartWeek;
-      if (!includeRegular && !isPlayoff) return;
-      if (!includePlayoffs && isPlayoff) return;
+      if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
         if (!roster) return;
 
         const userId = roster.owner_id;
+        // Skip bye weeks
+        if (isByeWeekForUser(userId, league, weekInfo.week)) return;
         const teamName = getTeamName(userId, league);
         const starters = matchup.starters || [];
         const playersPoints = matchup.players_points || {};
@@ -164,18 +163,17 @@ export const calculateNegativeStats = (
 
   data.forEach((league) => {
     if (!league.matchupInfo) return;
-    const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
     league.matchupInfo.forEach((weekInfo) => {
-      const isPlayoff = weekInfo.week >= playoffStartWeek;
-      if (!includeRegular && !isPlayoff) return;
-      if (!includePlayoffs && isPlayoff) return;
+      if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
         if (!roster) return;
 
         const userId = roster.owner_id;
+        // Skip bye weeks
+        if (isByeWeekForUser(userId, league, weekInfo.week)) return;
         const teamName = getTeamName(userId, league);
         const starters = matchup.starters || [];
         const playersPoints = matchup.players_points || {};
@@ -269,18 +267,17 @@ export const calculateKickerBoomStats = (
 
   data.forEach((league) => {
     if (!league.matchupInfo) return;
-    const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
     league.matchupInfo.forEach((weekInfo) => {
-      const isPlayoff = weekInfo.week >= playoffStartWeek;
-      if (!includeRegular && !isPlayoff) return;
-      if (!includePlayoffs && isPlayoff) return;
+      if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
         if (!roster) return;
 
         const userId = roster.owner_id;
+        // Skip bye weeks
+        if (isByeWeekForUser(userId, league, weekInfo.week)) return;
         const teamName = getTeamName(userId, league);
         const starters = matchup.starters || [];
         const playersPoints = matchup.players_points || {};
@@ -374,18 +371,17 @@ export const calculateDefenseBoomStats = (
 
   data.forEach((league) => {
     if (!league.matchupInfo) return;
-    const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
     league.matchupInfo.forEach((weekInfo) => {
-      const isPlayoff = weekInfo.week >= playoffStartWeek;
-      if (!includeRegular && !isPlayoff) return;
-      if (!includePlayoffs && isPlayoff) return;
+      if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
         if (!roster) return;
 
         const userId = roster.owner_id;
+        // Skip bye weeks
+        if (isByeWeekForUser(userId, league, weekInfo.week)) return;
         const teamName = getTeamName(userId, league);
         const starters = matchup.starters || [];
         const playersPoints = matchup.players_points || {};
@@ -479,18 +475,17 @@ export const calculateNoClothesStats = (
 
   data.forEach((league) => {
     if (!league.matchupInfo) return;
-    const playoffStartWeek = league.settings.playoff_week_start || Infinity;
 
     league.matchupInfo.forEach((weekInfo) => {
-      const isPlayoff = weekInfo.week >= playoffStartWeek;
-      if (!includeRegular && !isPlayoff) return;
-      if (!includePlayoffs && isPlayoff) return;
+      if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
         if (!roster) return;
 
         const userId = roster.owner_id;
+        // Skip bye weeks
+        if (isByeWeekForUser(userId, league, weekInfo.week)) return;
         const teamName = getTeamName(userId, league);
         const starters = matchup.starters || [];
         const playersPoints = matchup.players_points || {};

@@ -9,6 +9,9 @@ import {
   getBowlWinner,
   getPlayerName,
   projectedPointsInWeek,
+  isPlayoffWeek,
+  isByeWeekForUser,
+  weekMatchesFilter,
 } from './HelperMethods';
 import sidebetsData from '../Data/sidebets.json';
 import yearTrollData from '../Data/yearTrollData.json';
@@ -51,21 +54,6 @@ export interface YearSidebet {
 // HELPERS (Regular vs Playoffs, Bye handling)
 // =============================================================================
 
-const isPlayoffWeek = (data: LeagueData, week: number): boolean =>
-  week >= data.settings.playoff_week_start;
-
-const weekIsIncluded = (
-  data: LeagueData,
-  week: number,
-  includeRegularSeason: boolean,
-  includePlayoffs: boolean
-): boolean => {
-  const playoff = isPlayoffWeek(data, week);
-  if (playoff && !includePlayoffs) return false;
-  if (!playoff && !includeRegularSeason) return false;
-  return true;
-};
-
 /**
  * Many of your methods historically defaulted to:
  * - include regular season weeks only
@@ -93,21 +81,8 @@ const getRelevantMatchups = (
 
   return data.matchupInfo.filter((m) => {
     if (maxWeekExclusive !== null && m.week >= maxWeekExclusive) return false;
-    return weekIsIncluded(data, m.week, includeRegularSeason, includePlayoffs);
+    return weekMatchesFilter(data, m.week, includeRegularSeason, includePlayoffs);
   });
-};
-
-/**
- * In playoffs, a team can have a bye.
- * Those weeks should be excluded team-by-team (not league-wide).
- * Conservative rule: in playoffs, if there is no opponent matchup OR opponent points are 0 => bye.
- * (You suggested either condition; this matches that.)
- */
-const isPlayoffByeWeek = (data: LeagueData, week: number, oppMatchup?: Matchup): boolean => {
-  if (!isPlayoffWeek(data, week)) return false;
-  if (!oppMatchup) return true;
-  const oppPts = oppMatchup.points ?? 0;
-  return oppPts === 0;
 };
 
 // =============================================================================
@@ -163,7 +138,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points < opponentMatchup.points) {
@@ -316,7 +291,7 @@ class SidebetMethods {
     // BossWhenItCounts is inherently playoffs (week playoff_week_start+2)
     // If caller excludes playoffs, return empty/default.
     const targetWeek = data.settings.playoff_week_start + 2;
-    if (!weekIsIncluded(data, targetWeek, includeRegularSeason, includePlayoffs)) return [new SidebetStat()];
+    if (!weekMatchesFilter(data, targetWeek, includeRegularSeason, includePlayoffs)) return [new SidebetStat()];
 
     return this.MostPointsInWeek(data, targetWeek);
   }
@@ -327,7 +302,7 @@ class SidebetMethods {
     includePlayoffs: boolean = false
   ): SidebetStat[] {
     // Week 1 is regular season; if caller excludes regular season, return empty/default
-    if (!weekIsIncluded(data, 1, includeRegularSeason, includePlayoffs)) return [new SidebetStat()];
+    if (!weekMatchesFilter(data, 1, includeRegularSeason, includePlayoffs)) return [new SidebetStat()];
     return this.MostPointsInWeek(data, 1);
   }
 
@@ -420,7 +395,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       // BetterLuckyThanGood: smallest winning score (still a win)
@@ -493,7 +468,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points > juggernautTotal) {
@@ -563,7 +538,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points < opponentMatchup.points) {
@@ -635,7 +610,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points > opponentMatchup.points) {
@@ -707,7 +682,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points < opponentMatchup.points) {
@@ -782,7 +757,7 @@ class SidebetMethods {
       );
 
       if (!matchup) return;
-      if (isPlayoffByeWeek(data, matchupInfo.week, opponentMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchupInfo.week)) return;
       if (!opponentMatchup) return;
 
       if (matchup.points > opponentMatchup.points) {
@@ -927,7 +902,7 @@ class SidebetMethods {
       );
 
       if (!teamMatchup) continue;
-      if (isPlayoffByeWeek(data, matchup.week, oppMatchup)) continue;
+      if (isByeWeekForUser(user.user_id, data, matchup.week)) continue;
 
       matchupFound = true;
 
@@ -1089,7 +1064,7 @@ class SidebetMethods {
       );
 
       if (!teamMatchup) return;
-      if (isPlayoffByeWeek(data, matchup.week, oppMatchup)) return;
+      if (isByeWeekForUser(user.user_id, data, matchup.week)) return;
       if (!oppMatchup) return;
 
       for (let i = 0; i < oppMatchup.starters.length; i++) {

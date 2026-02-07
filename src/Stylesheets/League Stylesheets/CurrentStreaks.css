@@ -1,0 +1,208 @@
+/* =========================================================================
+   CurrentStreaks.css – Card grid for the "Current Streaks" Other Stat
+   Inspired by TrollHome streak-card UI, scoped with .cs- prefix
+   ========================================================================= */
+
+.current-streaks-page {
+  padding: 20px 0;
+}
+
+.current-streaks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Card base */
+.cs-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cs-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.cs-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Win / loss accent colours */
+.cs-card.win::before {
+  background: linear-gradient(90deg, #4ade80 0%, transparent 100%);
+}
+
+.cs-card.loss::before {
+  background: linear-gradient(90deg, #ef4444 0%, transparent 100%);
+}
+
+/* ---- Card Header ---- */
+.cs-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.cs-card-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.cs-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Streak Display ---- */
+.cs-streak-display {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.cs-streak-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.cs-card.win .cs-streak-badge {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #1a1a1a;
+}
+
+.cs-card.loss .cs-streak-badge {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+}
+
+.cs-streak-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.cs-streak-number {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cs-card.win .cs-streak-number {
+  color: #4ade80;
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+}
+
+.cs-card.loss .cs-streak-number {
+  color: #ef4444;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.cs-streak-text {
+  font-size: 13px;
+  color: #a0a0a0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---- Progress Bar ---- */
+.cs-progress {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.cs-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: #a0a0a0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cs-progress-record {
+  color: #60a5fa;
+}
+
+.cs-progress-bar {
+  height: 26px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cs-progress-fill {
+  height: 100%;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  transition: width 0.5s ease;
+  min-width: 36px;
+}
+
+.cs-card.win .cs-progress-fill {
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+}
+
+.cs-card.loss .cs-progress-fill {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.cs-progress-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* ---- Started label ---- */
+.cs-started {
+  font-size: 11px;
+  color: #a0a0a0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .current-streaks-grid {
+    grid-template-columns: 1fr;
+    padding: 0 8px;
+  }
+}
