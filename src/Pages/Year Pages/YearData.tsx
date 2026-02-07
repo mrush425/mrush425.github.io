@@ -151,9 +151,9 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                     sidebetDisplay.winners.push(firstResult?.user?.metadata?.team_name || "n/a");
                     sidebetDisplay.statDisplays.push(firstResult?.stats_display || "n/a");
         
-                    if (firstResult?.stat_number) {
+                    if (firstResult?.stat_number != null) {
                       result.slice(1).forEach((res) => {
-                        if (res.stat_number === firstResult.stat_number) {
+                        if (res.stat_number != null && Math.abs(res.stat_number - firstResult.stat_number!) < 0.0001) {
                           sidebetDisplay.statDisplays.push(res.stats_display || "n/a");
                           sidebetDisplay.winners.push(res?.user?.metadata?.team_name || "n/a");
                         }
@@ -433,11 +433,22 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                                     {sidebetsDisplay.map((sidebet, index) => (
                                         <tr key={index}>
                                             <td>{sidebet.sidebetName}</td>
-                                            <td><span className="winner-badge">{sidebet.winners.join(", ")}</span></td>
-                                            <td dangerouslySetInnerHTML={{
-                                                __html: sidebet.statDisplays.join("<br>"),
-                                            }}
-                                            ></td>
+                                            <td>
+                                                {sidebet.winners.map((winner, wi) => (
+                                                    <div key={wi} className={`winner-badge${sidebet.winners.length > 1 ? ' tied-winner' : ''}`}>
+                                                        {winner}
+                                                    </div>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {sidebet.statDisplays.map((stat, si) => (
+                                                    <div
+                                                        key={si}
+                                                        className={sidebet.statDisplays.length > 1 ? 'tied-stat' : ''}
+                                                        dangerouslySetInnerHTML={{ __html: stat }}
+                                                    />
+                                                ))}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

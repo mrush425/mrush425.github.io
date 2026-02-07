@@ -19,6 +19,7 @@ import SidebetStats from './Year Pages/SidebetStats';
 import HallOfFameHome from './Hall of Fame Pages/HallOfFameHome';
 import FootballPlayerChampions from './Hall of Fame Pages/FootballPlayerChampions';
 import ScheduleViewer from './Year Pages/ScheduleViewer';
+import MoneyCalculator from './Year Pages/MoneyCalculator';
 import LeagueHome from './League Pages/LeagueHome';
 import BowlHistory from './League Pages/BowlHistory';
 import RecordsStats from './League Pages/RecordsStats';
@@ -109,6 +110,7 @@ return (
                 {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
                 {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
                 {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
+                {generateYearRoute(leagueYear, '/money-calculator', <MoneyCalculator data={leagueYear} />)}
               </React.Fragment>
             ))}
             <Route path="*" element={<Navigate to="/" />} />

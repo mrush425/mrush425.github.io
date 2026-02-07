@@ -1,0 +1,310 @@
+/* =========================================================================
+   MoneyCalculator.css
+   ========================================================================= */
+
+.money-calc-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.money-calc-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.money-calc-loading {
+  text-align: center;
+  color: #a0a0a0;
+  padding: 60px 0;
+  font-size: 16px;
+}
+
+/* Summary cards */
+.money-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.money-summary-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.money-summary-label {
+  font-size: 12px;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.money-summary-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+/* Section headers */
+.money-section-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 14px;
+}
+
+.money-table-section {
+  margin-bottom: 32px;
+}
+
+/* Table */
+.money-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.money-table thead th {
+  background: rgba(255, 255, 255, 0.08);
+  color: #a0a0a0;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.money-table tbody td {
+  padding: 10px 14px;
+  color: #e0e0e0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  vertical-align: middle;
+}
+
+.money-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.money-row-highlight {
+  background: rgba(74, 222, 128, 0.04);
+}
+
+.money-row-highlight:hover {
+  background: rgba(74, 222, 128, 0.08) !important;
+}
+
+.money-positive {
+  color: #4ade80 !important;
+  font-weight: 700;
+}
+
+.money-total {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+/* Sidebet win pills */
+.sidebet-win-pill {
+  display: block;
+  width: fit-content;
+  background: rgba(96, 165, 250, 0.25);
+  color: #60a5fa;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 2px 0;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+/* Expandable rows */
+.money-row-clickable {
+  transition: background 0.15s ease;
+}
+
+.money-row-clickable:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.money-row-expanded {
+  border-bottom: none !important;
+}
+
+.money-row-expanded td {
+  border-bottom: none !important;
+}
+
+.expand-arrow {
+  display: inline-block;
+  font-size: 10px;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+  color: #a0a0a0;
+}
+
+.expand-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+/* Detail dropdown */
+.money-detail-row td {
+  padding: 0 14px 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.money-detail-content {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.money-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.money-detail-table thead th {
+  background: rgba(255, 255, 255, 0.05);
+  color: #a0a0a0;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.money-detail-table tbody td {
+  padding: 8px 12px;
+  color: #e0e0e0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.money-detail-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Bowl matchup summary */
+.bowl-matchup-summary {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.bowl-matchup-summary.bowl-won {
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.15);
+}
+
+.bowl-matchup-summary.bowl-lost {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.bowl-matchup-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #a0a0a0;
+  margin-bottom: 8px;
+}
+
+.bowl-matchup-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bowl-team {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.bowl-score {
+  font-size: 22px;
+  font-weight: 800;
+  color: #e0e0e0;
+}
+
+.bowl-vs {
+  font-size: 16px;
+  color: #666;
+  font-weight: 600;
+}
+
+/* Tied section */
+.tied-section {
+  background: rgba(234, 179, 8, 0.04);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.tied-description {
+  color: #a0a0a0;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.tied-table thead th {
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.tied-team-pill {
+  display: block;
+  width: fit-content;
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 2px 0;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .money-summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .money-calc-container {
+    padding: 12px;
+  }
+
+  .money-calc-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .money-summary-cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .money-summary-value {
+    font-size: 20px;
+  }
+}
