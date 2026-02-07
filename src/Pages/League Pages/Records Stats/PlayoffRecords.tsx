@@ -404,9 +404,6 @@ const PlayoffRecords: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) 
                 </button>
             )}
 
-                                <th onClick={() => handleSort('winnersBracketCount')} className="table-col-2 sortable">
-                                    Winners-Losers {getSortIndicator('winnersBracketCount')}
-                                </th>
             <div className="two-pane-layout">
                 
                 {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}

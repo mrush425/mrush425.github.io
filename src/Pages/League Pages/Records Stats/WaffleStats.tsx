@@ -42,7 +42,7 @@ const WaffleDashboard: React.FC<RecordComponentProps & { minYears?: number }> = 
       {mode === 'combined' ? (
         <WaffleRecords data={data} minYears={minYears} />
       ) : (
-        <TopWaffleSeasons data={data} />
+        <TopWaffleSeasons data={data} minYears={minYears} />
       )}
     </div>
   );

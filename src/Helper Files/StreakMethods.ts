@@ -18,10 +18,20 @@ export interface Streak {
   end: StreakRangePoint;
 }
 
+export interface StreakWeekDetail {
+  year: number;
+  week: number;
+  teamScore: number;
+  opponentScore: number;
+  outcome: 'W' | 'L' | 'T';
+}
+
 interface WeekResult {
   year: number;
   week: number;
   outcome: WeekOutcome;
+  myPoints: number;
+  oppPoints: number;
 }
 
 const formatWeekLabel = (week: number, year: number) => `week ${week}, ${year}`;
@@ -87,7 +97,7 @@ function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult
       else if (myPts < oppPts) outcome = 'L';
       else outcome = 'T'; // ties break streak
 
-      results.push({ year, week: matchup.week, outcome });
+      results.push({ year, week: matchup.week, outcome, myPoints: myPts, oppPoints: oppPts });
     });
   }
 
@@ -237,4 +247,46 @@ export function getCurrentStreak(userId: string, leagues: LeagueData[]): {
     start,
     end,
   };
+}
+
+/**
+ * Returns week-by-week matchup details for a specific streak, including the week that ended the streak.
+ * @param userId The user whose streak to get details for
+ * @param streak The streak to get details for
+ * @param type The type of streak (win/loss)
+ * @param leagues All league data
+ * @returns Array of StreakWeekDetail from streak start to the week it ended (inclusive)
+ */
+export function getStreakWeekDetails(
+  userId: string,
+  streak: Streak,
+  type: StreakType,
+  leagues: LeagueData[]
+): StreakWeekDetail[] {
+  const weekly = buildUserWeekResults(userId, leagues);
+  if (weekly.length === 0) return [];
+
+  // Find the start index of this streak
+  const startIdx = weekly.findIndex(
+    (w) => w.year === streak.start.year && w.week === streak.start.week
+  );
+  if (startIdx === -1) return [];
+
+  // Find the end index of the streak
+  const endIdx = weekly.findIndex(
+    (w) => w.year === streak.end.year && w.week === streak.end.week
+  );
+  if (endIdx === -1) return [];
+
+  // Include the streak weeks plus one more (the week it ended), if it exists
+  const endSlice = endIdx + 2; // +1 for the ending week, +1 because slice is exclusive
+  const details = weekly.slice(startIdx, Math.min(endSlice, weekly.length));
+
+  return details.map((w) => ({
+    year: w.year,
+    week: w.week,
+    teamScore: w.myPoints,
+    opponentScore: w.oppPoints,
+    outcome: w.outcome,
+  }));
 }

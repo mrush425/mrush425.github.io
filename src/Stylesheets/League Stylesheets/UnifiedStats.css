@@ -136,6 +136,88 @@
   line-height: 1;
 }
 
+/* Sortable Table Headers */
+.leagueStatsTable th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+  position: relative;
+  padding-right: 28px;
+}
+
+.leagueStatsTable th.sortable:hover {
+  color: #e0e0e0;
+}
+
+.leagueStatsTable th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.4;
+}
+
+.leagueStatsTable th.sorted-asc::after {
+  border-bottom: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+.leagueStatsTable th.sorted-desc::after {
+  border-top: 5px solid #e0e0e0;
+  opacity: 1;
+}
+
+/* Expandable Row Styles */
+.expandable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.expandable-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.expanded-detail-row td {
+  padding: 0 !important;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.expanded-detail-content {
+  padding: 12px 24px 16px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.expanded-detail-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.expanded-detail-content table th {
+  background: transparent;
+  border-bottom: 1px solid var(--border-light);
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.expanded-detail-content table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
 /* Team Name Cell */
 .team-name-cell {
   text-align: left !important;

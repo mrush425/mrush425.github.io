@@ -196,6 +196,8 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                 
                 {/* 2. FILTER CHECKBOXES (Second element) */}
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    {selectedItem?.displayName !== 'Weekly Score Averages' &&
+                     selectedItem?.displayName !== 'Playoff Teams Average Points' && (
                     <div className="pointsFilter filter-style"> 
                         <label>
                             <input
@@ -207,7 +209,10 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                             Filter teams with fewer than 3 years played
                         </label>
                     </div>
-                    {(selectedItem?.displayName.includes('Weekly') || 
+                    )}
+                    {selectedItem?.displayName !== 'Weekly Score Averages' &&
+                     selectedItem?.displayName !== 'Playoff Teams Average Points' &&
+                    (selectedItem?.displayName.includes('Weekly') || 
                       selectedItem?.displayName === 'Heartbreaker' ||
                       selectedItem?.displayName === 'GetWreckd' ||
                       selectedItem?.displayName === 'Better Lucky Than Good' ||

@@ -48,6 +48,13 @@ const STAT_COMPONENTS: OtherStatItem[] = [
 
 // Stats that should show the minYears filter
 const STATS_WITH_FILTER = [
+    'League Placement Stats',
+    'Money Stats',
+    'Favorite Players',
+    'Win/Lose Streaks',
+    'Helmet Master',
+    'The Charger',
+    'The Viking',
     'Low Scorers (<5 pts)',
     'Negative Points',
     'Kicker Boom (>20 pts)',

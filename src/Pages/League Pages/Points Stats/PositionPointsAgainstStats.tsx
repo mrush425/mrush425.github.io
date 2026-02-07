@@ -117,6 +117,12 @@ const PositionPointsAgainstStats: React.FC<
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileDetail, setShowMobileDetail] = useState(false);
 
+  const [avgSortColumn, setAvgSortColumn] = useState<string>('avgPerGame');
+  const [avgSortDirection, setAvgSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const [singleSortColumn, setSingleSortColumn] = useState<string>('avgPerGame');
+  const [singleSortDirection, setSingleSortDirection] = useState<'asc' | 'desc'>('desc');
+
   const yearsPlayedMap = useMemo(() => buildYearsPlayedMap(data), [data]);
 
   // ---------------------------------------------------------------------
@@ -170,9 +176,19 @@ const PositionPointsAgainstStats: React.FC<
       });
     });
 
-    rows.sort((a, b) => b.avgPerGame - a.avgPerGame);
+    rows.sort((a, b) => {
+      let aVal: any, bVal: any;
+      switch (avgSortColumn) {
+        case 'teamName': aVal = a.teamName.toLowerCase(); bVal = b.teamName.toLowerCase(); break;
+        case 'avgPerGame': aVal = a.avgPerGame; bVal = b.avgPerGame; break;
+        case 'avgPerYear': aVal = a.avgPerYear; bVal = b.avgPerYear; break;
+        case 'totalPoints': aVal = a.totalPoints; bVal = b.totalPoints; break;
+        default: aVal = a.avgPerGame; bVal = b.avgPerGame;
+      }
+      return avgSortDirection === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+    });
     return rows;
-  }, [data, position, yearsPlayedMap, minYears]);
+  }, [data, position, yearsPlayedMap, minYears, includeRegularSeason, includePlayoffs, avgSortColumn, avgSortDirection]);
 
   const averageRightRows = useMemo((): AverageRightRow[] => {
     if (!selectedAverageUserId) return [];
@@ -243,10 +259,19 @@ const PositionPointsAgainstStats: React.FC<
       });
     });
 
-    // default sort: highest Avg/Game
-    rows.sort((a, b) => b.avgPerGame - a.avgPerGame);
+    rows.sort((a, b) => {
+      let aVal: any, bVal: any;
+      switch (singleSortColumn) {
+        case 'teamName': aVal = a.teamName.toLowerCase(); bVal = b.teamName.toLowerCase(); break;
+        case 'year': aVal = a.year; bVal = b.year; break;
+        case 'avgPerGame': aVal = a.avgPerGame; bVal = b.avgPerGame; break;
+        case 'totalPoints': aVal = a.totalPoints; bVal = b.totalPoints; break;
+        default: aVal = a.avgPerGame; bVal = b.avgPerGame;
+      }
+      return singleSortDirection === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+    });
     return rows;
-  }, [data, position, yearsPlayedMap, minYears, includeRegularSeason, includePlayoffs]);
+  }, [data, position, yearsPlayedMap, minYears, includeRegularSeason, includePlayoffs, singleSortColumn, singleSortDirection]);
 
   // Per-year extremes for SINGLE YEAR highlighting:
   // now based on Avg/Game (since that’s the primary stat)
@@ -295,6 +320,24 @@ const PositionPointsAgainstStats: React.FC<
   // RENDER
   // ---------------------------------------------------------------------
 
+  const handleAvgSort = (column: string) => {
+    if (avgSortColumn === column) {
+      setAvgSortDirection(avgSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setAvgSortColumn(column);
+      setAvgSortDirection(column === 'teamName' ? 'asc' : 'desc');
+    }
+  };
+
+  const handleSingleSort = (column: string) => {
+    if (singleSortColumn === column) {
+      setSingleSortDirection(singleSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSingleSortColumn(column);
+      setSingleSortDirection(column === 'teamName' || column === 'year' ? 'asc' : 'desc');
+    }
+  };
+
   const handleBackToList = () => {
     setShowMobileDetail(false);
   };
@@ -335,10 +378,10 @@ const PositionPointsAgainstStats: React.FC<
             <table className="leagueStatsTable regular-season-table selectable-table">
               <thead>
                 <tr>
-                  <th>Team (Years)</th>
-                  <th>Avg / Game</th>
-                  <th>Avg / Year</th>
-                  <th>Total</th>
+                  <th className={`sortable ${avgSortColumn === 'teamName' ? `sorted-${avgSortDirection}` : ''}`} onClick={() => handleAvgSort('teamName')}>Team (Years)</th>
+                  <th className={`sortable ${avgSortColumn === 'avgPerGame' ? `sorted-${avgSortDirection}` : ''}`} onClick={() => handleAvgSort('avgPerGame')}>Avg / Game</th>
+                  <th className={`sortable ${avgSortColumn === 'avgPerYear' ? `sorted-${avgSortDirection}` : ''}`} onClick={() => handleAvgSort('avgPerYear')}>Avg / Year</th>
+                  <th className={`sortable ${avgSortColumn === 'totalPoints' ? `sorted-${avgSortDirection}` : ''}`} onClick={() => handleAvgSort('totalPoints')}>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -368,10 +411,10 @@ const PositionPointsAgainstStats: React.FC<
             <table className="leagueStatsTable regular-season-table selectable-table">
               <thead>
                 <tr>
-                  <th>Team (Years)</th>
-                  <th>Year</th>
-                  <th>Avg / Game</th>
-                  <th>Total</th>
+                  <th className={`sortable ${singleSortColumn === 'teamName' ? `sorted-${singleSortDirection}` : ''}`} onClick={() => handleSingleSort('teamName')}>Team (Years)</th>
+                  <th className={`sortable ${singleSortColumn === 'year' ? `sorted-${singleSortDirection}` : ''}`} onClick={() => handleSingleSort('year')}>Year</th>
+                  <th className={`sortable ${singleSortColumn === 'avgPerGame' ? `sorted-${singleSortDirection}` : ''}`} onClick={() => handleSingleSort('avgPerGame')}>Avg / Game</th>
+                  <th className={`sortable ${singleSortColumn === 'totalPoints' ? `sorted-${singleSortDirection}` : ''}`} onClick={() => handleSingleSort('totalPoints')}>Total</th>
                 </tr>
               </thead>
               <tbody>

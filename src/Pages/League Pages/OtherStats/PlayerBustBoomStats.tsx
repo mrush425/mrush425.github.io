@@ -114,6 +114,35 @@ export const calculateLowScorerStats = (
     instancesByUser[userId].sort((a, b) => parseInt(b.year) - parseInt(a.year) || b.week - a.week);
   });
 
+  // Include all users (even those with 0 count)
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!userSeasons[userId]) {
+        userSeasons[userId] = new Set();
+      }
+      userSeasons[userId].add(league.season);
+    });
+  });
+
+  // Ensure every user has an entry in countMap
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!countMap[userId]) {
+        const teamName = getTeamName(userId, league);
+        countMap[userId] = { teamName, userId, count: 0, seasons: 0, avgPerSeason: 0 };
+      }
+    });
+  });
+
+  // Recalculate seasons and avg for all users
+  Object.keys(countMap).forEach(userId => {
+    const seasons = userSeasons[userId]?.size || 0;
+    countMap[userId].seasons = seasons;
+    countMap[userId].avgPerSeason = seasons > 0 ? countMap[userId].count / seasons : 0;
+  });
+
   return {
     counts: Object.values(countMap)
       .filter(team => team.seasons >= minYears)
@@ -190,6 +219,33 @@ export const calculateNegativeStats = (
 
   Object.keys(instancesByUser).forEach(userId => {
     instancesByUser[userId].sort((a, b) => parseInt(b.year) - parseInt(a.year) || b.week - a.week);
+  });
+
+  // Include all users (even those with 0 count)
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!userSeasons[userId]) {
+        userSeasons[userId] = new Set();
+      }
+      userSeasons[userId].add(league.season);
+    });
+  });
+
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!countMap[userId]) {
+        const teamName = getTeamName(userId, league);
+        countMap[userId] = { teamName, userId, count: 0, seasons: 0, avgPerSeason: 0 };
+      }
+    });
+  });
+
+  Object.keys(countMap).forEach(userId => {
+    const seasons = userSeasons[userId]?.size || 0;
+    countMap[userId].seasons = seasons;
+    countMap[userId].avgPerSeason = seasons > 0 ? countMap[userId].count / seasons : 0;
   });
 
   return {
@@ -270,6 +326,33 @@ export const calculateKickerBoomStats = (
     instancesByUser[userId].sort((a, b) => parseInt(b.year) - parseInt(a.year) || b.week - a.week);
   });
 
+  // Include all users (even those with 0 count)
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!userSeasons[userId]) {
+        userSeasons[userId] = new Set();
+      }
+      userSeasons[userId].add(league.season);
+    });
+  });
+
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!countMap[userId]) {
+        const teamName = getTeamName(userId, league);
+        countMap[userId] = { teamName, userId, count: 0, seasons: 0, avgPerSeason: 0 };
+      }
+    });
+  });
+
+  Object.keys(countMap).forEach(userId => {
+    const seasons = userSeasons[userId]?.size || 0;
+    countMap[userId].seasons = seasons;
+    countMap[userId].avgPerSeason = seasons > 0 ? countMap[userId].count / seasons : 0;
+  });
+
   return {
     counts: Object.values(countMap)
       .filter(team => team.seasons >= minYears)
@@ -348,6 +431,33 @@ export const calculateDefenseBoomStats = (
     instancesByUser[userId].sort((a, b) => parseInt(b.year) - parseInt(a.year) || b.week - a.week);
   });
 
+  // Include all users (even those with 0 count)
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!userSeasons[userId]) {
+        userSeasons[userId] = new Set();
+      }
+      userSeasons[userId].add(league.season);
+    });
+  });
+
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!countMap[userId]) {
+        const teamName = getTeamName(userId, league);
+        countMap[userId] = { teamName, userId, count: 0, seasons: 0, avgPerSeason: 0 };
+      }
+    });
+  });
+
+  Object.keys(countMap).forEach(userId => {
+    const seasons = userSeasons[userId]?.size || 0;
+    countMap[userId].seasons = seasons;
+    countMap[userId].avgPerSeason = seasons > 0 ? countMap[userId].count / seasons : 0;
+  });
+
   return {
     counts: Object.values(countMap)
       .filter(team => team.seasons >= minYears)
@@ -424,6 +534,33 @@ export const calculateNoClothesStats = (
 
   Object.keys(instancesByUser).forEach(userId => {
     instancesByUser[userId].sort((a, b) => parseInt(b.year) - parseInt(a.year) || b.week - a.week);
+  });
+
+  // Include all users (even those with 0 count)
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!userSeasons[userId]) {
+        userSeasons[userId] = new Set();
+      }
+      userSeasons[userId].add(league.season);
+    });
+  });
+
+  data.forEach((league) => {
+    league.users.forEach((u) => {
+      const userId = u.user_id;
+      if (!countMap[userId]) {
+        const teamName = getTeamName(userId, league);
+        countMap[userId] = { teamName, userId, count: 0, seasons: 0, avgPerSeason: 0 };
+      }
+    });
+  });
+
+  Object.keys(countMap).forEach(userId => {
+    const seasons = userSeasons[userId]?.size || 0;
+    countMap[userId].seasons = seasons;
+    countMap[userId].avgPerSeason = seasons > 0 ? countMap[userId].count / seasons : 0;
   });
 
   return {

@@ -1,8 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
-import { calculateMoneyStats } from '../../../Helper Files/MoneyMethods';
+import { calculateMoneyStats, calculateYearlyMoneyBreakdown } from '../../../Helper Files/MoneyMethods';
+
+// =========================================================================
+// TYPE DEFINITIONS
+// =========================================================================
 
 interface MoneyStatsRow {
   userId: string;
@@ -11,13 +15,67 @@ interface MoneyStatsRow {
   moneyPaidIn: number;
   moneyEarned: number;
   netEarned: number;
+  netPerYear: number;
 }
 
 const getCurrentYear = (): string => new Date().getFullYear().toString();
 
+// =========================================================================
+// YEARLY BREAKDOWN SUB-COMPONENT (RIGHT PANE)
+// =========================================================================
+
+interface YearlyMoneyBreakdownPaneProps {
+  data: LeagueData[];
+  selectedTeam: MoneyStatsRow;
+}
+
+const YearlyMoneyBreakdownPane: React.FC<YearlyMoneyBreakdownPaneProps> = ({ data, selectedTeam }) => {
+  const yearlyStats = useMemo(() => {
+    return calculateYearlyMoneyBreakdown(selectedTeam.userId, data);
+  }, [data, selectedTeam.userId]);
+
+  return (
+    <div className="detail-pane">
+      <h4>Yearly Breakdown for {selectedTeam.teamName}</h4>
+      <table className="leagueStatsTable detail-table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Paid In</th>
+            <th>Earned</th>
+            <th>Net After Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {yearlyStats.map((yr) => (
+            <tr key={yr.year}>
+              <td>{yr.year}</td>
+              <td>${yr.paidIn.toFixed(2)}</td>
+              <td>${yr.earned.toFixed(2)}</td>
+              <td style={{ color: yr.netAfterYear >= 0 ? '#4ade80' : '#ef4444', fontWeight: 600 }}>
+                {yr.netAfterYear >= 0 ? '+' : ''}${Math.abs(yr.netAfterYear).toFixed(2)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {yearlyStats.length === 0 && (
+        <div className="notImplementedMessage">No yearly money data available for this team.</div>
+      )}
+    </div>
+  );
+};
+
+// =========================================================================
+// MAIN COMPONENT
+// =========================================================================
+
 const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
-  const [sortColumn, setSortColumn] = useState<string>('teamName');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortColumn, setSortColumn] = useState<string>('netPerYear');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [selectedTeam, setSelectedTeam] = useState<MoneyStatsRow | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const rows = useMemo<MoneyStatsRow[]>(() => {
     const currentYear = getCurrentYear();
@@ -50,6 +108,7 @@ const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
       if (yearsPlayed < minYears) return;
 
       const moneyData = calculateMoneyStats(userId, data);
+      const netPerYear = yearsPlayed > 0 ? moneyData.netMoneyEarned / yearsPlayed : 0;
 
       resultRows.push({
         userId,
@@ -58,6 +117,7 @@ const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
         moneyPaidIn: moneyData.totalMoneyPaidIn,
         moneyEarned: moneyData.totalMoneyEarned,
         netEarned: moneyData.netMoneyEarned,
+        netPerYear,
       });
     });
 
@@ -83,13 +143,13 @@ const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
           aValue = a.netEarned;
           bValue = b.netEarned;
           break;
-        case 'yearsPlayed':
-          aValue = a.yearsPlayed;
-          bValue = b.yearsPlayed;
+        case 'netPerYear':
+          aValue = a.netPerYear;
+          bValue = b.netPerYear;
           break;
         default:
-          aValue = a.teamName.toLowerCase();
-          bValue = b.teamName.toLowerCase();
+          aValue = a.netPerYear;
+          bValue = b.netPerYear;
       }
 
       if (sortDirection === 'asc') {
@@ -102,13 +162,33 @@ const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
     return resultRows;
   }, [data, minYears, sortColumn, sortDirection]);
 
+  // Auto-select first row
+  useEffect(() => {
+    if (!selectedTeam && rows.length > 0) {
+      setSelectedTeam(rows[0]);
+    }
+  }, [rows, selectedTeam]);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection('asc');
+      setSortDirection(column === 'teamName' ? 'asc' : 'desc');
     }
+  };
+
+  const handleRowClick = (team: MoneyStatsRow) => {
+    setSelectedTeam(prev => (prev?.userId === team.userId ? null : team));
+    if (isMobile) setShowMobileDetail(true);
   };
 
   if (rows.length === 0) {
@@ -123,52 +203,84 @@ const MoneyStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
 
   return (
     <div className="regular-season-records">
-      {/* ---- TABLE ---- */}
-      <table className="leagueStatsTable regular-season-table">
-        <thead>
-          <tr>
-            <th 
-              className={`sortable ${sortColumn === 'teamName' ? `sorted-${sortDirection}` : ''}`}
-              onClick={() => handleSort('teamName')}
-            >
-              Team (Years)
-            </th>
-            <th 
-              className={`sortable ${sortColumn === 'moneyPaidIn' ? `sorted-${sortDirection}` : ''}`}
-              onClick={() => handleSort('moneyPaidIn')}
-            >
-              Paid In
-            </th>
-            <th 
-              className={`sortable ${sortColumn === 'moneyEarned' ? `sorted-${sortDirection}` : ''}`}
-              onClick={() => handleSort('moneyEarned')}
-            >
-              Earned
-            </th>
-            <th 
-              className={`sortable ${sortColumn === 'netEarned' ? `sorted-${sortDirection}` : ''}`}
-              onClick={() => handleSort('netEarned')}
-            >
-              Net
-            </th>
-            <th>Net/Year</th>
-          </tr>
-        </thead>
+      {isMobile && showMobileDetail && (
+        <button onClick={() => setShowMobileDetail(false)} className="mobile-back-button">
+          ← Back to List
+        </button>
+      )}
+      <div className="two-pane-layout">
 
-        <tbody>
-          {rows.map((r, idx) => (
-            <tr key={r.userId} className={idx % 2 === 0 ? 'even-row' : 'odd-row'}>
-              <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
-              <td>${r.moneyPaidIn.toFixed(2)}</td>
-              <td>${r.moneyEarned.toFixed(2)}</td>
-              <td style={{ color: r.netEarned >= 0 ? '#4ade80' : '#ef4444', fontWeight: 700 }}>
-                ${r.netEarned >= 0 ? '+' : ''}{r.netEarned.toFixed(2)}
-              </td>
-              <td>${(r.netEarned / r.yearsPlayed).toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        {/* -------------------- LEFT PANE: MAIN TABLE -------------------- */}
+        <div className={`main-table-pane ${isMobile && showMobileDetail ? 'mobile-hidden' : ''}`}>
+          <table className="leagueStatsTable regular-season-table selectable-table">
+            <thead>
+              <tr>
+                <th
+                  className={`table-col-team sortable ${sortColumn === 'teamName' ? `sorted-${sortDirection}` : ''}`}
+                  onClick={() => handleSort('teamName')}
+                >
+                  Team (Years)
+                </th>
+                <th
+                  className={`sortable ${sortColumn === 'moneyPaidIn' ? `sorted-${sortDirection}` : ''}`}
+                  onClick={() => handleSort('moneyPaidIn')}
+                >
+                  Paid In
+                </th>
+                <th
+                  className={`sortable ${sortColumn === 'moneyEarned' ? `sorted-${sortDirection}` : ''}`}
+                  onClick={() => handleSort('moneyEarned')}
+                >
+                  Earned
+                </th>
+                <th
+                  className={`sortable ${sortColumn === 'netEarned' ? `sorted-${sortDirection}` : ''}`}
+                  onClick={() => handleSort('netEarned')}
+                >
+                  Net
+                </th>
+                <th
+                  className={`sortable ${sortColumn === 'netPerYear' ? `sorted-${sortDirection}` : ''}`}
+                  onClick={() => handleSort('netPerYear')}
+                >
+                  Net/Year
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {rows.map((r, idx) => (
+                <tr
+                  key={r.userId}
+                  className={`${selectedTeam?.userId === r.userId ? 'active selected-row' : ''} ${idx % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                  onClick={() => handleRowClick(r)}
+                >
+                  <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
+                  <td>${r.moneyPaidIn.toFixed(2)}</td>
+                  <td>${r.moneyEarned.toFixed(2)}</td>
+                  <td style={{ color: r.netEarned >= 0 ? '#4ade80' : '#ef4444', fontWeight: 700 }}>
+                    {r.netEarned >= 0 ? '+' : ''}${Math.abs(r.netEarned).toFixed(2)}
+                  </td>
+                  <td style={{ color: r.netPerYear >= 0 ? '#4ade80' : '#ef4444', fontWeight: 700 }}>
+                    {r.netPerYear >= 0 ? '+' : ''}${Math.abs(r.netPerYear).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* -------------------- RIGHT PANE: YEARLY BREAKDOWN -------------------- */}
+        <div className={`detail-pane-wrapper ${isMobile && !showMobileDetail ? 'mobile-hidden' : ''}`}>
+          {selectedTeam ? (
+            <YearlyMoneyBreakdownPane data={data} selectedTeam={selectedTeam} />
+          ) : (
+            <div className="notImplementedMessage">
+              Select a team from the table to see a yearly money breakdown.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

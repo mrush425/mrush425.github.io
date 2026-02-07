@@ -47,7 +47,7 @@ interface SortConfig {
   direction: 'ascending' | 'descending';
 }
 
-const TopWaffleSeasons: React.FC<RecordComponentProps> = ({ data }) => {
+const TopWaffleSeasons: React.FC<RecordComponentProps> = ({ data, minYears = 0 }) => {
   // Start sorted ascending so hardest seasons (lowest %) appear first
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'pctVal', direction: 'ascending' });
 
@@ -84,7 +84,7 @@ const TopWaffleSeasons: React.FC<RecordComponentProps> = ({ data }) => {
   }, [data]);
 
   const rows = useMemo<Row[]>(() => {
-    const items = [...allRows];
+    const items = allRows.filter(r => r.yearsPlayed >= minYears);
     const { key, direction } = sortConfig;
 
     items.sort((a, b) => {
@@ -102,7 +102,7 @@ const TopWaffleSeasons: React.FC<RecordComponentProps> = ({ data }) => {
     });
 
     return items;
-  }, [allRows, sortConfig]);
+  }, [allRows, sortConfig, minYears]);
 
   const handleSort = (key: SortKey) => {
     setSortConfig(prev => {

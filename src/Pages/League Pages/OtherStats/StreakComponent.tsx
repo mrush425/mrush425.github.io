@@ -4,14 +4,15 @@ import React, { useMemo, useState } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
-import { getUserLongestStreak, StreakType, Streak } from '../../../Helper Files/StreakMethods'; // <-- adjust path if needed
+import { getUserLongestStreak, getStreakWeekDetails, StreakType, Streak, StreakWeekDetail } from '../../../Helper Files/StreakMethods';
 
 interface TeamStreakRow {
   userId: string;
   teamName: string;
   yearsPlayed: number;
   streakLength: number;
-  ranges: string[]; // each: "week X, YEAR -> week Y, YEAR"
+  ranges: string[];
+  streaks: Streak[]; // keep the actual streak objects for detail lookup
 }
 
 const getCurrentYear = (): string => new Date().getFullYear().toString();
@@ -20,6 +21,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
   const [streakType, setStreakType] = useState<StreakType>('win');
   const [sortColumn, setSortColumn] = useState<string>('streakLength');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
   const rows = useMemo<TeamStreakRow[]>(() => {
     const currentYear = getCurrentYear();
@@ -60,6 +62,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
           yearsPlayed,
           streakLength: 0,
           ranges: [],
+          streaks: [],
         });
         return;
       }
@@ -67,9 +70,11 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
       // All returned streaks are tied for longest (by design of helper)
       const streakLength = streaks[0].length;
 
-      // Make display ranges, and keep them in chronological order (optional)
-      const ranges = [...streaks]
-        .sort((a, b) => a.start.year - b.start.year || a.start.week - b.start.week)
+      const sortedStreaks = [...streaks]
+        .sort((a, b) => a.start.year - b.start.year || a.start.week - b.start.week);
+
+      // Make display ranges
+      const ranges = sortedStreaks
         .map(s => `${s.start.label} -> ${s.end.label}`);
 
       resultRows.push({
@@ -78,6 +83,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
         yearsPlayed,
         streakLength,
         ranges,
+        streaks: sortedStreaks,
       });
     });
 
@@ -122,8 +128,33 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection('desc');
+      setSortDirection(column === 'teamName' ? 'asc' : 'desc');
     }
+  };
+
+  // Get week-by-week details for the expanded row
+  const expandedWeekDetails = useMemo<StreakWeekDetail[]>(() => {
+    if (!expandedUserId) return [];
+    const row = rows.find((r) => r.userId === expandedUserId);
+    if (!row || row.streaks.length === 0) return [];
+
+    // Get details for all tied streaks, concatenated
+    const allDetails: StreakWeekDetail[] = [];
+    row.streaks.forEach((streak, idx) => {
+      const details = getStreakWeekDetails(expandedUserId, streak, streakType, data);
+      if (idx > 0 && details.length > 0) {
+        // Add a separator marker (empty row will be rendered in UI)
+        allDetails.push({ year: -1, week: -1, teamScore: 0, opponentScore: 0, outcome: 'T' });
+      }
+      allDetails.push(...details);
+    });
+    return allDetails;
+  }, [expandedUserId, rows, streakType, data]);
+
+  // Reset expansion when streak type changes
+  const handleStreakTypeChange = (newType: StreakType) => {
+    setStreakType(newType);
+    setExpandedUserId(null);
   };
 
   if (sortedRows.length === 0) {
@@ -158,7 +189,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
               name="streakType"
               value="win"
               checked={streakType === 'win'}
-              onChange={() => setStreakType('win')}
+              onChange={() => handleStreakTypeChange('win')}
             />
             Winning Streak
           </label>
@@ -169,7 +200,7 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
               name="streakType"
               value="loss"
               checked={streakType === 'loss'}
-              onChange={() => setStreakType('loss')}
+              onChange={() => handleStreakTypeChange('loss')}
             />
             Losing Streak
           </label>
@@ -197,24 +228,79 @@ const StreakComponent: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) 
         </thead>
 
         <tbody>
-          {sortedRows.map((r, idx) => (
-            <tr key={r.userId} className={idx % 2 === 0 ? 'even-row' : 'odd-row'}>
-              <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
-              <td>{r.streakLength === 0 ? '-' : r.streakLength}</td>
-              <td>
-                {r.ranges.length === 0 ? (
-                  '-'
-                ) : (
-                  r.ranges.map((range, i) => (
-                    <React.Fragment key={i}>
-                      {range}
-                      {i < r.ranges.length - 1 && <br />}
-                    </React.Fragment>
-                  ))
+          {sortedRows.map((r, idx) => {
+            const isExpanded = expandedUserId === r.userId;
+            const weekDetails = isExpanded ? expandedWeekDetails : [];
+
+            return (
+              <React.Fragment key={r.userId}>
+                <tr
+                  className={`${idx % 2 === 0 ? 'even-row' : 'odd-row'} expandable-row`}
+                  onClick={() => r.streakLength > 0 && setExpandedUserId(isExpanded ? null : r.userId)}
+                  style={{ cursor: r.streakLength > 0 ? 'pointer' : 'default' }}
+                >
+                  <td className="team-name-cell">{r.teamName} ({r.yearsPlayed})</td>
+                  <td>{r.streakLength === 0 ? '-' : r.streakLength}</td>
+                  <td>
+                    {r.ranges.length === 0 ? (
+                      '-'
+                    ) : (
+                      r.ranges.map((range, i) => (
+                        <React.Fragment key={i}>
+                          {range}
+                          {i < r.ranges.length - 1 && <br />}
+                        </React.Fragment>
+                      ))
+                    )}
+                  </td>
+                </tr>
+
+                {isExpanded && weekDetails.length > 0 && (
+                  <tr className="expanded-detail-row">
+                    <td colSpan={3}>
+                      <div className="expanded-detail-content">
+                        <table className="leagueStatsTable compact-table">
+                          <thead>
+                            <tr>
+                              <th>Year</th>
+                              <th>Week</th>
+                              <th>Team Score</th>
+                              <th>Opponent Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {weekDetails.map((d, di) => {
+                              if (d.year === -1) {
+                                return (
+                                  <tr key={`sep-${di}`}>
+                                    <td colSpan={4} style={{ textAlign: 'center', fontStyle: 'italic', padding: '4px 0', borderTop: '2px solid #555' }}>
+                                      — tied streak —
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                              return (
+                                <tr key={`${d.year}-${d.week}`}>
+                                  <td>{d.year}</td>
+                                  <td>{d.week}</td>
+                                  <td style={{ color: d.outcome === 'W' ? '#2ecc71' : d.outcome === 'L' ? '#e74c3c' : undefined }}>
+                                    {d.teamScore.toFixed(2)}
+                                  </td>
+                                  <td style={{ color: d.outcome === 'W' ? '#e74c3c' : d.outcome === 'L' ? '#2ecc71' : undefined }}>
+                                    {d.opponentScore.toFixed(2)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
                 )}
-              </td>
-            </tr>
-          ))}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -26,7 +26,7 @@ interface UserFavoriteRow {
 
 const POSITIONS: Position[] = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
 
-const FavoritePlayerStats: React.FC<OtherComponentProps> = ({ data }) => {
+const FavoritePlayerStats: React.FC<OtherComponentProps> = ({ data, minYears = 0 }) => {
   const [selectedPosition, setSelectedPosition] = useState<Position>('QB');
   const [selectedMode, setSelectedMode] = useState<FavoriteMode>('draft');
   const [loading, setLoading] = useState(false);
@@ -39,18 +39,26 @@ const FavoritePlayerStats: React.FC<OtherComponentProps> = ({ data }) => {
   const [sortColumn, setSortColumn] = useState<string>('details');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
-  // Get all unique users across all years
+  // Get all unique users across all years, filtered by minYears
   const allUsers = useMemo(() => {
     const userMap = new Map<string, SleeperUser>();
+    const yearsMap = new Map<string, number>();
+    const currentYear = new Date().getFullYear().toString();
     data.forEach((league: LeagueData) => {
+      const isCompleted = league.season !== currentYear;
       league.users.forEach((user: SleeperUser) => {
         if (!userMap.has(user.user_id)) {
           userMap.set(user.user_id, user);
         }
+        if (isCompleted) {
+          yearsMap.set(user.user_id, (yearsMap.get(user.user_id) ?? 0) + 1);
+        }
       });
     });
-    return Array.from(userMap.values());
-  }, [data]);
+    return Array.from(userMap.values()).filter(
+      (u) => (yearsMap.get(u.user_id) ?? 0) >= minYears
+    );
+  }, [data, minYears]);
 
   // Load draft results (async)
   useEffect(() => {
