@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import LeagueData from '../../../Interfaces/LeagueData';
 import FootballPlayerStatsMethods from '../../../Helper Files/FootballPlayerStatsMethods';
+import { getPlayerImageUrl, getFallbackImageUrl } from '../../../Helper Files/HelperMethods';
 
 interface TopPointsAtEachPositionBenchProps {
   data: LeagueData[];
@@ -12,20 +13,6 @@ const TopPointsAtEachPositionBench: React.FC<TopPointsAtEachPositionBenchProps> 
   const results = useMemo(() => {
     return FootballPlayerStatsMethods.MaxPointsByPositionBench(data, allPositions);
   }, [data]);
-
-  const getPlayerImageUrl = (playerId: string, position: string) => {
-    const isDefense = position === 'DEF';
-    if (isDefense) {
-      return `https://sleepercdn.com/images/team_logos/nfl/${playerId.toLowerCase()}.png`;
-    }
-    return `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`;
-  };
-
-  const getFallbackImageUrl = (position: string) => {
-    return position === 'DEF'
-      ? 'https://sleepercdn.com/images/fallback_team_logo.png'
-      : 'https://sleepercdn.com/images/fallback_player_image.png';
-  };
 
   const getPositionColor = (position: string) => {
     const colors: Record<string, string> = {

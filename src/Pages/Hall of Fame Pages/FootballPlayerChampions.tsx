@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../../Stylesheets/Hall of Fame Stylesheets/FootballPlayerChampions.css'
 import HallOfFameNavBar from '../../Navigation/HallOfFameNavBar';
 import HallOfFameProps from './HallOfFameProps';
-import { findRosterByUserId, getLeagueWinner } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, getLeagueWinner, getPlayerName, getPlayerImageUrl } from '../../Helper Files/HelperMethods';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import SleeperRoster from '../../Interfaces/SleeperRoster';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
@@ -260,13 +260,13 @@ const FootballPlayerChampions: React.FC<HallOfFameProps> = ({ data }) => {
                   <div className="player-card-header">
                     <div className="player-image-wrapper">
                       {player.injury_status ? (
-                        <div className="player-image" style={{ backgroundImage: `url(https://sleepercdn.com/content/nfl/players/${player.player_id}.jpg)` }} />
+                        <div className="player-image" style={{ backgroundImage: `url(${getPlayerImageUrl(player.player_id, selectedPosition)})` }} />
                       ) : (
-                        <div className="player-image" style={{ backgroundImage: `url(https://sleepercdn.com/content/nfl/players/${player.player_id}.jpg)` }} />
+                        <div className="player-image" style={{ backgroundImage: `url(${getPlayerImageUrl(player.player_id, selectedPosition)})` }} />
                       )}
                     </div>
                     <div className="player-info">
-                      <h3 className="player-card-name">{player.first_name} {player.last_name}</h3>
+                      <h3 className="player-card-name">{getPlayerName(player.player_id)}</h3>
                       <p className="player-position">{selectedPosition}</p>
                     </div>
                   </div>

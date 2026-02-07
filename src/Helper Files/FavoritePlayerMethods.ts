@@ -1,7 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import DraftPick from '../Interfaces/DraftPick';
-import { getUserSeasonPlace, findRosterByUserId } from './HelperMethods';
+import { getUserSeasonPlace, findRosterByUserId, getPlayerName } from './HelperMethods';
 import Matchup from '../Interfaces/Matchup';
 
 // =============================================================================
@@ -54,15 +54,6 @@ export interface FavoriteOwnedResult {
 function getPlayerPosition(playerId: string): string | undefined {
   const player = (playerData as any)[playerId];
   return player?.position;
-}
-
-/**
- * Returns the player's name from the playerData.json file
- */
-function getPlayerName(playerId: string): string {
-  const player = (playerData as any)[playerId];
-  if (!player) return 'Unknown';
-  return player.full_name || `${player.first_name || ''} ${player.last_name || ''}`.trim() || 'Unknown';
 }
 
 /**

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import LeagueData from '../../../Interfaces/LeagueData';
 import FootballPlayerStatsMethods, { JamarcusRusselStatResult } from '../../../Helper Files/FootballPlayerStatsMethods';
+import { getPlayerImageUrl, getFallbackImageUrl } from '../../../Helper Files/HelperMethods';
 
 interface BestFirstRoundersTop20Props {
   data: LeagueData[];
@@ -28,20 +29,6 @@ const BestFirstRoundersTop20: React.FC<BestFirstRoundersTop20Props> = ({ data })
       isMounted = false;
     };
   }, [data]);
-
-  const getPlayerImageUrl = (playerId: string, position: string) => {
-    const isDefense = position === 'DEF';
-    if (isDefense) {
-      return `https://sleepercdn.com/images/team_logos/nfl/${playerId.toLowerCase()}.png`;
-    }
-    return `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`;
-  };
-
-  const getFallbackImageUrl = (position: string) => {
-    return position === 'DEF'
-      ? 'https://sleepercdn.com/images/fallback_team_logo.png'
-      : 'https://sleepercdn.com/images/fallback_player_image.png';
-  };
 
   const getPositionColor = (position: string) => {
     const colors: Record<string, string> = {

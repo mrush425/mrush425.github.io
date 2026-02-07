@@ -7,6 +7,7 @@ import '../../Stylesheets/YearStylesheets/DraftReportCard.css'; // Create a CSS 
 import DraftInfo from '../../Interfaces/DraftInfo';
 import TeamDropdown from './TeamDropdown'; // Adjust the path accordingly
 import {getBackgroundAndTextColor, getPlayerStats } from './SharedDraftMethods';
+import { getPlayerName } from '../../Helper Files/HelperMethods';
 import { fetchDraftData } from '../../SleeperApiMethods';
 
 interface DraftReportCardProps {
@@ -164,13 +165,13 @@ const DraftReportCard: React.FC<DraftReportCardProps> = ({ data }) => {
                                     return (
                                         <tr key={pick.pick_no}>
                                             <td style={{ backgroundColor: backgroundColor, color:textColor }}>{pick.pick_no}</td>
-                                            <td style={{ backgroundColor: backgroundColor, color:textColor  }}>{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</td>
+                                            <td style={{ backgroundColor: backgroundColor, color:textColor  }}>{getPlayerName(pick.player_id)}</td>
                                             <td style={{ backgroundColor: backgroundColor, color:textColor  }}>{positionRank}</td>
-                                            <td style={{ backgroundColor: nextBackgroundColor, color:nextTextColor  }}>{nextPlayerStats ? `${nextPlayerStats.player.first_name} ${nextPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: nextBackgroundColor, color:nextTextColor  }}>{nextPlayerStats ? getPlayerName(nextPlayerStats.player_id) : ''}</td>
                                             <td style={{ backgroundColor: nextBackgroundColor, color:nextTextColor  }}>{nextPlayerRank || ''}</td>
-                                            <td style={{ backgroundColor: secondBackgroundColor, color:secondTextColor  }}>{secondPlayerStats ? `${secondPlayerStats.player.first_name} ${secondPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: secondBackgroundColor, color:secondTextColor  }}>{secondPlayerStats ? getPlayerName(secondPlayerStats.player_id) : ''}</td>
                                             <td style={{ backgroundColor: secondBackgroundColor, color:secondTextColor  }}>{secondPlayerRank || ''}</td>
-                                            <td style={{ backgroundColor: thirdBackgroundColor, color:thirdTextColor  }}>{thirdPlayerStats ? `${thirdPlayerStats.player.first_name} ${thirdPlayerStats.player.last_name}` : ''}</td>
+                                            <td style={{ backgroundColor: thirdBackgroundColor, color:thirdTextColor  }}>{thirdPlayerStats ? getPlayerName(thirdPlayerStats.player_id) : ''}</td>
                                             <td style={{ backgroundColor: thirdBackgroundColor, color:thirdTextColor  }}>{thirdPlayerRank || ''}</td>
                                             {/* Add additional table cells based on the draft pick properties */}
                                         </tr>

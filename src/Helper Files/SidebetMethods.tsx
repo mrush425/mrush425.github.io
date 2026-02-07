@@ -7,6 +7,7 @@ import {
   findRosterByUserId,
   findUserByRosterId,
   getBowlWinner,
+  getPlayerName,
   projectedPointsInWeek,
 } from './HelperMethods';
 import sidebetsData from '../Data/sidebets.json';
@@ -872,7 +873,7 @@ class SidebetMethods {
       }
 
       const halfPPRPoints = playerStat.stats.pts_half_ppr;
-      const playerName = `${playerStat.player.first_name} ${playerStat.player.last_name}`;
+      const playerName = getPlayerName(String(playerId));
 
       const sidebetStat: SidebetStat = new SidebetStat();
       sidebetStat.user = user;
@@ -1104,7 +1105,7 @@ class SidebetMethods {
         pointsAgainstByPosition += pts;
 
         if (acc) {
-          const playerName = `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || String(playerId);
+          const playerName = getPlayerName(playerId);
           acc.details.push({
             year: Number.isFinite(year) ? year : 0,
             week: matchup.week,
@@ -1244,7 +1245,7 @@ class SidebetMethods {
       const sidebetStat: SidebetStat = new SidebetStat();
       sidebetStat.user = user;
       sidebetStat.stat_number = points || 0;
-      sidebetStat.stats_display = `${playerYearStats.player.first_name} ${playerYearStats.player.last_name} with ${points} half-PPR points`;
+      sidebetStat.stats_display = `${getPlayerName(receiverId)} with ${points} half-PPR points`;
 
       return sidebetStat;
     } catch (error) {

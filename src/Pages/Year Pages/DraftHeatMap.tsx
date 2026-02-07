@@ -7,6 +7,7 @@ import PlayerYearStats from '../../Interfaces/PlayerYearStats';
 import '../../Stylesheets/YearStylesheets/DraftHeatMap.css'; // Create a CSS file for styling
 import DraftInfo from '../../Interfaces/DraftInfo';
 import {getBackgroundAndTextColor, getValueBasedColor, getPlayerStats } from './SharedDraftMethods';
+import { getPlayerName } from '../../Helper Files/HelperMethods';
 import { fetchDraftData } from '../../SleeperApiMethods';
 
 interface DraftHeatMapProps {
@@ -107,7 +108,7 @@ const DraftHeatMap: React.FC<DraftHeatMapProps> = ({ data }) => {
   
     return (
       <div className="draft-cell-content" style={{ color: textColor }}>
-        <div className="draft-player-name">{`${pick.metadata.first_name} ${pick.metadata.last_name}`}</div>
+        <div className="draft-player-name">{getPlayerName(pick.player_id)}</div>
         <div className="draft-position-points">
           <span className="draft-player-position">#{index + 1} {position}</span>
           <span className="draft-player-points">{playerStat?.stats.pts_half_ppr || 0} pts</span>

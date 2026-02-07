@@ -2,7 +2,7 @@ import React from 'react';
 import SleeperUser from '../Interfaces/SleeperUser';
 import LeagueData from '../Interfaces/LeagueData';
 import './Stylesheets/MatchupDisplay.css';
-import { getMatchupForWeek, getScoreForWeek } from '../Helper Files/HelperMethods';
+import { getMatchupForWeek, getScoreForWeek, getPlayerName, getPlayerImageUrl, getFallbackImageUrl } from '../Helper Files/HelperMethods';
 import Matchup from '../Interfaces/Matchup';
 import playerData from '../Data/players.json';
 
@@ -35,8 +35,7 @@ const MatchupDisplay: React.FC<MatchupDisplayProps> = ({
   const renderStarter = (playerId: string | undefined): string => {
     if (!playerId) return '';
     if (playerId in playerData) {
-      const player = (playerData as Record<string, any>)[playerId];
-      return `${player.first_name} ${player.last_name}`;
+      return getPlayerName(playerId);
     }
     return playerId;
   };
@@ -44,12 +43,9 @@ const MatchupDisplay: React.FC<MatchupDisplayProps> = ({
   const renderStarterImage = (starter: string | undefined): JSX.Element | null => {
     if (!starter) return null;
     const isPlayer = !isNaN(Number(starter));
-    const imageUrl = isPlayer
-      ? `https://sleepercdn.com/content/nfl/players/${starter}.jpg`
-      : `https://sleepercdn.com/images/team_logos/nfl/${starter.toLowerCase()}.png`;
-    const fallbackImageUrl = isPlayer
-      ? 'https://sleepercdn.com/images/fallback_player_image.png'
-      : 'https://sleepercdn.com/images/fallback_team_logo.png';
+    const position = isPlayer ? '' : 'DEF';
+    const imageUrl = getPlayerImageUrl(starter, position);
+    const fallbackImageUrl = getFallbackImageUrl(position);
 
     return (
       <img

@@ -6,9 +6,86 @@ import playoffJsonData from '../Data/playoffs.json'; // Import your trollData.js
 import Matchup from "../Interfaces/Matchup";
 import PlayerYearStats from "../Interfaces/PlayerYearStats";
 import yearTrollData from '../Data/yearTrollData.json';
+import playerData from '../Data/players.json';
 
+/**
+ * Player name overrides - use this to customize how certain players are displayed.
+ * Key: playerId, Value: override name
+ */
+export const PLAYER_NAME_OVERRIDES: Record<string, string> = {
+  '4017': 'DePoop Poopson',      // Deshaun Watson
+  '1264': 'Justurd Buttker',     // Justin Tucker
+};
 
+/**
+ * Player image overrides - use this to customize player images.
+ * Key: playerId, Value: image URL (can be external URL or require() for local images)
+ * 
+ * For local images, place them in Helper Files/Override Images/ and use:
+ * '4017': require('./Override Images/player-name.png'),
+ * 
+ * For external URLs:
+ * '4017': 'https://example.com/custom-image.png',
+ */
+export const PLAYER_IMAGE_OVERRIDES: Record<string, string> = {
+  '4017': require('./Override Images/Poop Watson.png'),   // Deshaun Watson
+  '1264': require('./Override Images/Poop Tucker.png'),   // Justin Tucker
+};
 
+/**
+ * Gets a football player's image URL by playerId.
+ * Checks for image overrides first, then returns the Sleeper CDN URL.
+ * 
+ * @param playerId - The player's sleeper ID (or team abbreviation for DEF)
+ * @param position - The player's position (used to determine if DEF)
+ * @returns The player's image URL
+ */
+export function getPlayerImageUrl(playerId: string, position: string): string {
+  // Check for override first
+  if (PLAYER_IMAGE_OVERRIDES[playerId]) {
+    return PLAYER_IMAGE_OVERRIDES[playerId];
+  }
+  
+  // DEF uses team logos
+  if (position === 'DEF') {
+    return `https://sleepercdn.com/images/team_logos/nfl/${playerId.toLowerCase()}.png`;
+  }
+  
+  // Regular players use player images
+  return `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`;
+}
+
+/**
+ * Gets the fallback image URL for when a player image fails to load.
+ * 
+ * @param position - The player's position (used to determine if DEF)
+ * @returns The fallback image URL
+ */
+export function getFallbackImageUrl(position: string): string {
+  return position === 'DEF'
+    ? 'https://sleepercdn.com/images/fallback_team_logo.png'
+    : 'https://sleepercdn.com/images/fallback_player_image.png';
+}
+
+/**
+ * Gets a football player's name by playerId.
+ * Handles both regular players and defenses (DEF).
+ * Checks for name overrides first, then falls back to player data.
+ * 
+ * @param playerId - The player's sleeper ID (or team abbreviation for DEF)
+ * @returns The player's display name
+ */
+export function getPlayerName(playerId: string): string {
+  // Check for override first
+  if (PLAYER_NAME_OVERRIDES[playerId]) {
+    return PLAYER_NAME_OVERRIDES[playerId];
+  }
+  
+  const player = (playerData as any)[playerId];
+  if (!player) return 'Unknown';
+  
+  return player.full_name || `${player.first_name || ''} ${player.last_name || ''}`.trim() || 'Unknown';
+}
 
 export function findRosterByUserId(user_id: string, rosters: SleeperRoster[]): SleeperRoster | undefined {
     return rosters.find((roster) => roster.owner_id === user_id);

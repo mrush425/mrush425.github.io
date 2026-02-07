@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import playersData from '../../../Data/players.json';
+import { getPlayerName } from '../../../Helper Files/HelperMethods';
 
 // Type definitions
 type PositionType = 'QB' | 'RB' | 'WR' | 'TE';
@@ -28,7 +29,7 @@ const getPlayerInfo = (playerId: string): { name: string; position: string } => 
   const player = (playersData as any)[playerId];
   if (player) {
     return {
-      name: player.full_name || `${player.first_name || ''} ${player.last_name || ''}`.trim() || `Player ${playerId}`,
+      name: getPlayerName(playerId),
       position: player.fantasy_positions?.[0] || player.position || 'Unknown'
     };
   }

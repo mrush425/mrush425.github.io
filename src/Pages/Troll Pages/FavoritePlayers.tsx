@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
+import { getPlayerImageUrl, getFallbackImageUrl } from '../../Helper Files/HelperMethods';
 import {
   getFavoritePlayerByDraft,
   getFavoritePlayerByLineup,
@@ -52,20 +53,6 @@ const FavoritePlayers: React.FC<FavoritePlayersProps> = ({ userId, userName, lea
     const ownershipResult = getFavoritePlayerByOwnership(leagueData, userId, POSITIONS);
     setOwnershipResults(ownershipResult);
   }, [leagueData, userId]);
-
-  const getPlayerImageUrl = (playerId: string, position: string) => {
-    const isDefense = position === 'DEF';
-    if (isDefense) {
-      return `https://sleepercdn.com/images/team_logos/nfl/${playerId.toLowerCase()}.png`;
-    }
-    return `https://sleepercdn.com/content/nfl/players/${playerId}.jpg`;
-  };
-
-  const getFallbackImageUrl = (position: string) => {
-    return position === 'DEF'
-      ? 'https://sleepercdn.com/images/fallback_team_logo.png'
-      : 'https://sleepercdn.com/images/fallback_player_image.png';
-  };
 
   const getPositionColor = (position: string) => {
     const colors: Record<string, string> = {

@@ -1,7 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import yearTrollData from '../Data/yearTrollData.json';
-import { getUserSeasonPlace, getOverallPlace } from './HelperMethods';
+import { getUserSeasonPlace, getOverallPlace, getPlayerName } from './HelperMethods';
 
 // =============================================================================
 // TYPES / EXPORTS
@@ -73,12 +73,7 @@ class FootballPlayerStatsMethods {
         }
 
         const playerInfo = (playerData as any)[playerId];
-        const playerName =
-          playerStat?.player?.full_name ||
-          `${playerStat?.player?.first_name || ''} ${playerStat?.player?.last_name || ''}`.trim() ||
-          playerInfo?.full_name ||
-          `${playerInfo?.first_name || ''} ${playerInfo?.last_name || ''}`.trim() ||
-          'Unknown';
+        const playerName = getPlayerName(playerId);
         const position = playerStat?.player?.position || playerInfo?.position || 'N/A';
 
         // Calculate games played by counting weeks with stats
@@ -278,8 +273,7 @@ class FootballPlayerStatsMethods {
             const positionKey = playerPosition;
             const currentResults = positionMaxMap.get(positionKey) || [];
 
-            // For all positions, construct name from first_name and last_name if full_name doesn't exist
-            const playerName = playerInfo.full_name || `${playerInfo.first_name || ''} ${playerInfo.last_name || ''}`.trim() || 'Unknown';
+            const playerName = getPlayerName(playerId);
 
             const newResult: MaxPointsByPositionResult = {
               position: playerPosition,
@@ -363,8 +357,7 @@ class FootballPlayerStatsMethods {
             const playerPosition = playerInfo.position;
             if (!selectedPositions.includes(playerPosition)) return;
 
-            // For all positions, construct name from first_name and last_name if full_name doesn't exist
-            const playerName = playerInfo.full_name || `${playerInfo.first_name || ''} ${playerInfo.last_name || ''}`.trim() || 'Unknown';
+            const playerName = getPlayerName(playerId);
 
             allResults.push({
               position: playerPosition,
@@ -443,7 +436,7 @@ class FootballPlayerStatsMethods {
             const positionKey = playerPosition;
             const currentResults = positionMaxMap.get(positionKey) || [];
 
-            const playerName = playerInfo.full_name || `${playerInfo.first_name || ''} ${playerInfo.last_name || ''}`.trim() || 'Unknown';
+            const playerName = getPlayerName(playerId);
 
             const newResult: MaxPointsByPositionResult = {
               position: playerPosition,
@@ -531,7 +524,7 @@ class FootballPlayerStatsMethods {
             const playerPosition = playerInfo.position;
             if (!selectedPositions.includes(playerPosition)) return;
 
-            const playerName = playerInfo.full_name || `${playerInfo.first_name || ''} ${playerInfo.last_name || ''}`.trim() || 'Unknown';
+            const playerName = getPlayerName(playerId);
 
             allResults.push({
               position: playerPosition,
