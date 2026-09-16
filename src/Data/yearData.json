@@ -110,5 +110,21 @@
 				"belt_starter_id": "473734861195046912"
 			}
 		]
+	},
+	{
+		"year": 2026,
+		"data": [
+			{
+				"year": 2026,
+				"sleeper_id": "1389721156168212480",
+				"buy_in": 50,
+				"side_bet_buy_in": 10,
+				"set_and_forget_winner_id": "",
+				"set_and_forget_winner_points": "",
+				"set_and_forget_loser_id": "",
+				"set_and_forget_loser_points": "",
+				"belt_starter_id": "999520196761153536"
+			}
+		]
 	}
 ]

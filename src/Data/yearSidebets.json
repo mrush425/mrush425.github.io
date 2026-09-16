@@ -484,7 +484,7 @@
 			},
 			{
 				"year": 2025,
-				"sidebetName": "The Charger",
+				"sidebetName": "Charger",
 				"sponsor": "Connar Bodoh",
 				"sponsorId": "473932605763350528"
 			},
@@ -535,6 +535,83 @@
 				"sidebetName": "The Belt",
 				"sponsor": "Jorge Dosdos",
 				"sponsorId": "473734861195046912"
+			}
+		]
+	},
+	{
+		"year": 2026,
+		"data": [
+			{
+				"year": 2026,
+				"sidebetName": "Juggernaut",
+				"sponsor": "John Rush",
+				"sponsorId": "473933377913745408"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "The Jamarcus Russel",
+				"sponsor": "Justin Schwartz",
+				"sponsorId": "999520196761153536"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "The Connar Effect",
+				"sponsor": "Connar Bodoh",
+				"sponsorId": "473932605763350528"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "At Least I Draft Well",
+				"sponsor": "De'Vonne Jackson",
+				"sponsorId": "438826516663496704"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Participation Ribbon",
+				"sponsor": "Chris Rosenthal",
+				"sponsorId": "473933351699345408"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Oh Shit",
+				"sponsor": "Justin Leman",
+				"sponsorId": "473932355996741632"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Heartbreaker",
+				"sponsor": "Jorge Dosdos",
+				"sponsorId": "473734861195046912"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Maybe Next Time",
+				"sponsor": "Matt Nockerts",
+				"sponsorId": "452666519613075456"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Helmet Master",
+				"sponsor": "Justin Sowers",
+				"sponsorId": "473932553733009408"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Better Lucky Than Good",
+				"sponsor": "Matt Rush",
+				"sponsorId": "473933594708930560"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "Coming in Hot",
+				"sponsor": "Derrick Allen",
+				"sponsorId": "1254075684570013696"
+			},
+			{
+				"year": 2026,
+				"sidebetName": "The Belt",
+				"sponsor": "Alex Dosdos",
+				"sponsorId": "473933216856666112"
 			}
 		]
 	}
