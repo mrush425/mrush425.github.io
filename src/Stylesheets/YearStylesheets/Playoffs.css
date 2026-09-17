@@ -148,6 +148,18 @@
   gap: 6px;
 }
 
+.match-team.winner {
+  border: 2px solid var(--accent-yellow);
+  color: var(--accent-yellow);
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.25);
+}
+
+.match-team.winner::after {
+  content: '🏆';
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
 .team-with-points {
   display: flex;
   justify-content: space-between;

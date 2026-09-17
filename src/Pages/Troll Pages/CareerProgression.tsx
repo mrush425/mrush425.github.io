@@ -6,7 +6,6 @@ import TrollNavBar from '../../Navigation/TrollNavBar';
 import yearTrollData from '../../Data/yearTrollData.json';
 import yearData from '../../Data/yearData.json';
 import { getUserSeasonPlace } from '../League Pages/OtherStats/PlaceStats';
-import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
 
 interface CareerProgressionProps {
   userId: string;
@@ -16,11 +15,21 @@ interface CareerProgressionProps {
 
 const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName, leagueData }) => {
   const stats = useMemo(() => {
+    const isCurrentSeasonInProgress = (league: LeagueData): boolean =>
+      league.nflSeasonInfo?.season?.toString() === league.season &&
+      league.nflSeasonInfo?.season_type !== 'post';
+
+    const getLastCompletedWeek = (league: LeagueData): number => {
+      if (!isCurrentSeasonInProgress(league)) return Infinity;
+      const currentWeek = league.nflSeasonInfo?.week ?? 1;
+      return Math.max(0, currentWeek - 1);
+    };
+
     // Build win percentage over time chart data (regular season only, continuous across all seasons)
-    const winPercentageOverTime: { week: number; winPct: number; season: string; record: string }[] = [];
+    const winPercentageOverTime: { week: number; seasonWeek: number; totalWeeks: number; winPct: number; season: string; record: string }[] = [];
     
     // Build points over time chart data (average points for/against, continuous across all seasons)
-    const pointsOverTime: { week: number; avgPointsFor: number; avgPointsAgainst: number; season: string }[] = [];
+    const pointsOverTime: { week: number; seasonWeek: number; totalWeeks: number; avgPointsFor: number; avgPointsAgainst: number; season: string }[] = [];
     
     // Build money over time chart data (cumulative profit/loss)
     const moneyOverTime: { season: string; netMoney: number }[] = [];
@@ -44,6 +53,7 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
     sortedLeagues.forEach((league) => {
       const roster = league.rosters.find((r) => r.owner_id === userId);
       const user = league.users.find((u) => u.user_id === userId);
+      const currentSeasonInProgress = isCurrentSeasonInProgress(league);
       
       if (roster && user) {
         // Get season place (regular season)
@@ -61,39 +71,42 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
         const buyIn = Number(firstEntry?.buy_in || 0);
         const sideBetBuyIn = Number(firstEntry?.side_bet_buy_in || 0);
         const totalBuyIn = buyIn + sideBetBuyIn;
-        
-        // Calculate net money for this season
-        cumulativeMoney += moneyEarned - totalBuyIn;
-        
-        // Add to money over time chart (once per season)
-        moneyOverTime.push({
-          season: league.season,
-          netMoney: cumulativeMoney
-        });
-        
-        cumulativeSeasonPlace += seasonPlace;
-        cumulativeFinalPlace += finalPlace;
-        yearCount++;
-        
-        // Add to average place chart
-        averagePlaceOverTime.push({
-          season: league.season,
-          avgSeasonPlace: Number((cumulativeSeasonPlace / yearCount).toFixed(2)),
-          avgFinalPlace: Number((cumulativeFinalPlace / yearCount).toFixed(2)),
-          seasonPlace: seasonPlace,
-          finalPlace: finalPlace
-        });
+
+        if (!currentSeasonInProgress) {
+          // Calculate net money for this season only after the season has completed
+          cumulativeMoney += moneyEarned - totalBuyIn;
+          
+          // Add to money over time chart (once per completed season)
+          moneyOverTime.push({
+            season: league.season,
+            netMoney: cumulativeMoney
+          });
+          
+          cumulativeSeasonPlace += seasonPlace;
+          cumulativeFinalPlace += finalPlace;
+          yearCount++;
+          
+          // Add to average place chart
+          averagePlaceOverTime.push({
+            season: league.season,
+            avgSeasonPlace: Number((cumulativeSeasonPlace / yearCount).toFixed(2)),
+            avgFinalPlace: Number((cumulativeFinalPlace / yearCount).toFixed(2)),
+            seasonPlace: seasonPlace,
+            finalPlace: finalPlace
+          });
+        }
       }
       
       if (roster && user && league.matchupInfo) {
         const playoffStartWeek = league.settings.playoff_week_start || Infinity;
+        const lastCompletedWeek = getLastCompletedWeek(league);
         
         // Sort matchup info by week
         const sortedMatchupInfo = [...league.matchupInfo].sort((a, b) => a.week - b.week);
         
-        // Iterate through each week in regular season order
+        // Iterate through each week in regular season order, but stop at the last completed week for an active season
         sortedMatchupInfo.forEach((info) => {
-          if (info.week < playoffStartWeek) {
+          if (info.week < playoffStartWeek && info.week <= lastCompletedWeek) {
             // Find this user's matchup for this week
             const userMatchup = info.matchups.find((m: any) => m.roster_id === roster.roster_id);
             
@@ -120,9 +133,13 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
                 const losses = overallGames - overallWins;
                 const avgPointsFor = overallGames > 0 ? Number((totalPointsFor / overallGames).toFixed(2)) : 0;
                 const avgPointsAgainst = overallGames > 0 ? Number((totalPointsAgainst / overallGames).toFixed(2)) : 0;
+                const seasonWeek = info.week;
+                const totalWeeks = overallWeekCounter;
                 
                 winPercentageOverTime.push({
                   week: overallWeekCounter,
+                  seasonWeek: seasonWeek,
+                  totalWeeks: totalWeeks,
                   winPct: winPct,
                   season: league.season,
                   record: `${overallWins}-${losses}`
@@ -130,6 +147,8 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
                 
                 pointsOverTime.push({
                   week: overallWeekCounter,
+                  seasonWeek: seasonWeek,
+                  totalWeeks: totalWeeks,
                   avgPointsFor: avgPointsFor,
                   avgPointsAgainst: avgPointsAgainst,
                   season: league.season
@@ -442,7 +461,13 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
                             return (
                               <div style={{ color: '#60a5fa' }}>
                                 <p style={{ margin: '0 0 4px 0', fontSize: '12px' }}>
-                                  Week {data.week}
+                                  Year: {data.season}
+                                </p>
+                                <p style={{ margin: '0 0 4px 0', fontSize: '12px' }}>
+                                  Week: {data.seasonWeek ?? data.week}
+                                </p>
+                                <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#cbd5e1' }}>
+                                  Total Weeks: {data.totalWeeks ?? data.week}
                                 </p>
                                 <p style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 'bold' }}>
                                   {data.winPct}%
@@ -517,7 +542,13 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
                             return (
                               <div style={{ color: '#fff', fontSize: '12px' }}>
                                 <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>
-                                  Week {data.week}
+                                  Year: {data.season}
+                                </p>
+                                <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>
+                                  Week: {data.seasonWeek ?? data.week}
+                                </p>
+                                <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#cbd5e1' }}>
+                                  Total Weeks: {data.totalWeeks ?? data.week}
                                 </p>
                                 <p style={{ margin: '0 0 4px 0', color: '#10b981' }}>
                                   Avg Points For: {data.avgPointsFor.toFixed(2)}

@@ -69,8 +69,10 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
     const matchupInfo = data.matchupInfo.find(m => m.week === matchup.week);
     if (!matchupInfo || matchupInfo.matchups.length === 0) return undefined;
 
-    const user1Score = getScoreForWeek(user1, matchup.week, data);
-    const user2Score = getScoreForWeek(user2, matchup.week, data);
+    const user1Score = getScoreForWeek(user1, matchup.week, data) +
+      (matchup.secondWeek ? getScoreForWeek(user1, matchup.secondWeek, data) : 0);
+    const user2Score = getScoreForWeek(user2, matchup.week, data) +
+      (matchup.secondWeek ? getScoreForWeek(user2, matchup.secondWeek, data) : 0);
 
     // Only determine winner if we have valid scores (not 0 for both)
     if (user1Score === 0 && user2Score === 0) return undefined;
@@ -202,7 +204,8 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
     if (!userId || !matchup?.week) return <>{getTeamName(userId)}</>;
     
     const user = data.users.find(u => u.user_id === userId);
-    const score = getScoreForWeek(user!, matchup.week, data);
+    const score = getScoreForWeek(user!, matchup.week, data) +
+      (matchup.secondWeek ? getScoreForWeek(user!, matchup.secondWeek, data) : 0);
     const displayScore = score > 0 ? score.toFixed(2) : null;
     
     return (
@@ -228,9 +231,13 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
                   className={`bracket-match ${selectedMatchup?.id === matchup.id ? 'selected' : ''}`}
                   onClick={() => setSelectedMatchup(matchup)}
                 >
-                  <div className='match-team'>{getTeamWithPoints(matchup.user1Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user1Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user1Id, matchup)}
+                  </div>
                   <div className='match-vs'>vs</div>
-                  <div className='match-team'>{getTeamWithPoints(matchup.user2Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user2Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user2Id, matchup)}
+                  </div>
                 </div>
               );
             })}
@@ -249,9 +256,13 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
                   className={`bracket-match ${selectedMatchup?.id === matchup.id ? 'selected' : ''}`}
                   onClick={() => setSelectedMatchup(matchup)}
                 >
-                  <div className='match-team'>{getTeamWithPoints(matchup.user1Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user1Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user1Id, matchup)}
+                  </div>
                   <div className='match-vs'>vs</div>
-                  <div className='match-team'>{getTeamWithPoints(matchup.user2Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user2Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user2Id, matchup)}
+                  </div>
                 </div>
               );
             })}
@@ -270,9 +281,13 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
                   className={`bracket-match ${selectedMatchup?.id === matchup.id ? 'selected' : ''}`}
                   onClick={() => setSelectedMatchup(matchup)}
                 >
-                  <div className='match-team'>{getTeamWithPoints(matchup.user1Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user1Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user1Id, matchup)}
+                  </div>
                   <div className='match-vs'>vs</div>
-                  <div className='match-team'>{getTeamWithPoints(matchup.user2Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user2Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user2Id, matchup)}
+                  </div>
                 </div>
               );
             })}
@@ -291,9 +306,13 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
                   className={`bracket-match ${selectedMatchup?.id === matchup.id ? 'selected' : ''}`}
                   onClick={() => setSelectedMatchup(matchup)}
                 >
-                  <div className='match-team'>{getTeamWithPoints(matchup.user1Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user1Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user1Id, matchup)}
+                  </div>
                   <div className='match-vs'>vs</div>
-                  <div className='match-team'>{getTeamWithPoints(matchup.user2Id, matchup)}</div>
+                  <div className={`match-team ${winner === matchup.user2Id ? 'winner' : ''}`}>
+                    {getTeamWithPoints(matchup.user2Id, matchup)}
+                  </div>
                 </div>
               );
             })}
@@ -311,9 +330,13 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
                 className={`bracket-match ${selectedMatchup?.id === matchup.id ? 'selected' : ''}`}
                 onClick={() => setSelectedMatchup(matchup)}
               >
-                <div className='match-team'>{getTeamWithPoints(matchup.user1Id, matchup)}</div>
+                <div className={`match-team ${winner === matchup.user1Id ? 'winner' : ''}`}>
+                  {getTeamWithPoints(matchup.user1Id, matchup)}
+                </div>
                 <div className='match-vs'>vs</div>
-                <div className='match-team'>{getTeamWithPoints(matchup.user2Id, matchup)}</div>
+                <div className={`match-team ${winner === matchup.user2Id ? 'winner' : ''}`}>
+                  {getTeamWithPoints(matchup.user2Id, matchup)}
+                </div>
               </div>
             );
           })}

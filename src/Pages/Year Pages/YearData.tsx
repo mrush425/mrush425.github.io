@@ -16,14 +16,14 @@ import SidebetMethods, { Sidebet, YearSidebet } from '../../Helper Files/Sidebet
 
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
-import { getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { getLast3WeeksAveragePointsMap, getOverallPlace, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 
 interface YearDataProps {
     data: LeagueData;
 }
 
 // Extend SortKey type to include the new column
-type SortKey = 'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams' | 'default';
+type SortKey = 'seasonPlace' | 'finalPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams' | 'default';
 type TabType = 'basic' | 'advanced' | 'sidebets';
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
@@ -36,6 +36,13 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const users = data.users;
     const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
+    const isCompletedSeason = data.nflSeasonInfo?.season?.toString() !== data.season || data.nflSeasonInfo?.season_type === 'post';
+    const cardRosters = data.rosters.slice().sort((rosterA, rosterB) => {
+        const userA = users.find((user) => user.user_id === rosterA.owner_id);
+        const userB = users.find((user) => user.user_id === rosterB.owner_id);
+        if (!userA || !userB) return 0;
+        return getUserSeasonPlace(userA.user_id, data) - getUserSeasonPlace(userB.user_id, data);
+    });
 
     const toggleRowExpanded = (rosterId: number) => {
         const newExpanded = new Set(expandedRows);
@@ -47,8 +54,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
         setExpandedRows(newExpanded);
     };
 
-    // UPDATED: Added 'winsAgainstWinningTeams' to the handleSort parameter type
-    const handleSort = (column: 'seasonPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams') => {
+    const handleSort = (column: 'seasonPlace' | 'finalPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams') => {
         setSortBy(column);
         setSortDirection(sortBy === column ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'desc');
     };
@@ -62,6 +68,10 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             if (sortBy === 'seasonPlace') {
                 const placeA = getUserSeasonPlace(userA.user_id, data);
                 const placeB = getUserSeasonPlace(userB.user_id, data);
+                return sortDirection === 'asc' ? placeA - placeB : placeB - placeA;
+            } else if (sortBy === 'finalPlace') {
+                const placeA = getOverallPlace(userA.user_id, data.season) ?? 999;
+                const placeB = getOverallPlace(userB.user_id, data.season) ?? 999;
                 return sortDirection === 'asc' ? placeA - placeB : placeB - placeA;
             }
             else if (sortBy === 'wins' || sortBy === 'default') {
@@ -214,7 +224,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
 
                 {/* Stat Cards Section */}
                 <div className="stat-cards-container">
-                    {sortedRosters.map((roster) => {
+                    {cardRosters.map((roster) => {
                         const user = users.find((u) => u.user_id === roster.owner_id);
                         if (!user) return null;
                         const wins = roster.settings.wins;
@@ -222,13 +232,21 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                         const winPct = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) : '0';
                         const recordAgainstEveryone = getRecordAgainstLeague(user, data);
                         const seasonPlace = getUserSeasonPlace(user.user_id, data);
+                        const finalPlace = isCompletedSeason ? getOverallPlace(user.user_id, data.season) : undefined;
                         
                         return (
                             <div key={roster.roster_id} className="stat-card">
                                 <div className="stat-card-header">
                                     <div className="stat-card-title">{user.metadata.team_name}</div>
-                                    <div className={`stat-card-place ${seasonPlace <= 6 ? 'playoffs' : 'no-playoffs'}`}>
-                                        #{seasonPlace}
+                                    <div className="stat-card-places">
+                                        <div className={`stat-card-place ${seasonPlace <= 6 ? 'playoffs' : 'no-playoffs'}`}>
+                                            RS #{seasonPlace}
+                                        </div>
+                                        {isCompletedSeason && (
+                                            <div className={`stat-card-place ${finalPlace !== undefined && finalPlace <= 6 ? 'final-playoffs' : 'final-no-playoffs'}`}>
+                                                Final #{finalPlace ?? '-'}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 
@@ -285,6 +303,12 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                                     
                                     {activeTab === 'basic' && (
                                         <>
+                                            {isCompletedSeason && (
+                                                <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('finalPlace')}>
+                                                    Final Place
+                                                    {sortBy === 'finalPlace' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
+                                                </th>
+                                            )}
                                             <th style={{ cursor: 'pointer', width: '100px' }} onClick={() => handleSort('wins')}>
                                                 Record
                                                 {sortBy === 'wins' && <span>{sortDirection === 'asc' ? ' ▲' : ' ▼'}</span>}
@@ -332,6 +356,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                             {sortedRosters.map((roster, index) => {
                                 const user = users.find((u) => u.user_id === roster.owner_id);
                                 const seasonPlace = user ? getUserSeasonPlace(user.user_id, data) : null;
+                                const finalPlace = isCompletedSeason && user ? getOverallPlace(user.user_id, data.season) : undefined;
                                 let recordAgainstEveryone: string = "";
                                 let leagueRecordAtSchedule: string = "";
                                 let averageRecordAgainstEveryone: string = "";
@@ -365,6 +390,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                                             
                                             {activeTab === 'basic' && (
                                                 <>
+                                                    {isCompletedSeason && <td>{finalPlace ?? '-'}</td>}
                                                     <td>{`${roster.settings.wins}-${roster.settings.losses}`}</td>
                                                     <td>{`${roster.settings.fpts}.${roster.settings.fpts_decimal}`}</td>
                                                     <td>{`${last3Average}`}</td>
@@ -390,7 +416,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                                         
                                         {isExpanded && (
                                             <tr className="expanded-row">
-                                                <td colSpan={activeTab === 'basic' ? 7 : 7} className="expanded-content">
+                                                <td colSpan={activeTab === 'basic' && isCompletedSeason ? 8 : 7} className="expanded-content">
                                                     <div className="expanded-details">
                                                         <div className="detail-column">
                                                             <h4>Record</h4>
