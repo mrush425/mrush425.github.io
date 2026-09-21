@@ -27,6 +27,9 @@ import PointsStats from './League Pages/PointsStats';
 import OtherStats from './League Pages/OtherStats';
 import FootballPlayerStats from './League Pages/FootballPlayerStats';
 import TrollData from './Troll Pages/TrollData';
+import SideBetSelection from './Begin Year Tools/SideBetSelection';
+import SuperSmashBros from './Begin Year Tools/SuperSmashBros';
+import PostDraftRankings from './Begin Year Tools/PostDraftRankings';
 
 function generateYearRoute(league: LeagueData, pathSuffix: string, component: React.ReactNode) {
   const path = `/season/${league.season}${pathSuffix}`;
@@ -98,6 +101,10 @@ return (
             <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
             {/*Troll Pages*/}
             <Route path="/troll/:trollId/*" element={<TrollData data={leagueData} />} />
+            {/*Begin Year Tools*/}
+            <Route path="/begin-year-tools/side-bet-selection" element={<SideBetSelection />} />
+            <Route path="/begin-year-tools/super-smash-bros" element={<SuperSmashBros />} />
+            <Route path="/begin-year-tools/post-draft-rankings" element={<PostDraftRankings />} />
             {/*Year Pages*/}
             {leagueData.map((leagueYear) => (
               <React.Fragment key={leagueYear.season}>

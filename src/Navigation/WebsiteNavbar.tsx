@@ -9,10 +9,11 @@ interface NavbarProps {
 
 const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [sidebarView, setSidebarView] = useState<'main' | 'seasons' | 'trolls'>('main'); // Tracks the sidebar view
+  const [sidebarView, setSidebarView] = useState<'main' | 'seasons' | 'trolls' | 'begin-year-tools'>('main'); // Tracks the sidebar view
   const closeDropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isTrollsDropdownOpen, setTrollsDropdownOpen] = useState(false);
+  const [isBeginYearToolsDropdownOpen, setBeginYearToolsDropdownOpen] = useState(false);
 
   const handleShowSidebar = () => setShowSidebar(true);
   const handleCloseSidebar = () => {
@@ -31,6 +32,7 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
     closeDropdownTimeout.current = setTimeout(() => {
       setDropdownOpen(false);
       setTrollsDropdownOpen(false);
+      setBeginYearToolsDropdownOpen(false);
     }, 200);
   };
 
@@ -75,6 +77,7 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
             {sidebarView === 'main' && 'League of the Trolls'}
             {sidebarView === 'seasons' && 'Seasons'}
             {sidebarView === 'trolls' && 'Trolls'}
+            {sidebarView === 'begin-year-tools' && 'Begin Year Tools'}
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
@@ -105,6 +108,13 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
               >
                 Trolls
                 <span>&gt;</span> {/* Simple text indicator */}
+              </Nav.Link>
+              <Nav.Link
+                onClick={() => setSidebarView('begin-year-tools')}
+                className="d-flex justify-content-between align-items-center cursor-pointer"
+              >
+                Begin Year Tools
+                <span>&gt;</span>
               </Nav.Link>
             </Nav>
           )}
@@ -142,6 +152,22 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
                   {troll.name}
                 </Nav.Link>
               ))}
+            </Nav>
+          )}
+          {sidebarView === 'begin-year-tools' && (
+            <Nav className="flex-column fs-4">
+              <Nav.Link onClick={() => setSidebarView('main')} className="cursor-pointer">
+                ← Back
+              </Nav.Link>
+              <Nav.Link as={Link} to="/begin-year-tools/side-bet-selection" onClick={handleCloseSidebar}>
+                Side Bet Selection
+              </Nav.Link>
+              <Nav.Link as={Link} to="/begin-year-tools/super-smash-bros" onClick={handleCloseSidebar}>
+                Super Smash Bros
+              </Nav.Link>
+              <Nav.Link as={Link} to="/begin-year-tools/post-draft-rankings" onClick={handleCloseSidebar}>
+                Post Draft Rankings
+              </Nav.Link>
             </Nav>
           )}
         </Offcanvas.Body>
@@ -201,6 +227,28 @@ const WebsiteNavBar: React.FC<NavbarProps> = ({ data }) => {
                   {troll.name}
                 </NavDropdown.Item>
               ))}
+            </NavDropdown>
+            <NavDropdown
+              title="Begin Year Tools"
+              id="begin-year-tools-nav-dropdown"
+              show={isBeginYearToolsDropdownOpen}
+              onMouseEnter={() => {
+                if (closeDropdownTimeout.current) {
+                  clearTimeout(closeDropdownTimeout.current);
+                }
+                setBeginYearToolsDropdownOpen(true);
+              }}
+              onMouseLeave={handleMouseLeave}
+            >
+              <NavDropdown.Item as={Link} to="/begin-year-tools/side-bet-selection">
+                Side Bet Selection
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/begin-year-tools/super-smash-bros">
+                Super Smash Bros
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/begin-year-tools/post-draft-rankings">
+                Post Draft Rankings
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Container>

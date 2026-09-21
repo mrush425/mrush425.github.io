@@ -1,0 +1,7 @@
+@import '../StandardStyles.css';
+
+.begin-year-tools-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}

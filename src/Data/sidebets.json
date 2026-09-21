@@ -3,150 +3,208 @@
         "methodName": "Heartbreaker",
         "displayName": "Heartbreaker",
         "description": "Lowest point differential in a single season loss.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "MostPointsAgainst",
         "displayName": "FS Team",
         "description": "Highest total points against in regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["Waffle"],
+        "retired": false
     },
     {
         "methodName": "HelmetMaster",
         "displayName": "Helmet Master",
         "description": "Best guess of the NFL record of the persons selected helmet.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "Juggernaut",
         "displayName": "Juggernaut",
         "description": "Highest single points scored in a regular season game.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "Waffle",
         "displayName": "Waffle",
         "description": "The most difficult schedule based on everyone playing in your schedule.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["MostPointsAgainst"],
+        "retired": false
     },
     {
         "methodName": "BetterLuckyThanGood",
         "displayName": "Better Lucky Than Good",
         "description": "Least points in a win in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "BossWhenItCounts",
         "displayName": "Being a Boss When it Counts",
         "description": "Most points scored in the championship week.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "MaybeNextTime",
         "displayName": "Maybe Next Time",
         "description": "Highest score in a loss in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "JamarcusRussel",
         "displayName": "The Jamarcus Russel",
         "description": "Biggest 1st round bust.",
-        "isAsync": true
+        "isAsync": true,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "ParticipationRibbon",
         "displayName": "Participation Ribbon",
         "description": "Troll bowl winner.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "BestBadReceiver",
         "displayName": "Helmet Master 4th String",
         "description": "Most points from 4th string WR of Helmet Master team.",
-        "isAsync": true
+        "isAsync": true,
+        "independentOf": [],
+        "retired": true
     },
     {
         "methodName": "Underperformer",
         "displayName": "Underperformer",
         "description": "Furthest points away from projections throughout the regular season.",
-        "isAsync": true
+        "isAsync": true,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "SetAndForgetWinner",
         "displayName": "At Least I Draft Well",
         "description": "Set and forget league winner.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "ComingInHot",
         "displayName": "Coming in Hot",
         "description": "Most points scored in week 1",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "GetWreckd",
         "displayName": "Get Wreck'd",
         "description": "Biggest blowout in a regular season game",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "Blackjack",
         "displayName": "Blackjack",
         "description": "Team with player closest to 21 points in a single game without going over",
-        "isAsync": true
+        "isAsync": true,
+        "independentOf": [],
+        "retired": true
     },
     {
         "methodName": "Charger",
         "displayName": "The Charger",
         "description": "The Team with the most single digit losses throughout the season. (3pts for <1 diff, 2pts for <5 diff, 1pt for <10 diff)",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "Viking",
         "displayName": "The Viking",
         "description": "The Team with the most single digit wins throughout the season. (3pts for <1 diff, 2pts for <5 diff, 1pt for <10 diff)",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "Belt",
         "displayName": "The Belt",
         "description": "The belt stars with the winner from the prior year (first year its the championship winner). The matchup with the belt, the belt is on the line. Whoever ends with the belt at the end of the regular season wins",
-        "isAsync": false  
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     },
     {
         "methodName": "ConnarEffect",
         "displayName": "The Connar Effect",
         "description": "Most points against by quarterbacks in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["GetRunOver", "ReceivingLosses", "KilledByATightEnd", "BlueBalls", "KickedInDaBallz"],
+        "retired": false
     },
     {
         "methodName": "GetRunOver",
         "displayName": "Get Run Over",
         "description": "Most points against by running backs in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["ConnarEffect", "ReceivingLosses", "KilledByATightEnd", "BlueBalls", "KickedInDaBallz"],
+        "retired": true
     },
     {
         "methodName": "ReceivingLosses",
         "displayName": "Receiving Losses",
         "description": "Most points against by wide receivers in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["ConnarEffect", "GetRunOver", "KilledByATightEnd", "BlueBalls", "KickedInDaBallz"],
+        "retired": true
     },
     {
         "methodName": "KilledByATightEnd",
         "displayName": "Killed by a Tight End",
         "description": "Most points against by tight ends in the regular season.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["ConnarEffect", "GetRunOver", "ReceivingLosses", "BlueBalls", "KickedInDaBallz"],
+        "retired": false
     },
     {
         "methodName": "BlueBalls",
         "displayName": "Blue Balls",
         "description": "Most points against by defenses.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["ConnarEffect", "GetRunOver", "ReceivingLosses", "KilledByATightEnd", "KickedInDaBallz"],
+        "retired": false
     },
     {
         "methodName": "KickedInDaBallz",
         "displayName": "Kicked in da Ballz",
         "description": "Most points against by kickers.",
-        "isAsync": false
+        "isAsync": false,
+        "independentOf": ["ConnarEffect", "GetRunOver", "ReceivingLosses", "KilledByATightEnd", "BlueBalls"],
+        "retired": false
+    },
+    {
+        "methodName": "OhShit",
+        "displayName": "Oh Shit",
+        "description": "Highest points against by a single player in the regular season.",
+        "isAsync": false,
+        "independentOf": [],
+        "retired": false
     }
 ]

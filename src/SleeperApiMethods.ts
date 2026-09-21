@@ -7,58 +7,82 @@ import PlayerYearStats from "./Interfaces/PlayerYearStats";
 import { populatePositionOrderedLists } from "./Pages/Year Pages/SharedDraftMethods";
 import trollData from './Data/trollData.json'; // Import your trollData.json
 
+interface SleeperArchiveIndex {
+  seasons: string[];
+}
 
-export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
-  const data: LeagueData[] = [];
+const sleeperDataBaseUrl = `${process.env.PUBLIC_URL}/Sleeper%20Data`;
 
-  while (leagueId !== null && leagueId !== undefined) {
-    const leaguePromise = fetch('https://api.sleeper.app/v1/league/' + leagueId).then(response => response.json());
-    const statePromise = fetch('https://api.sleeper.app/v1/state/nfl').then(response => response.json());
-    const rosterPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/rosters`).then(response => response.json());
-    const userPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/users`).then(response => response.json());
-
-    const [leagueJson, stateJson, rosterJson, userJson] = await Promise.all([leaguePromise, statePromise, rosterPromise, userPromise]);
-
-    // Fetch standings using the season from leagueJson
-    const standingsPromise = fetch(`https://site.api.espn.com/apis/v2/sports/football/nfl/standings?season=${leagueJson.season}`).then(response => response.json());
-    const standingsJson = await standingsPromise;
-
-    // Map standings to the NFLStanding interface
-    const standings: NFLStandingEntry[] = standingsJson.children.flatMap((conference: any) =>
-      conference.standings.entries.map((entry: any): NFLStandingEntry => ({
-        id: entry.team.id,
-        name: entry.team.displayName,
-        abbreviation: entry.team.abbreviation,
-        wins: entry.stats.find((stat: any) => stat.name === "wins")?.value || 0,
-        losses: entry.stats.find((stat: any) => stat.name === "losses")?.value || 0,
-        ties: entry.stats.find((stat: any) => stat.name === "ties")?.value || 0,
-        winPercent: entry.stats.find((stat: any) => stat.name === "winPercent")?.value || 0,
-      }))
-    );
-
-    for (const user of userJson) {
-      const trollMatch = trollData.find(troll => troll['Sleeper ID'] === user.user_id);
-      if (trollMatch) {
-        user.metadata = user.metadata || {};
-        user.metadata.team_name = trollMatch.Nickname;
-      }
+async function loadArchivedLeagueData(): Promise<LeagueData[]> {
+  try {
+    const indexResponse = await fetch(`${sleeperDataBaseUrl}/index.json`);
+    if (!indexResponse.ok) {
+      return [];
     }
 
-    // Add the additional information to the league data
-    leagueJson.nflSeasonInfo = stateJson;
-    leagueJson.rosters = rosterJson;
-    leagueJson.users = userJson;
-    leagueJson.matchupInfo = await getMatchupData(leagueJson);
+    const index: SleeperArchiveIndex = await indexResponse.json();
+    return await Promise.all(
+      index.seasons.map(async (season) => {
+        const response = await fetch(`${sleeperDataBaseUrl}/${season}/league.json`);
+        if (!response.ok) {
+          throw new Error(`Unable to load archived Sleeper data for ${season}.`);
+        }
+        return response.json() as Promise<LeagueData>;
+      })
+    );
+  } catch (error) {
+    console.warn('Unable to load archived Sleeper data. Continuing with live data only.', error);
+    return [];
+  }
+}
 
-    // Include standings data
-    leagueJson.nflStandings = standings;
+async function getLiveLeagueData(leagueId: string): Promise<LeagueData> {
+  const leaguePromise = fetch('https://api.sleeper.app/v1/league/' + leagueId).then(response => response.json());
+  const statePromise = fetch('https://api.sleeper.app/v1/state/nfl').then(response => response.json());
+  const rosterPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/rosters`).then(response => response.json());
+  const userPromise = fetch(`https://api.sleeper.app/v1/league/${leagueId}/users`).then(response => response.json());
 
-    data.push(leagueJson);
+  const [leagueJson, stateJson, rosterJson, userJson] = await Promise.all([leaguePromise, statePromise, rosterPromise, userPromise]);
+  const standingsResponse = await fetch(`https://site.api.espn.com/apis/v2/sports/football/nfl/standings?season=${leagueJson.season}`);
+  const standingsJson = await standingsResponse.json();
+  const standings: NFLStandingEntry[] = standingsJson.children.flatMap((conference: any) =>
+    conference.standings.entries.map((entry: any): NFLStandingEntry => ({
+      id: entry.team.id,
+      name: entry.team.displayName,
+      abbreviation: entry.team.abbreviation,
+      wins: entry.stats.find((stat: any) => stat.name === "wins")?.value || 0,
+      losses: entry.stats.find((stat: any) => stat.name === "losses")?.value || 0,
+      ties: entry.stats.find((stat: any) => stat.name === "ties")?.value || 0,
+      winPercent: entry.stats.find((stat: any) => stat.name === "winPercent")?.value || 0,
+    }))
+  );
 
-    leagueId = leagueJson.previous_league_id;
+  for (const user of userJson) {
+    const trollMatch = trollData.find(troll => troll['Sleeper ID'] === user.user_id);
+    if (trollMatch) {
+      user.metadata = user.metadata || {};
+      user.metadata.team_name = trollMatch.Nickname;
+    }
   }
 
-  return data;
+  leagueJson.nflSeasonInfo = stateJson;
+  leagueJson.rosters = rosterJson;
+  leagueJson.users = userJson;
+  leagueJson.matchupInfo = await getMatchupData(leagueJson);
+  leagueJson.nflStandings = standings;
+
+  return leagueJson;
+}
+
+export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
+  const [liveLeagueData, archivedLeagueData] = await Promise.all([
+    getLiveLeagueData(leagueId),
+    loadArchivedLeagueData(),
+  ]);
+
+  return [liveLeagueData, ...archivedLeagueData].sort(
+    (firstLeague, secondLeague) => Number(secondLeague.season) - Number(firstLeague.season)
+  );
 }
 
 

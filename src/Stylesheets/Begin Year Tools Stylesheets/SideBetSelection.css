@@ -1,0 +1,273 @@
+@import '../StandardStyles.css';
+
+.begin-year-tools-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.sidebet-selection-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 24px;
+}
+
+.sidebet-selection-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.sidebet-export-button {
+  background: rgba(96, 165, 250, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  color: var(--accent-blue);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sidebet-export-button:hover {
+  background: rgba(96, 165, 250, 0.25);
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.sidebet-table-scroll {
+  overflow-x: auto;
+}
+
+.sidebet-selection-panel:first-child .sidebet-table-scroll,
+.sidebet-selection-table {
+  overflow: visible;
+}
+
+.sidebet-selection-table,
+.sidebet-catalog-table {
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sidebet-selection-table th,
+.sidebet-selection-table td,
+.sidebet-catalog-table th,
+.sidebet-catalog-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.sidebet-selection-table th,
+.sidebet-catalog-table th {
+  background: transparent;
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sidebet-selection-table td,
+.sidebet-catalog-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.sidebet-selection-table td:first-child {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.sidebet-catalog-table td:first-child {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.sidebet-catalog-table td:last-child {
+  color: #cbd5e1;
+}
+
+.sidebet-selection-table tbody tr,
+.sidebet-catalog-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.sidebet-selection-table tbody tr:nth-child(even),
+.sidebet-catalog-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sidebet-selection-table tbody tr:hover,
+.sidebet-catalog-table tbody tr:hover {
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.sidebet-dropdown-cell {
+  position: relative;
+}
+
+.sidebet-dropdown-toggle {
+  width: 100%;
+  min-width: 230px;
+  padding: 12px 14px;
+  background: var(--bg-dark-secondary);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  font-size: 16px;
+  text-align: left;
+}
+
+.sidebet-dropdown-toggle:hover,
+.sidebet-dropdown-toggle[aria-expanded='true'] {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.sidebet-dropdown-placeholder {
+  border-color: rgba(249, 115, 22, 0.45);
+  color: var(--accent-orange);
+}
+
+.sidebet-dropdown-placeholder:hover,
+.sidebet-dropdown-placeholder[aria-expanded='true'] {
+  border-color: var(--accent-orange);
+  color: #fdba74;
+}
+
+.sidebet-dropdown-menu {
+  position: fixed;
+  z-index: 1100;
+  max-width: calc(100vw - 32px);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--bg-dark-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sidebet-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 16px;
+  text-align: left;
+}
+
+.sidebet-dropdown-item:hover {
+  background: var(--bg-glass-light);
+  color: var(--accent-blue);
+}
+
+.sidebet-export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 12, 29, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.sidebet-export-modal {
+  width: min(720px, 100%);
+  max-height: min(720px, 90vh);
+  overflow: auto;
+  background: var(--bg-dark-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.sidebet-export-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sidebet-export-modal-header h2 {
+  font-size: 18px;
+}
+
+.sidebet-export-close {
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.sidebet-export-close:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.sidebet-export-table-scroll {
+  overflow-x: auto;
+  padding: 20px;
+}
+
+.sidebet-export-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sidebet-export-table th,
+.sidebet-export-table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.sidebet-export-table th {
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sidebet-export-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.sidebet-export-table td:nth-child(2) {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.sidebet-export-table td:last-child {
+  color: var(--accent-cyan);
+}
+
+.sidebet-export-empty {
+  padding: 24px 20px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 850px) {
+  .sidebet-selection-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebet-dropdown-menu {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+}
