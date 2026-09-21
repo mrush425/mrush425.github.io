@@ -6,35 +6,7 @@ import NFLStandingEntry from "./Interfaces/NFLStandingEntry";
 import PlayerYearStats from "./Interfaces/PlayerYearStats";
 import { populatePositionOrderedLists } from "./Pages/Year Pages/SharedDraftMethods";
 import trollData from './Data/trollData.json'; // Import your trollData.json
-
-interface SleeperArchiveIndex {
-  seasons: string[];
-}
-
-const sleeperDataBaseUrl = `${process.env.PUBLIC_URL}/Sleeper%20Data`;
-
-async function loadArchivedLeagueData(): Promise<LeagueData[]> {
-  try {
-    const indexResponse = await fetch(`${sleeperDataBaseUrl}/index.json`);
-    if (!indexResponse.ok) {
-      return [];
-    }
-
-    const index: SleeperArchiveIndex = await indexResponse.json();
-    return await Promise.all(
-      index.seasons.map(async (season) => {
-        const response = await fetch(`${sleeperDataBaseUrl}/${season}/league.json`);
-        if (!response.ok) {
-          throw new Error(`Unable to load archived Sleeper data for ${season}.`);
-        }
-        return response.json() as Promise<LeagueData>;
-      })
-    );
-  } catch (error) {
-    console.warn('Unable to load archived Sleeper data. Continuing with live data only.', error);
-    return [];
-  }
-}
+import archivedLeagueData from './Data/Sleeper Data';
 
 async function getLiveLeagueData(leagueId: string): Promise<LeagueData> {
   const leaguePromise = fetch('https://api.sleeper.app/v1/league/' + leagueId).then(response => response.json());
@@ -75,10 +47,7 @@ async function getLiveLeagueData(leagueId: string): Promise<LeagueData> {
 }
 
 export async function getLeagueData(leagueId: string): Promise<LeagueData[]> {
-  const [liveLeagueData, archivedLeagueData] = await Promise.all([
-    getLiveLeagueData(leagueId),
-    loadArchivedLeagueData(),
-  ]);
+  const liveLeagueData = await getLiveLeagueData(leagueId);
 
   return [liveLeagueData, ...archivedLeagueData].sort(
     (firstLeague, secondLeague) => Number(secondLeague.season) - Number(firstLeague.season)
