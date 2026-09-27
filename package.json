@@ -11,9 +11,13 @@
     "@types/node": "^16.18.50",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "bootstrap": "^5.3.8",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.30.6",
     "react-scripts": "^5.0.1",
+    "recharts": "^2.12.7",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -23,6 +27,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "snapshot:sleeper": "node scripts/snapshot-sleeper-data.js",
+    "snapshot:sleeper:all": "node scripts/snapshot-sleeper-data.js --all",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

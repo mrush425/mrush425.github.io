@@ -43,7 +43,7 @@ const SideBetSelection: React.FC = () => {
     .filter(
       (year) =>
         year.data.length >= 12 &&
-        year.data.every((sponsor: Sponsor) => Number.isInteger(sponsor.place) && sponsor.place > 0)
+        (year.data as any[]).every((sponsor: Sponsor) => Number.isInteger(sponsor.place) && sponsor.place > 0)
     )
     .reduce((latestYear, year) => (year.year > latestYear.year ? year : latestYear));
   const sponsors = mostRecentCompletedYear.data

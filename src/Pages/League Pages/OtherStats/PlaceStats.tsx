@@ -42,7 +42,7 @@ export const getOverallPlace = (userId: string, season: string): number | undefi
 
     if (!yearData) return undefined;
 
-    const playerData = yearData.data.find(
+    const playerData = (yearData.data as any[]).find(
         (pd: any) => pd.sleeper_id === userId
     );
     

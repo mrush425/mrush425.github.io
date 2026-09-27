@@ -117,7 +117,7 @@ class FootballPlayerStatsMethods {
       const gamesPlayed = league.settings.playoff_week_start + 2;
 
       return league.users.map(async (user) => {
-        const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === user.user_id);
+        const playerDataEntry = (yearDataEntry.data as any[]).find((pd: any) => pd.sleeper_id === user.user_id);
         if (!playerDataEntry) {
           return undefined;
         }
@@ -176,7 +176,7 @@ class FootballPlayerStatsMethods {
       const gamesPlayed = league.settings.playoff_week_start + 2;
 
       return league.users.map(async (user) => {
-        const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === user.user_id);
+        const playerDataEntry = (yearDataEntry.data as any[]).find((pd: any) => pd.sleeper_id === user.user_id);
         if (!playerDataEntry) {
           return undefined;
         }

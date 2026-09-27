@@ -101,7 +101,7 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         
         // Get final place (after playoffs) from yearTrollData
         const yearData = yearTrollData.find((yd: any) => yd.year === Number(league.season));
-        const playerData = yearData?.data.find((pd: any) => pd.sleeper_id === userId);
+        const playerData = (yearData?.data as any[] | undefined)?.find((pd: any) => pd.sleeper_id === userId);
         const finalPlace = playerData?.place;
 
         // Use PointCalculations to get regular season points only

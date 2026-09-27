@@ -13,6 +13,15 @@ interface CareerProgressionProps {
   leagueData: LeagueData[];
 }
 
+interface YearTrollDataEntry {
+  year: number;
+  data: Array<{
+    sleeper_id: string;
+    place?: number;
+    money_earned?: number;
+  }>;
+}
+
 const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName, leagueData }) => {
   const stats = useMemo(() => {
     const isCurrentSeasonInProgress = (league: LeagueData): boolean =>
@@ -60,8 +69,8 @@ const CareerProgression: React.FC<CareerProgressionProps> = ({ userId, userName,
         const seasonPlace = getUserSeasonPlace(userId, league) || 0;
         
         // Get final place (after playoffs) from yearTrollData
-        const yearDataEntry = yearTrollData.find((yd: any) => yd.year === Number(league.season));
-        const playerData = yearDataEntry?.data.find((pd: any) => pd.sleeper_id === userId);
+        const yearDataEntry = (yearTrollData as YearTrollDataEntry[]).find((yd) => yd.year === Number(league.season));
+        const playerData = yearDataEntry?.data.find((pd) => pd.sleeper_id === userId);
         const finalPlace = playerData?.place || 0;
         const moneyEarned = Number(playerData?.money_earned || 0);
         

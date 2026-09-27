@@ -198,7 +198,7 @@ class SidebetMethods {
       return undefined;
     }
 
-    const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === userSleeperId);
+    const playerDataEntry = (yearDataEntry.data as any[]).find((pd: any) => pd.sleeper_id === userSleeperId);
     if (!playerDataEntry) {
       console.warn(`No helmet master data found for user ${user.user_id} in season ${currentSeason}.`);
       return undefined;
@@ -818,7 +818,7 @@ class SidebetMethods {
       return undefined;
     }
 
-    const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === userSleeperId);
+    const playerDataEntry = (yearDataEntry.data as any[]).find((pd: any) => pd.sleeper_id === userSleeperId);
     if (!playerDataEntry) {
       console.warn(`No data found for user ${userSleeperId} in season ${season}.`);
       return undefined;
@@ -1068,7 +1068,7 @@ class SidebetMethods {
       if (!oppMatchup) return;
 
       for (let i = 0; i < oppMatchup.starters.length; i++) {
-        const playerId = oppMatchup.starters[i];
+        const playerId: string = oppMatchup.starters[i];
         const pts = oppMatchup.starters_points[i] ?? 0;
 
         if (!(playerId in playerData)) continue;
@@ -1243,7 +1243,7 @@ class SidebetMethods {
       return undefined;
     }
 
-    const playerDataEntry = yearDataEntry.data.find((pd: any) => pd.sleeper_id === userSleeperId);
+    const playerDataEntry = (yearDataEntry.data as any[]).find((pd: any) => pd.sleeper_id === userSleeperId);
     if (!playerDataEntry) {
       console.warn(`No helmet master data found for user ${user.user_id} in season ${currentSeason}.`);
       return undefined;
