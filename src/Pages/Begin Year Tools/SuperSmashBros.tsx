@@ -149,11 +149,13 @@ const SuperSmashBros: React.FC = () => {
   };
 
   const updatePlace = (section: number, slot: number, place: string) => {
-    setMatches((currentMatches) => currentMatches.map((match, sectionIndex) =>
-      sectionIndex === section
-        ? match.map((matchSlot, slotIndex) => slotIndex === slot ? { ...matchSlot, place } : matchSlot)
-        : match
-    ));
+    setMatches((currentMatches) => currentMatches.map((match, sectionIndex) => {
+      if (sectionIndex !== section) return match;
+      if (place && match.some((matchSlot, slotIndex) => slotIndex !== slot && matchSlot.place === place)) {
+        return match;
+      }
+      return match.map((matchSlot, slotIndex) => slotIndex === slot ? { ...matchSlot, place } : matchSlot);
+    }));
   };
 
   const getTroll = (trollId: string) => allTrolls.find((troll) => troll['Sleeper ID'] === trollId);
@@ -245,6 +247,15 @@ const SuperSmashBros: React.FC = () => {
             <div className="smash-match-slots">
               {match.map((slot, slotIndex) => (
                 <article className="smash-match-slot" key={slotIndex}>
+                  {(() => {
+                    const selectedPlaces = new Set(
+                      match
+                        .filter((_, index) => index !== slotIndex)
+                        .map((matchSlot) => matchSlot.place)
+                        .filter(Boolean)
+                    );
+                    return (
+                      <>
                   <span className="smash-cpu-label">CPU {slotIndex + 1} ({getPositionAverage(slotIndex + 1)})</span>
                   <button type="button" className="smash-fighter-box" onClick={() => openPicker(sectionIndex, slotIndex)}>
                     {slot.character ? <img src={slot.character.image} alt={slot.character.name} /> : <span aria-hidden="true" />}
@@ -253,7 +264,10 @@ const SuperSmashBros: React.FC = () => {
                     {slot.character ? `${slot.character.name} (${getCharacterAverage(slot.character.name)}, x${getCharacterUseCount(slot.character.name)})` : '---'}
                   </span>
                   <strong>{getTroll(slot.trollId)?.Nickname ?? '---'} ({getTrollAverage(slot.trollId)})</strong>
-                  <label>Place<select value={slot.place} onChange={(event) => updatePlace(sectionIndex, slotIndex, event.target.value)}><option value="">---</option>{Array.from({ length: 6 }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></label>
+                  <label>Place<select value={slot.place} onChange={(event) => updatePlace(sectionIndex, slotIndex, event.target.value)}><option value="">---</option>{Array.from({ length: 6 }, (_, index) => { const place = String(index + 1); return <option key={place} value={place} disabled={selectedPlaces.has(place)}>{place}</option>; })}</select></label>
+                      </>
+                    );
+                  })()}
                 </article>
               ))}
             </div>

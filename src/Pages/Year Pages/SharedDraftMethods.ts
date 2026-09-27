@@ -13,10 +13,12 @@ export const calculatePercentileRanges = (listLength: number): [number, number, 
     return [firstPercentile, secondPercentile, thirdPercentile, fourthPercentile, fifthPercentile, sixthPercentile];
   };
   
-  export const populatePositionOrderedLists = (playerStats: PlayerYearStats[]): Record<string, PlayerYearStats[]> => {
+    export const populatePositionOrderedLists = (playerStats: Array<PlayerYearStats | null>): Record<string, PlayerYearStats[]> => {
     let positionOrderedLists: Record<string, PlayerYearStats[]> = {};
     positionOrderedLists={};
     playerStats.forEach((stats) => {
+            if (!stats) return;
+
       const position = stats.player.position;
       if (!positionOrderedLists[position]) {
         positionOrderedLists[position] = [];

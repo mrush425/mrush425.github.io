@@ -108,9 +108,18 @@ export async function fetchDraftData(draftId: string, leagueId: string, season: 
           )
       );
 
-      const playerStatsData = await Promise.all(
+      const playerStatsData = (await Promise.all(
           playerStatsResponses.map((response) => response.json())
-      );
+      )).map((stats, index) => {
+          if (stats) return stats as PlayerYearStats;
+
+          const pick = picks[index];
+          return {
+              player_id: pick.player_id,
+              player: { position: pick.metadata.position },
+              stats: { pts_half_ppr: 0 },
+          } as PlayerYearStats;
+      });
 
       const positionOrderedLists = populatePositionOrderedLists(playerStatsData);
 
