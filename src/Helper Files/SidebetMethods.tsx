@@ -1163,6 +1163,52 @@ class SidebetMethods {
     return this.SortedPointsAgainstByPosition('K', data, includeRegularSeason, includePlayoffs);
   }
 
+  static OhShit(
+    data: LeagueData,
+    includeRegularSeason: boolean = true,
+    includePlayoffs: boolean = false
+  ): SidebetStat[] {
+    const orderedSidebets: SidebetStat[] = [];
+    const relevantMatchups = getRelevantMatchups(data, includeRegularSeason, includePlayoffs, true);
+
+    data.rosters.forEach((roster) => {
+      const sidebetStat = new SidebetStat();
+      sidebetStat.user = data.users.find((user) => user.user_id === roster.owner_id);
+
+      let highestPoints = 0;
+      let highestWeek = 0;
+      let highestPlayer = '';
+
+      relevantMatchups.forEach((matchupInfo) => {
+        const teamMatchup = matchupInfo.matchups.find((matchup) => matchup.roster_id === roster.roster_id);
+        if (!teamMatchup) return;
+
+        const opponentMatchup = matchupInfo.matchups.find(
+          (matchup) => matchup.matchup_id === teamMatchup.matchup_id && matchup.roster_id !== roster.roster_id
+        );
+        if (!opponentMatchup) return;
+
+        opponentMatchup.starters.forEach((playerId, index) => {
+          const points = opponentMatchup.starters_points[index] ?? 0;
+          if (points <= highestPoints) return;
+
+          highestPoints = points;
+          highestWeek = matchupInfo.week;
+          highestPlayer = getPlayerName(playerId);
+        });
+      });
+
+      sidebetStat.stat_number = highestPoints;
+      sidebetStat.stats_display = highestPlayer
+        ? `Week ${highestWeek}: ${highestPoints.toFixed(2)} points - ${highestPlayer}`
+        : 'No points recorded';
+      orderedSidebets.push(sidebetStat);
+    });
+
+    orderedSidebets.sort((first, second) => (second.stat_number ?? 0) - (first.stat_number ?? 0));
+    return orderedSidebets;
+  }
+
   static BlueBalls(
     data: LeagueData,
     includeRegularSeason: boolean = true,

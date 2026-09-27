@@ -202,7 +202,7 @@
     {
         "methodName": "OhShit",
         "displayName": "Oh Shit",
-        "description": "Highest points against by a single player in the regular season.",
+        "description": "Highest points against by a single player in a single game in the regular season.",
         "isAsync": false,
         "independentOf": [],
         "retired": false
