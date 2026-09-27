@@ -5,3 +5,262 @@
   max-width: 1400px;
   margin: 0 auto;
 }
+
+.post-draft-rankings-page {
+  max-width: none;
+  margin: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.post-draft-rankings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.post-draft-league-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.post-draft-league-form input {
+  width: 220px;
+}
+
+.post-draft-league-form button {
+  padding: 8px 14px;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 6px;
+  background: var(--accent-cyan);
+  color: var(--bg-dark-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.post-draft-league-form button:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue);
+}
+
+.post-draft-league-form button:disabled {
+  border-color: var(--border-medium);
+  background: var(--bg-glass-medium);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.post-draft-status,
+.post-draft-error {
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+.post-draft-error {
+  color: #b42318;
+}
+
+.post-draft-export-button,
+.post-draft-team button {
+  cursor: pointer;
+}
+
+.post-draft-team button.post-draft-selected-player {
+  background: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.post-draft-rankings-grid {
+  display: grid;
+  grid-auto-columns: 180px;
+  grid-auto-flow: column;
+  justify-content: safe center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 12px;
+}
+
+.post-draft-team {
+  border: 1px solid #c8c8c8;
+  min-width: 0;
+}
+
+.post-draft-team h4 {
+  margin: 4px;
+  color: #45739b;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.post-draft-team table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.post-draft-team table tbody tr:hover {
+  background: transparent;
+}
+
+.post-draft-team th,
+.post-draft-team td {
+  padding: 4px;
+  vertical-align: top;
+  text-align: left;
+  border: 0;
+}
+
+.post-draft-team ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-draft-team li {
+  display: flex;
+  justify-content: flex-start;
+  gap: 3px;
+  align-items: center;
+  height: 40px;
+  border-bottom: 1px solid #ececec;
+}
+
+.post-draft-team li button {
+  box-sizing: border-box;
+  flex: 0 0 24px;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+}
+
+.post-draft-team li span {
+  line-height: 16px;
+}
+
+.post-draft-team li:last-child {
+  border-bottom: 0;
+}
+
+.post-draft-team .post-draft-section-label {
+  display: block;
+  min-height: auto;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid #aeb7c2;
+  font-weight: bold;
+}
+
+.post-draft-position {
+  color: #45739b;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.post-draft-votes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 0 4px 4px;
+}
+
+.post-draft-votes label {
+  display: grid;
+  grid-template-columns: 16px 72px;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+}
+
+.post-draft-votes label:last-child {
+  padding-bottom: 5px;
+}
+
+.post-draft-votes input {
+  width: 72px;
+}
+
+.post-draft-export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 12, 29, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.post-draft-export-modal {
+  width: min(720px, 100%);
+  max-height: min(720px, 90vh);
+  overflow: auto;
+  background: var(--bg-dark-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.post-draft-export-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.post-draft-export-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.post-draft-export-modal-header button {
+  cursor: pointer;
+}
+
+.post-draft-export-table-scroll {
+  overflow-x: auto;
+  padding: 20px;
+}
+
+.post-draft-export-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.post-draft-export-table-scroll th,
+.post-draft-export-table-scroll td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.post-draft-export-table-scroll th:first-child,
+.post-draft-export-table-scroll td:first-child {
+  user-select: none;
+}
+
+@media (max-width: 500px) {
+  .post-draft-league-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .post-draft-league-form input {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .post-draft-rankings-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}

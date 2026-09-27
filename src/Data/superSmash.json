@@ -1,0 +1,1962 @@
+[
+    {
+        "year": 2019,
+        "data": [
+            {
+                "Year": 2019,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Pikachu",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Diddy Kong",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Wolf",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Luigi",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Wii Fit Trainer",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Sheik",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Inkling",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Mario",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Wario",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Lucina",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Meta Knight",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Roy",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Peach",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Ken",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Mega Man",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Zelda",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Lucas",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Greninja",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Snake",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Dark Samus",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Corrin",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Ice Climbers",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Falco",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2019,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Duck Hunt",
+                "Place": 6,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2020,
+        "data": [
+            {
+                "Year": 2020,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Wolf",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Yoshi",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Dr. Mario",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Mario",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Dark Pit",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Ganondorf",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Ice Climbers",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Lucario",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Banjo & Kazooie",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Isabelle",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Donkey Kong",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Luigi",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Pichu",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Inceneroar",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Terry",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Captain Falcon",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Kirby",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Cloud",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Wii Fit Trainer",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Little Mac",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Wario",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "King K. Rool",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Fox",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2020,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Samus",
+                "Place": 1,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2021,
+        "data": [
+            {
+                "Year": 2021,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Pit",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Bayonetta",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Ryu",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Ike",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Zero Suit Samus",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Greninja",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Luigi",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Dark Pit",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Simon",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Peach",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "King K. Rool",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Zelda",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Steve",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Rosalina & Luna",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Duck Hunt",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Palutena",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Donkey Kong",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Bowser Jr.",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Robin",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Ness",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Richter",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Pikachu",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Young Link",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2021,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Wolf",
+                "Place": 3,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2022,
+        "data": [
+            {
+                "Year": 2022,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Roy",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Fox",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Little Mac",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Sheik",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Ness",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Ice Climbers",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Captain Falcon",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Snake",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Simon",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Banjo & Kazooie",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Meta Knight",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Pichu",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Wario",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Pikachu",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Richter",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Jigglypuff",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Corrin",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Pit",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Shulk",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Zelda",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Mr. Game & Watch",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Pac-Man",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Peach",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2022,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Palutena",
+                "Place": 2,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2023,
+        "data": [
+            {
+                "Year": 2023,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Lucario",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Peach",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Ridley",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Toon Link",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Young Link",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Palutena",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Joker",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Link",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Luigi",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Samus",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Robin",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Mr. Game & Watch",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Ryu",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Snake",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Bowser Jr.",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Pikachu",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Piranha Plant",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Captain Falcon",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Rosalina & Luna",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Bayonetta",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Mewtwo",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Zero Suit Samus",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Dark Pit",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2023,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Villager",
+                "Place": 2,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2024,
+        "data": [
+            {
+                "Year": 2024,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Dark Pit",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Sheik",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Lucario",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Mr. Game & Watch",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Brandyn Kerscher",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Chrom",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Dark Samus",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Beau Zachowski",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Link",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Meta Knight",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Ridley",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Greninja",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Bowser",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Pichu",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Lucina",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "King K. Rool",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Luigi",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Isabelle",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Brandyn Kerscher",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Piranha Plant",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Inkling",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Mega Man",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Sora",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Beau Zachowski",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Bowser Jr.",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Mythra",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Villager",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2024,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Shulk",
+                "Place": 5,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2025,
+        "data": [
+            {
+                "Year": 2025,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Lucas",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Min Min",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Marth",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Robin",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Derrick Allen",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Wii Fit Trainer",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Mr. Game & Watch",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Ice Climbers",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Lucario",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Diddy Kong",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Simon",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Zero Suit Samus",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Schwartz",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Steve",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Corrin",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Schwartz",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Rosalina & Luna",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Ike",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Mega Man",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Piranha Plant",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Chrom",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Richter",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Derrick Allen",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Ridley",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Sora",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Ryu",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Palutena",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2025,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Joker",
+                "Place": 1,
+                "": ""
+            }
+        ]
+    },
+    {
+        "year": 2026,
+        "data": [
+            {
+                "Year": 2026,
+                "Player": "Alex Dosdos",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "A",
+                "Character": "Fox",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Matt Rush",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "A",
+                "Character": "Lucina",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Leman",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "A",
+                "Character": "Snake",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Schwartz",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "A",
+                "Character": "Mr. Game & Watch",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Matt Nockerts",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "A",
+                "Character": "Richter",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "John Rush",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "A",
+                "Character": "Kazuya",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Connar Bodoh",
+                "Round": 1,
+                "Position": 1,
+                "Pool": "B",
+                "Character": "Piranha Plant",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Jorge Dosdos",
+                "Round": 1,
+                "Position": 2,
+                "Pool": "B",
+                "Character": "Little Mac",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Sowers",
+                "Round": 1,
+                "Position": 3,
+                "Pool": "B",
+                "Character": "Pit",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Chris Rosenthal",
+                "Round": 1,
+                "Position": 4,
+                "Pool": "B",
+                "Character": "Zero Suit Samus",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Derrick Allen",
+                "Round": 1,
+                "Position": 5,
+                "Pool": "B",
+                "Character": "Ike",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "De'Vonne Jackson",
+                "Round": 1,
+                "Position": 6,
+                "Pool": "B",
+                "Character": "Greninja",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "John Rush",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "L",
+                "Character": "Daisy",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Alex Dosdos",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "L",
+                "Character": "Ice Climbers",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Derrick Allen",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "L",
+                "Character": "Diddy Kong",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Jorge Dosdos",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "L",
+                "Character": "Chrom",
+                "Place": 5,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Sowers",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "L",
+                "Character": "Pokemon Trainer",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Leman",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "L",
+                "Character": "Pyra & Mythra",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Justin Schwartz",
+                "Round": 2,
+                "Position": 1,
+                "Pool": "W",
+                "Character": "Cloud",
+                "Place": 2,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Matt Rush",
+                "Round": 2,
+                "Position": 2,
+                "Pool": "W",
+                "Character": "Wolf",
+                "Place": 4,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Chris Rosenthal",
+                "Round": 2,
+                "Position": 3,
+                "Pool": "W",
+                "Character": "Diddy Kong",
+                "Place": 3,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Matt Nockerts",
+                "Round": 2,
+                "Position": 4,
+                "Pool": "W",
+                "Character": "Mr. Game & Watch",
+                "Place": 6,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "De'Vonne Jackson",
+                "Round": 2,
+                "Position": 5,
+                "Pool": "W",
+                "Character": "Lucina",
+                "Place": 1,
+                "": ""
+            },
+            {
+                "Year": 2026,
+                "Player": "Connar Bodoh",
+                "Round": 2,
+                "Position": 6,
+                "Pool": "W",
+                "Character": "Corrin",
+                "Place": 5,
+                "": ""
+            }
+        ]
+    }
+]
