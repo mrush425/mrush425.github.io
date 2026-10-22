@@ -3,7 +3,11 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 
-import { getRecordWinPercentage } from '../../../Helper Files/RecordCalculations';
+import {
+  displayRecord,
+  getRecordAgainstLeague,
+  getRecordWinPercentage,
+} from '../../../Helper Files/RecordCalculations';
 import { getOverallPlace } from '../../../Helper Files/HelperMethods';
 
 // ✅ NEW: shared right pane
@@ -26,11 +30,19 @@ interface SeasonRow {
 
   winPct: string;
   winPctValue: number;
+  vsEveryoneRecord: string;
+  vsEveryoneWinPct: string;
+  vsEveryoneWinPctValue: number;
 
   overallPlace: number;
 }
 
-type SortKey = 'teamName' | 'season' | 'winPctValue' | 'overallPlace';
+type SortKey =
+  | 'teamName'
+  | 'season'
+  | 'winPctValue'
+  | 'vsEveryoneWinPctValue'
+  | 'overallPlace';
 
 interface SortConfig {
   key: SortKey;
@@ -39,6 +51,7 @@ interface SortConfig {
 
 interface MaxMinStats {
   winPctValue: { max: number; min: number };
+  vsEveryoneWinPctValue: { max: number; min: number };
   overallPlace: { max: number; min: number };
 }
 
@@ -82,6 +95,13 @@ const buildSeasonRows = (data: LeagueData[]): SeasonRow[] => {
 
       const winPct = getRecordWinPercentage(wins, losses, ties);
       const winPctValue = getPctValue(winPct);
+      const [vsEveryoneWins, vsEveryoneLosses, vsEveryoneTies] = getRecordAgainstLeague(user, league);
+      const vsEveryoneWinPct = getRecordWinPercentage(
+        vsEveryoneWins,
+        vsEveryoneLosses,
+        vsEveryoneTies
+      );
+      const vsEveryoneWinPctValue = getPctValue(vsEveryoneWinPct);
 
       const overallPlace = getOverallPlace(user.user_id, season.toString()) ?? 0;
 
@@ -97,6 +117,9 @@ const buildSeasonRows = (data: LeagueData[]): SeasonRow[] => {
 
         winPct,
         winPctValue,
+        vsEveryoneRecord: displayRecord(vsEveryoneWins, vsEveryoneLosses, vsEveryoneTies),
+        vsEveryoneWinPct,
+        vsEveryoneWinPctValue,
         overallPlace,
       });
     });
@@ -131,16 +154,22 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
         filteredSortedRows: [] as SeasonRow[],
         maxMin: {
           winPctValue: { max: 0, min: 0 },
+          vsEveryoneWinPctValue: { max: 0, min: 0 },
           overallPlace: { max: 0, min: 0 },
         } as MaxMinStats,
       };
     }
 
     const winPcts = filtered.map((r) => r.winPctValue);
+    const vsEveryoneWinPcts = filtered.map((r) => r.vsEveryoneWinPctValue);
     const places = filtered.map((r) => r.overallPlace).filter((p) => p > 0);
 
     const mm: MaxMinStats = {
       winPctValue: { max: Math.max(...winPcts), min: Math.min(...winPcts) },
+      vsEveryoneWinPctValue: {
+        max: Math.max(...vsEveryoneWinPcts),
+        min: Math.min(...vsEveryoneWinPcts),
+      },
       overallPlace: places.length
         ? { max: Math.max(...places), min: Math.min(...places) }
         : { max: 0, min: 0 },
@@ -157,6 +186,9 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
 
       if (sortConfig.key === 'season') return (a.season - b.season) * dir;
       if (sortConfig.key === 'winPctValue') return (a.winPctValue - b.winPctValue) * dir;
+      if (sortConfig.key === 'vsEveryoneWinPctValue') {
+        return (a.vsEveryoneWinPctValue - b.vsEveryoneWinPctValue) * dir;
+      }
       if (sortConfig.key === 'overallPlace') return (a.overallPlace - b.overallPlace) * dir;
 
       return 0;
@@ -244,6 +276,12 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
                 <th onClick={() => handleSort('winPctValue')} className="table-col-2 sortable">
                   Win % {getSortIndicator('winPctValue')}
                 </th>
+                <th
+                  onClick={() => handleSort('vsEveryoneWinPctValue')}
+                  className="table-col-2 sortable"
+                >
+                  Vs Everyone % {getSortIndicator('vsEveryoneWinPctValue')}
+                </th>
                 <th onClick={() => handleSort('overallPlace')} className="table-col-2 sortable">
                   Overall Place {getSortIndicator('overallPlace')}
                 </th>
@@ -272,6 +310,9 @@ const SeasonRecords: React.FC<RecordComponentProps & { minYears?: number }> = ({
                   <td className={getCellClassName('winPctValue', r.winPctValue)}>
                     {r.wins}-{r.losses}
                     {r.ties > 0 ? `-${r.ties}` : ''} ({r.winPct})
+                  </td>
+                  <td className={getCellClassName('vsEveryoneWinPctValue', r.vsEveryoneWinPctValue)}>
+                    {r.vsEveryoneRecord} ({r.vsEveryoneWinPct})
                   </td>
 
                   {/* If you want NO color on Overall Place, remove className here */}
