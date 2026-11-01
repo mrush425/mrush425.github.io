@@ -25,6 +25,7 @@ import BlueBalls from './Points Stats/BlueBalls';
 import WeeklyScoreAverages from './Points Stats/WeeklyScoreAverages';
 import Last2WeekPerformance from './Points Stats/Last2WeekPerformance';
 import PointBreakdown from './Points Stats/PointBreakdown';
+import PointBreakdownSlider from './Points Stats/PointBreakdownSlider';
 
 
 
@@ -75,6 +76,7 @@ const POINT_COMPONENTS: PointStatItem[] = [
     { displayName: 'Blue Balls', Component: BlueBalls },
     { displayName: 'Last 2 Week Performance', Component: Last2WeekPerformance },
     { displayName: 'Point Breakdown', Component: PointBreakdown },
+    { displayName: 'Point Breakdown Slider', Component: PointBreakdownSlider },
 ];
 
 
@@ -232,7 +234,8 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                       selectedItem?.displayName === 'Receiving Losses' ||
                       selectedItem?.displayName === 'Killed By a Tight End' ||
                       selectedItem?.displayName === 'Blue Balls' ||
-                      selectedItem?.displayName === 'Point Breakdown') && (
+                      selectedItem?.displayName === 'Point Breakdown' ||
+                      selectedItem?.displayName === 'Point Breakdown Slider') && (
                         <>
                             <div className="pointsFilter filter-style"> 
                                 <label>
