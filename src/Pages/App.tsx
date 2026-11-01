@@ -39,95 +39,112 @@ function generateYearRoute(league: LeagueData, pathSuffix: string, component: Re
 
 
 function App() {
+  return (
+    <Router>
+      <LeagueApp />
+    </Router>
+  );
+}
+
+function LeagueApp() {
   const [leagueData, setLeagueData] = useState<LeagueData[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    let isActive = true;
+
     const fetchLeagueData = async () => {
       try {
-        // Simulate progress updates
         setLoadingProgress(10);
-        
         const data = await getLeagueData(Current_League_Id);
-        
-        // Update progress as data loads
-        setLoadingProgress(50);
-        
-        // Simulate processing time
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setLoadingProgress(80);
-        
+
+        if (!isActive) return;
+
         setLeagueData(data);
-        
         setLoadingProgress(100);
-        
-        // Small delay before showing content
-        await new Promise(resolve => setTimeout(resolve, 300));
         setDataFetched(true);
       } catch (error) {
+        if (!isActive) return;
+
         console.error('Error fetching league data:', error);
-        setDataFetched(true); // Show app even on error
+        setLoadError(error instanceof Error ? error : new Error('Unknown error while loading league data.'));
       }
     };
 
     fetchLeagueData();
-  }, []);
+    return () => {
+      isActive = false;
+    };
+  }, [retryCount]);
 
   if (!dataFetched) {
+    if (loadError) {
+      return (
+        <div className="container py-5" role="alert">
+          <h1>Unable to load league data</h1>
+          <p>{loadError.message}</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setLoadError(null);
+              setLoadingProgress(0);
+              setRetryCount((count) => count + 1);
+            }}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+
     return <LoadingScreen progress={loadingProgress} />;
   }
 
-// App.tsx
-
-return (
-  <Router>
+  return (
     <div className="App">
-      <WebsiteNavBar data={leagueData} /> {/* Fixed at the top */}
-      <div className="App-content"> {/* Scrollable content */}
-        {dataFetched && (
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {/*Overall League Data*/}
-            <Route path="/league-stats" element={<LeagueHome data={leagueData} />} />
-            <Route path="/league-stats/bowl-history" element={<BowlHistory data={leagueData} />} />
-            <Route path="/league-stats/league-records" element={<RecordsStats data={leagueData} />} />
-            <Route path="/league-stats/league-points" element={<PointsStats data={leagueData} />} />
-            <Route path="/league-stats/league-other-stats" element={<OtherStats data={leagueData} />} />
-            <Route path="/league-stats/football-player-stats" element={<FootballPlayerStats data={leagueData} />} />
-            {/*Hall of Fame Pages*/}
-            <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
-            <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
-            {/*Troll Pages*/}
-            <Route path="/troll/:trollId/*" element={<TrollData data={leagueData} />} />
-            {/*Begin Year Tools*/}
-            <Route path="/begin-year-tools/side-bet-selection" element={<SideBetSelection />} />
-            <Route path="/begin-year-tools/super-smash-bros" element={<SuperSmashBros />} />
-            <Route path="/begin-year-tools/post-draft-rankings" element={<PostDraftRankings />} />
-            {/*Year Pages*/}
-            {leagueData.map((leagueYear) => (
-              <React.Fragment key={leagueYear.season}>
-                {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/schedule-comparison', <ScheduleComparison data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/overtime-comparison', <OvertimeComparison data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/draft-heatmap', <DraftHeatMap data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/draft-report-card', <DraftReportCard data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
-                {generateYearRoute(leagueYear, '/money-calculator', <MoneyCalculator data={leagueYear} />)}
-              </React.Fragment>
-            ))}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        )}
+      <WebsiteNavBar data={leagueData} />
+      <div className="App-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/*Overall League Data*/}
+          <Route path="/league-stats" element={<LeagueHome data={leagueData} />} />
+          <Route path="/league-stats/bowl-history" element={<BowlHistory data={leagueData} />} />
+          <Route path="/league-stats/league-records" element={<RecordsStats data={leagueData} />} />
+          <Route path="/league-stats/league-points" element={<PointsStats data={leagueData} />} />
+          <Route path="/league-stats/league-other-stats" element={<OtherStats data={leagueData} />} />
+          <Route path="/league-stats/football-player-stats" element={<FootballPlayerStats data={leagueData} />} />
+          {/*Hall of Fame Pages*/}
+          <Route path="/hall-of-fame" element={<HallOfFameHome data={leagueData} />} />
+          <Route path="/hall-of-fame/football-player-champions" element={<FootballPlayerChampions data={leagueData} />} />
+          {/*Troll Pages*/}
+          <Route path="/troll/:trollId/*" element={<TrollData data={leagueData} />} />
+          {/*Begin Year Tools*/}
+          <Route path="/begin-year-tools/side-bet-selection" element={<SideBetSelection />} />
+          <Route path="/begin-year-tools/super-smash-bros" element={<SuperSmashBros />} />
+          <Route path="/begin-year-tools/post-draft-rankings" element={<PostDraftRankings />} />
+          {/*Year Pages*/}
+          {leagueData.map((leagueYear) => (
+            <React.Fragment key={leagueYear.season}>
+              {generateYearRoute(leagueYear, '', <YearData data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/schedule-comparison', <ScheduleComparison data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/overtime-comparison', <OvertimeComparison data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/draft-heatmap', <DraftHeatMap data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/draft-report-card', <DraftReportCard data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/all-playoff-possibilities', <AllPlayoffPossibilities data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/playoffs', <Playoffs data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/sidebet-stats', <SidebetStats data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/schedule-viewer', <ScheduleViewer data={leagueYear} />)}
+              {generateYearRoute(leagueYear, '/money-calculator', <MoneyCalculator data={leagueYear} />)}
+            </React.Fragment>
+          ))}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </div>
     </div>
-  </Router>
-);
-
+  );
 }
 
 export default App;
