@@ -1,7 +1,7 @@
 import LeagueData from '../Interfaces/LeagueData';
 import playerData from '../Data/players.json';
 import yearTrollData from '../Data/yearTrollData.json';
-import { getUserSeasonPlace, getOverallPlace, getPlayerName, isByeWeekForUser } from './HelperMethods';
+import { getUserSeasonPlace, getOverallPlace, getPlayerName, isByeWeekForUser, isCurrentActiveWeek } from './HelperMethods';
 
 // =============================================================================
 // TYPES / EXPORTS
@@ -234,6 +234,7 @@ class FootballPlayerStatsMethods {
 
     data.forEach((league) => {
       league.matchupInfo.forEach((matchupInfo) => {
+        if (isCurrentActiveWeek(league, matchupInfo.week)) return;
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
           if (specificUserId) {
@@ -316,6 +317,7 @@ class FootballPlayerStatsMethods {
 
     data.forEach((league) => {
       league.matchupInfo.forEach((matchupInfo) => {
+        if (isCurrentActiveWeek(league, matchupInfo.week)) return;
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
           if (specificUserId) {
@@ -383,6 +385,7 @@ class FootballPlayerStatsMethods {
 
     data.forEach((league) => {
       league.matchupInfo.forEach((matchupInfo) => {
+        if (isCurrentActiveWeek(league, matchupInfo.week)) return;
         matchupInfo.matchups.forEach((matchup) => {
           // Skip if filtering for specific user and this matchup doesn't belong to them
           if (specificUserId) {
@@ -466,6 +469,7 @@ class FootballPlayerStatsMethods {
 
     data.forEach((league) => {
       league.matchupInfo.forEach((matchupInfo) => {
+        if (isCurrentActiveWeek(league, matchupInfo.week)) return;
         matchupInfo.matchups.forEach((matchup) => {
           if (specificUserId) {
             const roster = league.rosters.find((r) => r.roster_id === matchup.roster_id);

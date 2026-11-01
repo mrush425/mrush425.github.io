@@ -2,8 +2,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
-import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../../Helper Files/PointCalculations';
-import { getUserSeasonPlace, getOverallPlace, findRosterByUserId, isByeWeekForUser, isPlayoffWeek } from '../../../Helper Files/HelperMethods';
+import { calculatePlayoffPoints, calculatePlayoffPointsAgainst, isCurrentIncompleteLeagueSeason } from '../../../Helper Files/PointCalculations';
+import { getUserSeasonPlace, getOverallPlace, findRosterByUserId, isByeWeekForUser, isPlayoffWeek, isCurrentActiveWeek } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // TYPE DEFINITIONS
@@ -66,7 +66,7 @@ interface PlayoffWeeklyRow {
 const buildYearsPlayedMap = (data: LeagueData[]): Map<string, number> => {
     const map = new Map<string, number>();
 
-    data.forEach((league) => {
+    data.filter((league) => !isCurrentIncompleteLeagueSeason(league)).forEach((league) => {
         league.users.forEach((user) => {
             map.set(user.user_id, (map.get(user.user_id) ?? 0) + 1);
         });
@@ -76,7 +76,8 @@ const buildYearsPlayedMap = (data: LeagueData[]): Map<string, number> => {
 };
 
 const buildTeamPlayoffSeasonRows = (data: LeagueData[], minYears: number): TeamPlayoffSeasonRow[] => {
-    const yearsPlayedMap = buildYearsPlayedMap(data);
+    const completedSeasons = data.filter((league) => !isCurrentIncompleteLeagueSeason(league));
+    const yearsPlayedMap = buildYearsPlayedMap(completedSeasons);
     const rows: TeamPlayoffSeasonRow[] = [];
 
     const allUserIds = Array.from(yearsPlayedMap.keys());
@@ -85,7 +86,7 @@ const buildTeamPlayoffSeasonRows = (data: LeagueData[], minYears: number): TeamP
         const yearsPlayed = yearsPlayedMap.get(userId) ?? 0;
         if (yearsPlayed < minYears) return;
 
-        data.forEach((league) => {
+        completedSeasons.forEach((league) => {
             const userInLeague = league.users.find((u) => u.user_id === userId);
 
             if (!userInLeague) return;
@@ -175,6 +176,7 @@ const getWeeklyPlayoffBreakdown = (data: LeagueData[], userId: string, season: n
 
     // Process each playoff week
     playoffWeeks.forEach((week) => {
+        if (isCurrentActiveWeek(league, week)) return;
         // If this user has a bye this week, mark it
         if (isByeWeekForUser(userId, league, week)) {
             out.push({

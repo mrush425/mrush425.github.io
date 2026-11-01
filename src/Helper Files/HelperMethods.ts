@@ -132,6 +132,16 @@ export function isPlayoffWeek(league: LeagueData, week: number): boolean {
 }
 
 /**
+ * Returns true when a week is the active NFL week for this league's season.
+ */
+export function isCurrentActiveWeek(league: LeagueData, week: number): boolean {
+    return (
+        league.nflSeasonInfo?.season === league.season &&
+        league.nflSeasonInfo?.week === week
+    );
+}
+
+/**
  * Returns true if the user has a first-round playoff bye (seeds 1,2,7,8).
  */
 export function userHasPlayoffBye(userId: string, league: LeagueData): boolean {

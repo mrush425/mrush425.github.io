@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { PointComponentProps } from '../PointsStats';
 import LeagueData from '../../../Interfaces/LeagueData';
+import { isCurrentActiveWeek } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // TYPE DEFINITIONS
@@ -42,7 +43,7 @@ const calculateWeeklyAverages = (data: LeagueData[]): YearWeeklyAverages[] => {
     // Calculate average for each week
     for (let week = 1; week <= globalMaxWeek; week++) {
       // Check if this week is playoff week for this year
-      if (week >= playoffWeekStart) {
+      if (week >= playoffWeekStart || isCurrentActiveWeek(league, week)) {
         weekAverages.push(null);
         continue;
       }

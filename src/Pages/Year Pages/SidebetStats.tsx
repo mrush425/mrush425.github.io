@@ -3,6 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import SidebetMethods, { Sidebet } from '../../Helper Files/SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
+import { isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 
 import '../../Stylesheets/YearStylesheets/SidebetStats.css';
 
@@ -45,7 +46,12 @@ const SidebetStats: React.FC<SidebetStatsProps> = ({ data }) => {
         const result = sidebet.isAsync 
           ? await method(data, includeRegularSeason, includePlayoffs) 
           : method(data, includeRegularSeason, includePlayoffs);
-        setSidebetStats(result || []);
+        const targetWeek = sidebet.methodName === 'ComingInHot'
+          ? 1
+          : sidebet.methodName === 'BossWhenItCounts'
+            ? data.settings.playoff_week_start + 2
+            : undefined;
+        setSidebetStats(targetWeek !== undefined && isCurrentActiveWeek(data, targetWeek) ? [] : result || []);
         setIsImplemented(true);
       } else {
         setSidebetStats([]);

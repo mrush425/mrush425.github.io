@@ -16,7 +16,7 @@ import SidebetMethods, { Sidebet, YearSidebet } from '../../Helper Files/Sidebet
 
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
-import { getLast3WeeksAveragePointsMap, getOverallPlace, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { getLast3WeeksAveragePointsMap, getOverallPlace, getUserSeasonPlace, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 
 interface YearDataProps {
     data: LeagueData;
@@ -36,7 +36,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const users = data.users;
     const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
-    const isCompletedSeason = data.nflSeasonInfo?.season?.toString() !== data.season || data.nflSeasonInfo?.season_type === 'post';
+    const isCompletedSeason = data.nflSeasonInfo?.season?.toString() !== data.season;
     const cardRosters = data.rosters.slice().sort((rosterA, rosterB) => {
         const userA = users.find((user) => user.user_id === rosterA.owner_id);
         const userB = users.find((user) => user.user_id === rosterB.owner_id);
@@ -150,6 +150,13 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                     console.error(`Error executing method ${sidebet.methodName}:`, error);
                   }
         
+                  const targetWeek = sidebet.methodName === 'ComingInHot'
+                    ? 1
+                    : sidebet.methodName === 'BossWhenItCounts'
+                      ? data.settings.playoff_week_start + 2
+                      : undefined;
+                  if (targetWeek !== undefined && isCurrentActiveWeek(data, targetWeek)) result = [];
+
                   if (result && result.length > 0) {
                     let sidebetDisplay: SidebetDisplay = {
                       sidebetName: sidebet.displayName,

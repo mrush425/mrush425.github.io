@@ -12,6 +12,7 @@ import {
   isPlayoffWeek,
   isByeWeekForUser,
   weekMatchesFilter,
+  isCurrentActiveWeek,
 } from './HelperMethods';
 import sidebetsData from '../Data/sidebets.json';
 import yearTrollData from '../Data/yearTrollData.json';
@@ -81,6 +82,7 @@ const getRelevantMatchups = (
 
   return data.matchupInfo.filter((m) => {
     if (maxWeekExclusive !== null && m.week >= maxWeekExclusive) return false;
+    if (excludeCurrentWeekIfCurrentSeason && isCurrentActiveWeek(data, m.week)) return false;
     return weekMatchesFilter(data, m.week, includeRegularSeason, includePlayoffs);
   });
 };
@@ -308,6 +310,7 @@ class SidebetMethods {
 
   static MostPointsInWeek(data: LeagueData, week: number): SidebetStat[] {
     const orderedSidebets: SidebetStat[] = [];
+    if (isCurrentActiveWeek(data, week)) return orderedSidebets;
 
     const matchupInfo = data.matchupInfo[week - 1];
     if (!matchupInfo) return orderedSidebets;

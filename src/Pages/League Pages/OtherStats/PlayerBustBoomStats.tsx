@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { OtherComponentProps } from '../../../Interfaces/OtherStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import playersData from '../../../Data/players.json';
-import { getPlayerName, weekMatchesFilter, isByeWeekForUser } from '../../../Helper Files/HelperMethods';
+import { getPlayerName, weekMatchesFilter, isByeWeekForUser, isCurrentActiveWeek } from '../../../Helper Files/HelperMethods';
 
 // Type definitions
 type PositionType = 'QB' | 'RB' | 'WR' | 'TE';
@@ -59,6 +59,7 @@ export const calculateLowScorerStats = (
 
     league.matchupInfo.forEach((weekInfo) => {
       if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
+      if (isCurrentActiveWeek(league, weekInfo.week)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
@@ -166,6 +167,7 @@ export const calculateNegativeStats = (
 
     league.matchupInfo.forEach((weekInfo) => {
       if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
+      if (isCurrentActiveWeek(league, weekInfo.week)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
@@ -270,6 +272,7 @@ export const calculateKickerBoomStats = (
 
     league.matchupInfo.forEach((weekInfo) => {
       if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
+      if (isCurrentActiveWeek(league, weekInfo.week)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
@@ -374,6 +377,7 @@ export const calculateDefenseBoomStats = (
 
     league.matchupInfo.forEach((weekInfo) => {
       if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
+      if (isCurrentActiveWeek(league, weekInfo.week)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);
@@ -478,6 +482,7 @@ export const calculateNoClothesStats = (
 
     league.matchupInfo.forEach((weekInfo) => {
       if (!weekMatchesFilter(league, weekInfo.week, includeRegular, includePlayoffs)) return;
+      if (isCurrentActiveWeek(league, weekInfo.week)) return;
 
       weekInfo.matchups.forEach((matchup) => {
         const roster = league.rosters.find(r => r.roster_id === matchup.roster_id);

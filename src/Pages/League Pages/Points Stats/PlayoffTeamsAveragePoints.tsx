@@ -3,7 +3,7 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 
-import { calculateYearPoints } from '../../../Helper Files/PointCalculations';
+import { calculateYearPoints, isCurrentIncompleteLeagueSeason } from '../../../Helper Files/PointCalculations';
 
 
 import {
@@ -51,7 +51,7 @@ const buildTable = (data: LeagueData[]): Row[] => {
   const perYear: Record<number, Record<Place, Agg>> = {};
   const overall: Record<Place, Agg> = emptyAggs();
 
-  data.forEach((league) => {
+  data.filter((league) => !isCurrentIncompleteLeagueSeason(league)).forEach((league) => {
     const year = Number.parseInt(league.season);
     if (!Number.isFinite(year)) return;
 

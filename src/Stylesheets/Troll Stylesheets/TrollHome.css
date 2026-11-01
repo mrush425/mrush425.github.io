@@ -1540,20 +1540,99 @@
 }
 
 .distribution-bar {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 50px;
-  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
   border-radius: 6px 6px 0 0;
   transition: height 0.5s ease;
   min-height: 2px;
+  overflow: hidden;
+}
+
+.distribution-bar > span {
+  flex-basis: 0;
+  flex-shrink: 0;
+}
+
+.distribution-segment-loss,
+.distribution-legend-losses {
+  background-color: #ef4444;
+}
+
+.distribution-count-losses {
+  color: #ef4444;
+}
+
+.distribution-segment-tie,
+.distribution-legend-ties {
+  background-color: #3b82f6;
+}
+
+.distribution-count-ties {
+  color: #3b82f6;
+}
+
+.distribution-segment-win,
+.distribution-legend-wins {
+  background-color: #22c55e;
+}
+
+.distribution-count-wins {
+  color: #22c55e;
 }
 
 .distribution-count {
+  display: block;
+  text-align: center;
   font-size: 13px;
-  color: #fff;
   font-weight: 700;
   margin-bottom: 4px;
   line-height: 1;
+  white-space: nowrap;
+}
+
+.distribution-count-separator {
+  width: 0.4em;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+}
+
+.distribution-count > span {
+  display: inline-block;
+  line-height: 13px;
+  vertical-align: top;
+}
+
+.distribution-count-wins,
+.distribution-count-losses,
+.distribution-count-ties {
+  width: 1.2em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.distribution-legend {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 12px;
+  color: #a0a0a0;
+  font-size: 12px;
+}
+
+.distribution-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.distribution-legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
 }
 
 .distribution-label {
@@ -1583,10 +1662,20 @@
   .point-distribution-chart {
     gap: 3px;
     height: 160px;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .distribution-bar-container {
+    min-width: 32px;
   }
 
   .distribution-count {
-    font-size: 10px;
+    font-size: 9px;
+  }
+
+  .distribution-count > span {
+    line-height: 9px;
   }
 
   .distribution-label {
@@ -1595,5 +1684,10 @@
 
   .distribution-bar {
     max-width: 30px;
+  }
+
+  .distribution-legend {
+    gap: 12px;
+    font-size: 10px;
   }
 }

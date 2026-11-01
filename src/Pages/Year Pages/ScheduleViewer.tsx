@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import TeamDropdown from './TeamDropdown';
 import '../../Stylesheets/YearStylesheets/ScheduleViewer.css';
-import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getScoreForWeek } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getScoreForWeek, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
 
 interface ScheduleViewerProps {
@@ -74,7 +74,11 @@ const ScheduleViewer: React.FC<ScheduleViewerProps> = ({ data }) => {
       const user = users.find((u) => u.user_id === userId);
       if (!user) continue;
 
-      const points = Number(getScoreForWeek(user, week, data)) || parseFloat(averagePointsMap.get(userId)?.toFixed(2) || "0");
+      const isActiveWeek = isCurrentActiveWeek(data, week);
+      // Do not display partial live scores (or substitute a season average) as a final result.
+      const points = isActiveWeek
+        ? ''
+        : Number(getScoreForWeek(user, week, data)) || parseFloat(averagePointsMap.get(userId)?.toFixed(2) || "0");
       const last3Points = Number(parseFloat(last3AveragePointsMap.get(userId)?.toFixed(2) || "0"));
       const matchup = data.matchupInfo.find((m) => m.week === week);      
       const playerMatchup = matchup?.matchups.find(
@@ -90,7 +94,9 @@ const ScheduleViewer: React.FC<ScheduleViewerProps> = ({ data }) => {
       if(!opponentUser) continue;
       
       const opponentName = opponentMatchup ? findUserNameByRosterId(opponentMatchup.roster_id) : "Bye";
-      const opponentPoints = Number(getScoreForWeek(opponentUser, week, data)) || parseFloat(averagePointsMap.get(opponentUser.user_id)?.toFixed(2) || "0");
+      const opponentPoints = isActiveWeek
+        ? ''
+        : Number(getScoreForWeek(opponentUser, week, data)) || parseFloat(averagePointsMap.get(opponentUser.user_id)?.toFixed(2) || "0");
       const opponentAverageLast3Points = Number(parseFloat(last3AveragePointsMap.get(opponentUser.user_id)?.toFixed(2) || "0"));
   
       // Push the points as a number, and opponent points as a string

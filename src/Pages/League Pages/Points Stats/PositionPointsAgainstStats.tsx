@@ -8,7 +8,7 @@ import SidebetMethods, {
   PositionAgainstWeeklyDetail,
 } from '../../../Helper Files/SidebetMethods';
 
-import { findRosterByUserId } from '../../../Helper Files/HelperMethods';
+import { findRosterByUserId, isCurrentActiveWeek } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // TYPES
@@ -89,7 +89,7 @@ const getRegularSeasonGamesPlayed = (league: LeagueData, userId: string): number
 
   let games = 0;
   league.matchupInfo.forEach((mi) => {
-    if (mi.week >= maxWeekExclusive) return;
+    if (mi.week >= maxWeekExclusive || isCurrentActiveWeek(league, mi.week)) return;
     const hasMatchup = mi.matchups.some((m) => m.roster_id === rosterId);
     if (hasMatchup) games += 1;
   });

@@ -1,6 +1,14 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId, isByeWeekForUser, isPlayoffWeek } from "./HelperMethods";
+import { findRosterByUserId, isByeWeekForUser, isPlayoffWeek, isCurrentActiveWeek } from "./HelperMethods";
+
+/**
+ * Sleeper's NFL season state remains on the active season through the postseason.
+ * League data for that same season is therefore incomplete until the NFL state
+ * advances to the following season.
+ */
+export const isCurrentIncompleteLeagueSeason = (league: LeagueData): boolean =>
+    league.season === league.nflSeasonInfo.season;
 
 /**
  * Calculates the total fantasy points scored by a specific team for the entire year (season).
@@ -75,6 +83,7 @@ export const calculatePlayoffPoints = (
     let gamesPlayed = 0;
 
     data.matchupInfo.forEach((weekBlock) => {
+        if (isCurrentActiveWeek(data, weekBlock.week)) return;
         if (!isPlayoffWeek(data, weekBlock.week)) return;
         
         // Skip bye week for this user
@@ -121,6 +130,7 @@ export const calculatePlayoffPointsAgainst = (
     let gamesPlayed = 0;
 
     data.matchupInfo.forEach((weekBlock) => {
+        if (isCurrentActiveWeek(data, weekBlock.week)) return;
         if (!isPlayoffWeek(data, weekBlock.week)) return;
         
         // Skip bye week for this user

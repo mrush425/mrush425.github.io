@@ -8,6 +8,7 @@ import {
   getMatchupForWeek,
   getUserSeasonPlace,
   getOverallPlace,
+  isCurrentActiveWeek,
 } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
@@ -19,8 +20,8 @@ interface Last2WeekRow {
   teamName: string;
   yearsPlayed: number;
   year: number;
-  week1: number;
-  week2: number;
+  week1: number | null;
+  week2: number | null;
   avgPts: number;
   totalPts: number;
   seasonPlace: number;
@@ -95,21 +96,25 @@ const buildLast2WeekRows = (data: LeagueData[]): Last2WeekRow[] => {
     const playoffStart = league.settings.playoff_week_start;
     if (!playoffStart) return;
 
-    const week1 = playoffStart + 1;
-    const week2 = playoffStart + 2;
+    const candidateWeek1 = playoffStart + 1;
+    const candidateWeek2 = playoffStart + 2;
+    const week1 = isCurrentActiveWeek(league, candidateWeek1) ? null : candidateWeek1;
+    const week2 = isCurrentActiveWeek(league, candidateWeek2) ? null : candidateWeek2;
+    const eligibleWeekCount = Number(week1 !== null) + Number(week2 !== null);
+    if (eligibleWeekCount === 0) return;
 
     league.users.forEach((user) => {
       const roster = findRosterByUserId(user.user_id, league.rosters);
       if (!roster) return;
 
-      const score1 = getScoreForWeek(user as SleeperUser, week1, league);
-      const score2 = getScoreForWeek(user as SleeperUser, week2, league);
+      const score1 = week1 === null ? 0 : getScoreForWeek(user as SleeperUser, week1, league);
+      const score2 = week2 === null ? 0 : getScoreForWeek(user as SleeperUser, week2, league);
 
-      // Skip if no data for these weeks
+      // Skip if no data for the eligible weeks
       if (score1 === 0 && score2 === 0) return;
 
       const totalPts = round2(score1 + score2);
-      const avgPts = round2(totalPts / 2);
+      const avgPts = round2(totalPts / eligibleWeekCount);
 
       rows.push({
         userId: user.user_id,
@@ -123,8 +128,8 @@ const buildLast2WeekRows = (data: LeagueData[]): Last2WeekRow[] => {
         seasonPlace: getUserSeasonPlace(user.user_id, league),
         overallPlace: getOverallPlace(user.user_id, league.season),
         league,
-        opponentUserId1: findOpponentUserId(user.user_id, week1, league),
-        opponentUserId2: findOpponentUserId(user.user_id, week2, league),
+        opponentUserId1: week1 === null ? null : findOpponentUserId(user.user_id, week1, league),
+        opponentUserId2: week2 === null ? null : findOpponentUserId(user.user_id, week2, league),
       });
     });
   });
@@ -303,7 +308,7 @@ const Last2WeekPerformance: React.FC<Last2WeekPerformanceProps> = ({
         >
           {selectedRow && selectedLeague && selectedUser ? (
             <div>
-              {selectedOpp1 ? (
+              {selectedRow.week1 !== null && selectedOpp1 ? (
                 <MatchupDisplay
                   user1={selectedUser}
                   user2={selectedOpp1}
@@ -311,13 +316,13 @@ const Last2WeekPerformance: React.FC<Last2WeekPerformanceProps> = ({
                   week={selectedRow.week1}
                   title={`Week ${selectedRow.week1}, ${selectedRow.year}`}
                 />
-              ) : (
+              ) : selectedRow.week1 !== null ? (
                 <div className="notImplementedMessage">
                   Could not resolve Week {selectedRow.week1} opponent.
                 </div>
-              )}
+              ) : null}
               <div style={{ marginTop: '20px' }}>
-                {selectedOpp2 ? (
+                {selectedRow.week2 !== null && selectedOpp2 ? (
                   <MatchupDisplay
                     user1={selectedUser}
                     user2={selectedOpp2}
@@ -325,11 +330,11 @@ const Last2WeekPerformance: React.FC<Last2WeekPerformanceProps> = ({
                     week={selectedRow.week2}
                     title={`Week ${selectedRow.week2}, ${selectedRow.year}`}
                   />
-                ) : (
+                ) : selectedRow.week2 !== null ? (
                   <div className="notImplementedMessage">
                     Could not resolve Week {selectedRow.week2} opponent.
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           ) : (

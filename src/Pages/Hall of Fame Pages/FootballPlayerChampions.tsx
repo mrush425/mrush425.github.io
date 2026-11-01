@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../../Stylesheets/Hall of Fame Stylesheets/FootballPlayerChampions.css'
 import HallOfFameNavBar from '../../Navigation/HallOfFameNavBar';
 import HallOfFameProps from './HallOfFameProps';
-import { findRosterByUserId, getLeagueWinner, getPlayerName, getPlayerImageUrl } from '../../Helper Files/HelperMethods';
+import { findRosterByUserId, getLeagueWinner, getPlayerName, getPlayerImageUrl, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import SleeperRoster from '../../Interfaces/SleeperRoster';
 import MatchupInfo from '../../Interfaces/MatchupInfo';
@@ -35,7 +35,9 @@ const FootballPlayerChampions: React.FC<HallOfFameProps> = ({ data }) => {
         const leagueWinner: SleeperUser | undefined = getLeagueWinner(leagueData);
         if (leagueWinner) {
           const leagueWinnerRosterId: SleeperRoster | undefined = findRosterByUserId(leagueWinner.user_id, leagueData.rosters);
-          const matchupInfo: MatchupInfo | undefined = leagueData.matchupInfo.find((matchupInfo) => matchupInfo.week === leagueData.settings.playoff_week_start + 2);
+          const championshipWeek = leagueData.settings.playoff_week_start + 2;
+          if (isCurrentActiveWeek(leagueData, championshipWeek)) return;
+          const matchupInfo: MatchupInfo | undefined = leagueData.matchupInfo.find((matchupInfo) => matchupInfo.week === championshipWeek);
           const matchup: Matchup | undefined = matchupInfo?.matchups.find((matchup) => matchup.roster_id === leagueWinnerRosterId?.roster_id);
 
           if (matchup) {
@@ -120,7 +122,9 @@ const FootballPlayerChampions: React.FC<HallOfFameProps> = ({ data }) => {
       const leagueWinner: SleeperUser | undefined = getLeagueWinner(leagueD);
       if (leagueWinner) {
         const leagueWinnerRosterId: SleeperRoster | undefined = findRosterByUserId(leagueWinner.user_id, leagueD.rosters);
-        const matchupInfo: MatchupInfo | undefined = leagueD.matchupInfo.find((m: MatchupInfo) => m.week === leagueD.settings.playoff_week_start + 2);
+        const championshipWeek = leagueD.settings.playoff_week_start + 2;
+        if (isCurrentActiveWeek(leagueD, championshipWeek)) return;
+        const matchupInfo: MatchupInfo | undefined = leagueD.matchupInfo.find((m: MatchupInfo) => m.week === championshipWeek);
         const matchup: Matchup | undefined = matchupInfo?.matchups.find((m: Matchup) => m.roster_id === leagueWinnerRosterId?.roster_id);
 
         if (matchup) {

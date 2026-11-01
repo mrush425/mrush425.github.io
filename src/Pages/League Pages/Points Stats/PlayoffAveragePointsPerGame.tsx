@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { RecordComponentProps } from '../../../Interfaces/RecordStatItem'; 
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
-import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../../Helper Files/PointCalculations';
+import { calculatePlayoffPoints, calculatePlayoffPointsAgainst, isCurrentIncompleteLeagueSeason } from '../../../Helper Files/PointCalculations';
 
 
 // =========================================================================
@@ -53,8 +53,9 @@ interface MaxMinPlayoffPointsStats {
 // =========================================================================
 
 const aggregatePlayoffAveragePoints = (data: LeagueData[]): TeamPlayoffAveragePoints[] => {
+    const completedSeasons = data.filter(league => !isCurrentIncompleteLeagueSeason(league));
     const allUserIDs = new Set<string>();
-    data.forEach(league => {
+    completedSeasons.forEach(league => {
         league.users.forEach(user => allUserIDs.add(user.user_id));
     });
 
@@ -67,7 +68,7 @@ const aggregatePlayoffAveragePoints = (data: LeagueData[]): TeamPlayoffAveragePo
         let yearsPlayed = 0; 
         let teamName = '';
 
-        data.forEach(league => {
+        completedSeasons.forEach(league => {
             const userInLeague = league.users.find(u => u.user_id === userId);
 
             if (userInLeague) {
@@ -119,7 +120,7 @@ const aggregatePlayoffAveragePoints = (data: LeagueData[]): TeamPlayoffAveragePo
 const getYearlyPlayoffPointsBreakdown = (data: LeagueData[], userId: string): YearlyTeamPlayoffPoints[] => {
     const yearlyData: YearlyTeamPlayoffPoints[] = [];
 
-    data.forEach(league => {
+    data.filter(league => !isCurrentIncompleteLeagueSeason(league)).forEach(league => {
         const userInLeague = league.users.find(u => u.user_id === userId);
 
         if (userInLeague) {

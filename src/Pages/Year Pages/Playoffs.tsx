@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import MatchupDisplay from '../../Components/MatchupDisplay';
 import '../../Stylesheets/YearStylesheets/Playoffs.css';
-import { getUserSeasonPlace, getScoreForWeek } from '../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, getScoreForWeek, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 
 type BracketType = 'winners' | 'losers';
 
@@ -56,9 +56,14 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
     return data.settings.playoff_week_start || 14;
   };
 
-  // Determine winner of a matchup based on scores
+  const includesActiveWeek = (matchup?: BracketMatchup | null): boolean =>
+    !!matchup && [matchup.week, matchup.secondWeek].some(
+      (week) => week !== undefined && isCurrentActiveWeek(data, week)
+    );
+
+  // Determine winner only after every week of the matchup is complete.
   const getMatchupWinner = (matchup: BracketMatchup): string | undefined => {
-    if (!matchup.week || !matchup.user1Id || !matchup.user2Id) return undefined;
+    if (!matchup.week || !matchup.user1Id || !matchup.user2Id || includesActiveWeek(matchup)) return undefined;
 
     const user1 = data.users.find(u => u.user_id === matchup.user1Id);
     const user2 = data.users.find(u => u.user_id === matchup.user2Id);
@@ -202,7 +207,10 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
 
   const getTeamWithPoints = (userId?: string, matchup?: BracketMatchup): JSX.Element => {
     if (!userId || !matchup?.week) return <>{getTeamName(userId)}</>;
-    
+    if (includesActiveWeek(matchup)) {
+      return <div className='team-with-points'><span>{getTeamName(userId)}</span></div>;
+    }
+
     const user = data.users.find(u => u.user_id === userId);
     const score = getScoreForWeek(user!, matchup.week, data) +
       (matchup.secondWeek ? getScoreForWeek(user!, matchup.secondWeek, data) : 0);
@@ -356,13 +364,15 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
             ← Back to Bracket
           </button>
           <div className='matchup-detail-mobile'>
-            <MatchupDisplay
+            {includesActiveWeek(selectedMatchup) ? (
+              <p>Matchup details are hidden while a week is in progress.</p>
+            ) : <MatchupDisplay
               user1={selectedMatchup.user1Id ? data.users.find(u => u.user_id === selectedMatchup.user1Id) || null : null}
               user2={selectedMatchup.user2Id ? data.users.find(u => u.user_id === selectedMatchup.user2Id) || null : null}
               data={data}
               week={selectedMatchup.week}
               secondWeek={selectedMatchup.secondWeek}
-            />
+            />}
           </div>
         </div>
       ) : (
@@ -393,7 +403,9 @@ const Playoffs: React.FC<PlayoffsProps> = ({ data }) => {
             {!isMobile && (
               <div className='details-pane'>
                 {selectedMatchup && selectedMatchup.user1Id && selectedMatchup.user2Id ? (
-                  <MatchupDisplay
+                  includesActiveWeek(selectedMatchup) ? (
+                    <p>Matchup details are hidden while a week is in progress.</p>
+                  ) : <MatchupDisplay
                     user1={data.users.find(u => u.user_id === selectedMatchup.user1Id) || null}
                     user2={data.users.find(u => u.user_id === selectedMatchup.user2Id) || null}
                     data={data}

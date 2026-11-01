@@ -3,7 +3,7 @@ import { RecordComponentProps } from '../../../Interfaces/RecordStatItem';
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
 
-import { getMatchupForWeek, getScoreForWeek, getPlayoffStartWeek, isPlayoffWeek } from '../../../Helper Files/HelperMethods';
+import { getMatchupForWeek, getScoreForWeek, getPlayoffStartWeek, isPlayoffWeek, isCurrentActiveWeek } from '../../../Helper Files/HelperMethods';
 
 // ✅ Adjust this import path if MatchupDisplay is not located here.
 // Example alternatives you might need:
@@ -86,6 +86,7 @@ const buildAllGameRows = (data: LeagueData[]): GameRow[] => {
 
     // For each week (both regular season and playoff), build matchup rows
     for (let week = 1; week <= playoffEndWeek; week++) {
+      if (isCurrentActiveWeek(league, week)) continue;
       users.forEach((user) => {
         const matchup = getMatchupForWeek(user, week, league);
         if (!matchup) return;

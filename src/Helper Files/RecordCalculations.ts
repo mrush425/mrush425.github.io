@@ -1,6 +1,6 @@
 import LeagueData from "../Interfaces/LeagueData";
 import SleeperUser from "../Interfaces/SleeperUser";
-import { findRosterByUserId, getUserSeasonPlace, isByeWeekForUser, getPlayoffStartWeek, isPlayoffWeek } from "./HelperMethods";
+import { findRosterByUserId, getUserSeasonPlace, isByeWeekForUser, getPlayoffStartWeek, isPlayoffWeek, isCurrentActiveWeek } from "./HelperMethods";
 
 export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser, data: LeagueData): [wins: number, losses: number, ties: number] => {
     let wins: number = 0;
@@ -28,6 +28,7 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
         if (data.nflSeasonInfo.season === data.season && data.nflSeasonInfo.season_type!=="post") {
             relevantMatchups = data.matchupInfo.filter(
                 (matchup) =>
+                    !isCurrentActiveWeek(data, matchup.week) &&
                     matchup.week < data.nflSeasonInfo.week &&
                     matchup.week < data.settings.playoff_week_start
                     //matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
@@ -38,6 +39,7 @@ export const calculateScheduleRecord = (team: SleeperUser, schedule: SleeperUser
         else {
             relevantMatchups = data.matchupInfo.filter(
                 (matchup) =>
+                    !isCurrentActiveWeek(data, matchup.week) &&
                     matchup.week < data.settings.playoff_week_start 
                     // matchup.matchups.some((m) => m.roster_id === teamRosterId) &&
                     // matchup.matchups.some((m) => m.roster_id === scheduleRosterId)
@@ -93,6 +95,7 @@ export const calculateRecordAsOfWeek = (
   const relevantMatchups = data.matchupInfo.filter(
     (matchup) =>
       matchup.week <= latestWeekAllowed &&               // <= for "after week N"
+      !isCurrentActiveWeek(data, matchup.week) &&
       matchup.week < data.settings.playoff_week_start && // regular season only
       matchup.matchups.some((m) => m.roster_id === teamRosterId)
   );
@@ -193,8 +196,9 @@ export const getRecordInTop50 = (user: SleeperUser, data: LeagueData): [wins: nu
 
     //loop over each matcupInfo object from data.matchupInfo
     data.matchupInfo.forEach((matchupInfo) => {
-        if ((data.nflSeasonInfo.season === data.season && matchupInfo.week < data.nflSeasonInfo.week && matchupInfo.week < data.settings.playoff_week_start ) ||
-            ((data.nflSeasonInfo.season !== data.season || data.nflSeasonInfo.season_type==="post") && matchupInfo.week < data.settings.playoff_week_start)){
+        if (!isCurrentActiveWeek(data, matchupInfo.week) && (
+            (data.nflSeasonInfo.season === data.season && matchupInfo.week < data.nflSeasonInfo.week && matchupInfo.week < data.settings.playoff_week_start ) ||
+            ((data.nflSeasonInfo.season !== data.season || data.nflSeasonInfo.season_type==="post") && matchupInfo.week < data.settings.playoff_week_start))){
                 const sortedMatchups = matchupInfo.matchups.sort((a, b) => b.points - a.points);
                 const userIndex = sortedMatchups.findIndex(
                     (matchup) => matchup.roster_id === data.rosters.find((roster) => roster.owner_id === user.user_id)?.roster_id
@@ -234,7 +238,7 @@ export const recordAgainstWinningTeams = (user: SleeperUser, data: LeagueData): 
     
     // 3. Filter for relevant regular season matchups (based on existing logic)
     let relevantMatchups = data.matchupInfo.filter(
-        (matchup) => matchup.week < data.settings.playoff_week_start
+        (matchup) => matchup.week < data.settings.playoff_week_start && !isCurrentActiveWeek(data, matchup.week)
     );
 
     // If it's the current season, only count completed weeks
@@ -298,7 +302,7 @@ export const calculatePlayoffRecord = (user: SleeperUser, data: LeagueData): [wi
 
     // Filter for playoff weeks only, excluding bye week for this user
     const playoffMatchups = data.matchupInfo.filter(
-        (matchup) => isPlayoffWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
+        (matchup) => isPlayoffWeek(data, matchup.week) && !isCurrentActiveWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
     );
 
     playoffMatchups.forEach((matchup) => {
@@ -346,7 +350,7 @@ export const getPlayoffRecordAgainstLeague = (user: SleeperUser, data: LeagueDat
 
     // Filter for playoff weeks only, excluding bye week for this user
     const playoffMatchups = data.matchupInfo.filter(
-        (matchup) => isPlayoffWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
+        (matchup) => isPlayoffWeek(data, matchup.week) && !isCurrentActiveWeek(data, matchup.week) && !isByeWeekForUser(user.user_id, data, matchup.week)
     );
 
     // For each playoff week, compare user's score against all other teams

@@ -3,7 +3,7 @@ import LeagueData from '../../Interfaces/LeagueData';
 import SleeperUser from '../../Interfaces/SleeperUser';
 import MatchupDisplay from '../../Components/MatchupDisplay';
 import { calculatePlayoffPoints, calculatePlayoffPointsAgainst } from '../../Helper Files/PointCalculations';
-import { getUserSeasonPlace, isByeWeekForUser } from '../../Helper Files/HelperMethods';
+import { getUserSeasonPlace, isByeWeekForUser, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import '../../Stylesheets/Troll Stylesheets/Matchups.css';
 
 interface TrollMatchupsProps {
@@ -27,6 +27,9 @@ interface WeeklyMatchup {
   opponentPoints: number;
   result: 'W' | 'L' | 'T';
 }
+
+const isUnfinishedCurrentSeason = (league: LeagueData): boolean =>
+  league.season === league.nflSeasonInfo.season;
 
 const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueData }) => {
   const [selectedOpponentId, setSelectedOpponentId] = useState<string | null>(null);
@@ -93,6 +96,12 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
         Object.entries(matchupsByWeek).forEach(([weekStr, weekMatchups]) => {
           const week = Number(weekStr);
           const isPlayoff = week >= playoffStartWeek;
+
+          // Keep the in-progress season out of playoff breakdowns until the league advances.
+          if (isPlayoff && isUnfinishedCurrentSeason(league)) return;
+
+          // Omit the active NFL week for the current season; retain all historical weeks.
+          if (isCurrentActiveWeek(league, week)) return;
           
           // Skip bye week if either player has a bye
           if (isByeWeekForUser(userId, league, week) || isByeWeekForUser(selectedOpponentId, league, week)) {
@@ -190,12 +199,12 @@ const TrollMatchups: React.FC<TrollMatchupsProps> = ({ userId, userName, leagueD
       }
 
       // Calculate playoff averages using the proper functions that account for byes
-      if (userInLeague) {
+      if (userInLeague && !isUnfinishedCurrentSeason(league)) {
         const { points, gamesPlayed } = calculatePlayoffPoints(userInLeague, league);
         userPlayoffPointsTotal += points;
         userPlayoffGamesTotal += gamesPlayed;
       }
-      if (opponentInLeague) {
+      if (opponentInLeague && !isUnfinishedCurrentSeason(league)) {
         const { points, gamesPlayed } = calculatePlayoffPoints(opponentInLeague, league);
         opponentPlayoffPointsTotal += points;
         opponentPlayoffGamesTotal += gamesPlayed;

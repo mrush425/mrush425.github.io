@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import LeagueData from '../Interfaces/LeagueData';
 
-import { findRosterByUserId } from '../Helper Files/HelperMethods';
+import { findRosterByUserId, isCurrentActiveWeek } from '../Helper Files/HelperMethods';
 
 interface WeeklyMatchupRow {
   week: number;
@@ -63,6 +63,7 @@ const WeeklyMatchupsPane: React.FC<WeeklyMatchupsPaneProps> = ({
 
     league.matchupInfo.forEach((weekBlock: any) => {
       const week = weekBlock.week;
+      if (isCurrentActiveWeek(league, week)) return;
 
       // Skip playoff weeks if excludePlayoffs is true
       if (excludePlayoffs && week >= playoffStartWeek) {

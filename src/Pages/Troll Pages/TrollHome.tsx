@@ -14,6 +14,7 @@ import {
 } from '../../Helper Files/RecordCalculations';
 import { getUserLongestStreak, getCurrentStreak } from '../../Helper Files/StreakMethods';
 import { calculateMoneyStats } from '../../Helper Files/MoneyMethods';
+import { isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import { buildPointBreakdownRows, BUCKET_LABELS } from '../League Pages/Points Stats/PointBreakdown';
 import '../../Stylesheets/Troll Stylesheets/TrollHome.css';
 
@@ -51,6 +52,9 @@ interface OpponentRecord {
   overallAvgAgainst?: number;
 }
 
+const isUnfinishedCurrentSeason = (league: LeagueData): boolean =>
+  league.season === league.nflSeasonInfo.season;
+
 const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) => {
   const [sortColumn, setSortColumn] = useState<string>('season');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -64,7 +68,14 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     const rows = buildPointBreakdownRows(leagueData, true, true, userId);
     return rows.length > 0
       ? rows[0]
-      : { buckets: new Array(BUCKET_LABELS.length).fill(0), totalGames: 0, userId, teamName: userName, yearsPlayed: 0 };
+      : {
+          buckets: new Array(BUCKET_LABELS.length).fill(0),
+          bucketRecords: BUCKET_LABELS.map(() => ({ wins: 0, losses: 0, ties: 0 })),
+          totalGames: 0,
+          userId,
+          teamName: userName,
+          yearsPlayed: 0,
+        };
   }, [leagueData, userId, userName]);
 
   const bowlMap: { [key: string]: BowlRecord } = {
@@ -88,6 +99,10 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     let playoffTies = 0;
     let playoffTotalPoints = 0;
     let playoffTotalPointsAgainst = 0;
+    let completedPlayoffPoints = 0;
+    let completedPlayoffPointsAgainst = 0;
+    let completedPlayoffGames = 0;
+    let completedPlayoffGamesAgainst = 0;
     const bowlRecords: { [key: string]: BowlRecord } = JSON.parse(JSON.stringify(bowlMap));
     const opponentRecords: { [key: string]: OpponentRecord } = {};
 
@@ -132,15 +147,23 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
 
         // Calculate playoff points and points against using proper functions that account for bye weeks
         const { points: playoffPoints, gamesPlayed } = calculatePlayoffPoints(user as SleeperUser, league);
-        const { points: playoffPointsAgainst } = calculatePlayoffPointsAgainst(user as SleeperUser, league);
+        const { points: playoffPointsAgainst, gamesPlayed: gamesPlayedAgainst } = calculatePlayoffPointsAgainst(user as SleeperUser, league);
         playoffTotalPoints += playoffPoints;
         playoffTotalPointsAgainst += playoffPointsAgainst;
+        if (!isUnfinishedCurrentSeason(league)) {
+          completedPlayoffPoints += playoffPoints;
+          completedPlayoffPointsAgainst += playoffPointsAgainst;
+          completedPlayoffGames += gamesPlayed;
+          completedPlayoffGamesAgainst += gamesPlayedAgainst;
+        }
 
         // Calculate opponent records (regular season only)
         if (league.matchupInfo) {
           const playoffStartWeek = league.settings.playoff_week_start || Infinity;
           const matchupsByWeek: { [key: number]: any[] } = {};
           league.matchupInfo.forEach((info) => {
+            if (isCurrentActiveWeek(league, info.week)) return;
+
             // Only include regular season weeks
             if (info.week < playoffStartWeek) {
               if (!matchupsByWeek[info.week]) {
@@ -239,8 +262,10 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     
     const playoffGames = playoffWins + playoffLosses + playoffTies;
     const playoffWinPercentage = playoffGames > 0 ? ((playoffWins / playoffGames) * 100).toFixed(1) : '0.0';
-    const avgPlayoffPoints = playoffGames > 0 ? (playoffTotalPoints / playoffGames).toFixed(2) : '0.00';
-    const avgPlayoffPointsAgainst = playoffGames > 0 ? (playoffTotalPointsAgainst / playoffGames).toFixed(2) : '0.00';
+    const avgPlayoffPoints = completedPlayoffGames > 0 ? (completedPlayoffPoints / completedPlayoffGames).toFixed(2) : '0.00';
+    const avgPlayoffPointsAgainst = completedPlayoffGamesAgainst > 0
+      ? (completedPlayoffPointsAgainst / completedPlayoffGamesAgainst).toFixed(2)
+      : '0.00';
     
     const bestSeason =
       seasonRecords.length > 0
@@ -959,21 +984,46 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
             <div className="point-distribution-chart">
               {BUCKET_LABELS.map((label, i) => {
                 const count = pointBreakdown.buckets[i];
+                const { wins, losses, ties } = pointBreakdown.bucketRecords[i];
                 const maxCount = Math.max(...pointBreakdown.buckets, 1);
                 const heightPct = (count / maxCount) * 100;
+                const record = ties > 0
+                  ? `${wins}-${losses}-${ties}`
+                  : `${wins}-${losses}`;
                 return (
                   <div key={label} className="distribution-bar-container">
                     <div className="distribution-bar-wrapper">
-                      <span className="distribution-count">{count}</span>
+                      <span className="distribution-count" aria-label={`${wins} wins, ${losses} losses, ${ties} ties`}>
+                        <span className="distribution-count-wins">{wins}</span>
+                        <span className="distribution-count-separator">-</span>
+                        <span className="distribution-count-losses">{losses}</span>
+                        {ties > 0 && (
+                          <>
+                            <span className="distribution-count-separator">-</span>
+                            <span className="distribution-count-ties">{ties}</span>
+                          </>
+                        )}
+                      </span>
                       <div
                         className="distribution-bar"
                         style={{ height: `${Math.max(heightPct, count > 0 ? 5 : 2)}%` }}
-                      />
+                        role="img"
+                        aria-label={`${label} points: ${record} (wins-losses${ties > 0 ? '-ties' : ''})`}
+                      >
+                        <span className="distribution-segment-loss" style={{ flexGrow: losses }} />
+                        <span className="distribution-segment-tie" style={{ flexGrow: ties }} />
+                        <span className="distribution-segment-win" style={{ flexGrow: wins }} />
+                      </div>
                     </div>
                     <span className="distribution-label">{label}</span>
                   </div>
                 );
               })}
+            </div>
+            <div className="distribution-legend" aria-label="Matchup outcomes">
+              <span><i className="distribution-legend-wins" />Wins</span>
+              <span><i className="distribution-legend-losses" />Losses</span>
+              <span><i className="distribution-legend-ties" />Ties</span>
             </div>
             <div className="point-distribution-total">
               <span>{pointBreakdown.totalGames}</span> total games

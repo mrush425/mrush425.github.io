@@ -38,6 +38,8 @@ export interface PointComponentProps {
     minYears?: number; // Optional filter for minimum years played
     includeRegularSeason?: boolean; // Optional filter for including regular season weeks
     includePlayoffs?: boolean; // Optional filter for including playoff weeks
+    resultFilter?: 'all' | 'wins' | 'losses';
+    percentageMode?: boolean;
 }
 
 // Define the structure for an item in your dropdown list
@@ -90,6 +92,8 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
     const [minYears, setMinYears] = useState<number>(0);
     const [includeRegularSeason, setIncludeRegularSeason] = useState<boolean>(true);
     const [includePlayoffs, setIncludePlayoffs] = useState<boolean>(false); 
+    const [pointBreakdownResultFilter, setPointBreakdownResultFilter] = useState<'all' | 'wins' | 'losses'>('all');
+    const [pointBreakdownPercentageMode, setPointBreakdownPercentageMode] = useState(false);
 
     // Use POINT_COMPONENTS directly
     const items = useMemo(() => POINT_COMPONENTS, []); 
@@ -199,7 +203,8 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                 </div>
                 
                 {/* 2. FILTER CHECKBOXES (Second element) */}
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                <div className="points-filter-controls">
+                <div className="points-filter-checkboxes">
                     {selectedItem?.displayName !== 'Weekly Score Averages' &&
                      selectedItem?.displayName !== 'Playoff Teams Average Points' && (
                     <div className="pointsFilter filter-style"> 
@@ -253,13 +258,56 @@ const PointsStats: React.FC<LeagueProps> = ({ data }) => {
                             </div>
                         </>
                     )}
+                    {selectedItem?.displayName === 'Point Breakdown' && (
+                        <div className="pointsFilter filter-style">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={pointBreakdownPercentageMode}
+                                    style={{ marginRight: '6px' }}
+                                    onChange={(e) => setPointBreakdownPercentageMode(e.target.checked)}
+                                />
+                                Percentage mode
+                            </label>
+                        </div>
+                    )}
+                </div>
+                {selectedItem?.displayName === 'Point Breakdown' && (
+                    <fieldset
+                        className="point-breakdown-result-toggle"
+                        aria-label="Filter point breakdown results"
+                    >
+                        <legend>Show point breakdown for:</legend>
+                        {(['all', 'wins', 'losses'] as const).map((filter) => (
+                            <label key={filter}>
+                                <input
+                                    type="radio"
+                                    name="point-breakdown-result-filter"
+                                    value={filter}
+                                    checked={pointBreakdownResultFilter === filter}
+                                    onChange={() => setPointBreakdownResultFilter(filter)}
+                                />
+                                {filter === 'all'
+                                    ? 'All'
+                                    : filter.charAt(0).toUpperCase() + filter.slice(1)}
+                            </label>
+                        ))}
+                    </fieldset>
+                )}
                 </div>
                 
             </div>
             
             <div className="pointsContainer"> 
                 {/* The selected component receives the league data and the filter props */}
-                <SelectedComponent data={data} minYears={minYears} includeRegularSeason={includeRegularSeason} includePlayoffs={includePlayoffs} />
+                <SelectedComponent
+                    data={data}
+                    minYears={minYears}
+                    includeRegularSeason={includeRegularSeason}
+                    includePlayoffs={includePlayoffs}
+                    resultFilter={pointBreakdownResultFilter}
+                    percentageMode={pointBreakdownPercentageMode}
+                />
             </div>
         </div>
     );

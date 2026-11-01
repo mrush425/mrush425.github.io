@@ -41,13 +41,12 @@ const getCurrentYear = (): string => new Date().getFullYear().toString();
  * Builds a chronological list of week outcomes (W/L/T) for the given user across all seasons.
  * - Uses data.matchupInfo like your calculateScheduleRecord.
  * - Only counts regular season (week < playoff_week_start).
- * - Excludes in-progress current season weeks (week < nflSeasonInfo.week) using the same pattern you already use.
+ * - Excludes the current calendar season from historical streak records.
  */
 function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult[] {
   const currentYear = getCurrentYear();
-
   const seasons = [...leagues]
-    .filter(l => l.season !== currentYear)
+    .filter((league) => league.season !== currentYear)
     .sort((a, b) => Number(a.season) - Number(b.season));
 
   const results: WeekResult[] = [];
@@ -63,20 +62,9 @@ function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult
 
     const year = Number(league.season);
 
-    const inProgressSeason =
-      league.nflSeasonInfo?.season === league.season &&
-      league.nflSeasonInfo?.season_type !== 'post';
-
-    const relevantMatchups = league.matchupInfo.filter((matchup: any) => {
-      const isRegularSeason = matchup.week < league.settings.playoff_week_start;
-      if (!isRegularSeason) return false;
-
-      if (inProgressSeason) {
-        return matchup.week < league.nflSeasonInfo.week;
-      }
-
-      return true;
-    });
+    const relevantMatchups = league.matchupInfo.filter((matchup: any) =>
+      matchup.week < league.settings.playoff_week_start
+    );
 
     relevantMatchups.sort((a: any, b: any) => a.week - b.week);
 

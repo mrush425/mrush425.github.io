@@ -2,9 +2,22 @@ import React, { useState, useEffect } from 'react';
 import '../../Stylesheets/League Stylesheets/LeagueHome.css';
 import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
-import { getBowlWinner } from '../../Helper Files/HelperMethods';
+import { getBowlWinner, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import MatchupDisplay from '../../Components/MatchupDisplay';
 import LeagueData from '../../Interfaces/LeagueData';
+
+const bowlResultIsComplete = (bowl: string, league: LeagueData): boolean => {
+  const playoffStart = league.settings.playoff_week_start;
+  const weeks = bowl === 'Butler Bowl' || bowl === 'Koozie Bowl'
+    ? [playoffStart + 1, playoffStart + 2]
+    : [playoffStart + 2];
+  return weeks.every((week) => !isCurrentActiveWeek(league, week));
+};
+
+const getCompletedBowlWinner = (bowl: string, league: LeagueData) =>
+  bowlResultIsComplete(bowl, league)
+    ? getBowlWinner(bowl, league)
+    : [undefined, undefined, ''] as ReturnType<typeof getBowlWinner>;
 
 const BowlHistory: React.FC<LeagueProps> = ({ data }) => {
   const [matchupData, setMatchupData] = useState<{
@@ -50,6 +63,7 @@ const BowlHistory: React.FC<LeagueProps> = ({ data }) => {
     leagueData: LeagueData,
     bowl: string
   ) => {
+    if (!bowlResultIsComplete(bowl, leagueData)) return;
     if (bowl === 'Butler Bowl' || bowl === 'Koozie Bowl') {
       setMatchupData({
         winner,
@@ -100,7 +114,7 @@ const BowlHistory: React.FC<LeagueProps> = ({ data }) => {
                     <tr key={index}>
                       <td>{league.season}</td>
                       {bowlNames.map((bowl) => {
-                        const [winner, loser] = getBowlWinner(bowl, league);
+                        const [winner, loser] = getCompletedBowlWinner(bowl, league);
                         return (
                           <td
                             key={bowl}
@@ -148,7 +162,7 @@ const BowlHistory: React.FC<LeagueProps> = ({ data }) => {
                   <tr key={index}>
                     <td>{league.season}</td>
                     {bowlNames.map((bowl) => {
-                      const [winner, loser] = getBowlWinner(bowl, league);
+                      const [winner, loser] = getCompletedBowlWinner(bowl, league);
                       return (
                         <td
                           key={bowl}

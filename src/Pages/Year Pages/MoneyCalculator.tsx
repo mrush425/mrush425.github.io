@@ -6,7 +6,7 @@ import yearSidebetsData from '../../Data/yearSidebets.json';
 import yearDataJson from '../../Data/yearData.json';
 import SidebetMethods, { Sidebet } from '../../Helper Files/SidebetMethods';
 import SidebetStat from '../../Interfaces/SidebetStat';
-import { getOverallPlace, getBowlWinner } from '../../Helper Files/HelperMethods';
+import { getOverallPlace, getBowlWinner, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import trollDataJson from '../../Data/trollData.json';
 
 const getTrollName = (userId: string): string => {
@@ -132,6 +132,12 @@ const MoneyCalculator: React.FC<MoneyCalcProps> = ({ data }) => {
             console.error(`Error executing method ${sidebet.methodName}:`, error);
           }
 
+          const targetWeek = sidebet.methodName === 'ComingInHot'
+            ? 1
+            : sidebet.methodName === 'BossWhenItCounts'
+              ? data.settings.playoff_week_start + 2
+              : undefined;
+          if (targetWeek !== undefined && isCurrentActiveWeek(data, targetWeek)) continue;
           if (!result || result.length === 0) continue;
 
           const firstResult = result[0];
