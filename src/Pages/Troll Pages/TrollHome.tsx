@@ -267,9 +267,11 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
       ? (completedPlayoffPointsAgainst / completedPlayoffGamesAgainst).toFixed(2)
       : '0.00';
     
+    const currentSeason = leagueData.find(isUnfinishedCurrentSeason)?.season;
+    const completedSeasonRecords = seasonRecords.filter((record) => record.season !== currentSeason);
     const bestSeason =
-      seasonRecords.length > 0
-        ? seasonRecords.reduce((best, current) => {
+      completedSeasonRecords.length > 0
+        ? completedSeasonRecords.reduce((best, current) => {
             // Priority 1: Lower finalPlace is better
             const bestFinalPlace = best.finalPlace ?? Number.MAX_VALUE;
             const currentFinalPlace = current.finalPlace ?? Number.MAX_VALUE;
@@ -292,8 +294,8 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
         : null;
     
     const worstSeason =
-      seasonRecords.length > 0
-        ? seasonRecords.reduce((worst, current) => {
+      completedSeasonRecords.length > 0
+        ? completedSeasonRecords.reduce((worst, current) => {
             // Priority 1: Higher finalPlace is worse
             const worstFinalPlace = worst.finalPlace ?? Number.MIN_VALUE;
             const currentFinalPlace = current.finalPlace ?? Number.MIN_VALUE;

@@ -1,6 +1,6 @@
 import LeagueData from '../Interfaces/LeagueData';
 import SleeperRoster from '../Interfaces/SleeperRoster';
-import { findRosterByUserId } from './HelperMethods';
+import { findRosterByUserId, isCurrentActiveWeek } from './HelperMethods';
 
 export type StreakType = 'win' | 'loss';
 
@@ -35,19 +35,15 @@ interface WeekResult {
 }
 
 const formatWeekLabel = (week: number, year: number) => `week ${week}, ${year}`;
-const getCurrentYear = (): string => new Date().getFullYear().toString();
 
 /**
  * Builds a chronological list of week outcomes (W/L/T) for the given user across all seasons.
  * - Uses data.matchupInfo like your calculateScheduleRecord.
  * - Only counts regular season (week < playoff_week_start).
- * - Excludes the current calendar season from historical streak records.
+ * - Excludes the active week, whose results may be incomplete.
  */
 function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult[] {
-  const currentYear = getCurrentYear();
-  const seasons = [...leagues]
-    .filter((league) => league.season !== currentYear)
-    .sort((a, b) => Number(a.season) - Number(b.season));
+  const seasons = [...leagues].sort((a, b) => Number(a.season) - Number(b.season));
 
   const results: WeekResult[] = [];
 
@@ -62,9 +58,15 @@ function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult
 
     const year = Number(league.season);
 
-    const relevantMatchups = league.matchupInfo.filter((matchup: any) =>
-      matchup.week < league.settings.playoff_week_start
-    );
+    const relevantMatchups = league.matchupInfo.filter((matchup: any) => {
+      if (matchup.week >= league.settings.playoff_week_start) return false;
+      if (isCurrentActiveWeek(league, matchup.week)) return false;
+
+      const currentSeasonIsInProgress =
+        league.nflSeasonInfo.season === league.season &&
+        league.nflSeasonInfo.season_type !== 'post';
+      return !currentSeasonIsInProgress || matchup.week < league.nflSeasonInfo.week;
+    });
 
     relevantMatchups.sort((a: any, b: any) => a.week - b.week);
 
