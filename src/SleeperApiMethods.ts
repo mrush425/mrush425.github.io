@@ -91,10 +91,28 @@ export async function getMatchupData(leagueData: LeagueData): Promise<MatchupInf
 
 export async function fetchDraftData(draftId: string, leagueId: string, season: string): Promise<[DraftPick[], DraftInfo[],PlayerYearStats[], Record<string, PlayerYearStats[]>]> {
   try {
+      let resolvedDraftId = draftId;
+      if (season === '2020') {
+          const draftLeagueResponse = await fetch('https://api.sleeper.app/v1/league/608357369793056768');
+          if (!draftLeagueResponse.ok) {
+              throw new Error(`Could not load 2020 draft league (HTTP ${draftLeagueResponse.status}).`);
+          }
+
+          const draftLeague: { draft_id?: string } = await draftLeagueResponse.json();
+          if (!draftLeague.draft_id) {
+              throw new Error('The 2020 draft league did not include a draft ID.');
+          }
+          resolvedDraftId = draftLeague.draft_id;
+      }
+
       const [picksResponse, infoResponse] = await Promise.all([
-          fetch(`https://api.sleeper.app/v1/draft/${draftId}/picks`),
-          fetch(`https://api.sleeper.app/v1/draft/${draftId}`),
+          fetch(`https://api.sleeper.app/v1/draft/${resolvedDraftId}/picks`),
+          fetch(`https://api.sleeper.app/v1/draft/${resolvedDraftId}`),
       ]);
+
+      if (!picksResponse.ok || !infoResponse.ok) {
+          throw new Error(`Could not load draft data (HTTP ${picksResponse.status}/${infoResponse.status}).`);
+      }
 
       const picks: DraftPick[] = await picksResponse.json();
       const info: DraftInfo[] | DraftInfo = await infoResponse.json();
@@ -129,5 +147,4 @@ export async function fetchDraftData(draftId: string, leagueId: string, season: 
       throw error;
   }
 }
-
 

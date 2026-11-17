@@ -26,6 +26,8 @@ import WeeklyScoreAverages from './Points Stats/WeeklyScoreAverages';
 import Last2WeekPerformance from './Points Stats/Last2WeekPerformance';
 import PointBreakdown from './Points Stats/PointBreakdown';
 import PointBreakdownSlider from './Points Stats/PointBreakdownSlider';
+import { BestLowWeek, WorstHighWeek } from './Points Stats/SeasonExtremeWeeks';
+import RidingDefensiveWaivers from './Points Stats/RidingDefensiveWaivers';
 
 
 
@@ -62,6 +64,8 @@ const POINT_COMPONENTS: PointStatItem[] = [
     { displayName: 'Playoff Teams Average Points', Component: PlayoffTeamsAveragePoints },
     { displayName: 'Weekly Points Leaderboard', Component: WeeklyPointsLeaderboard }, // Example placeholder
     { displayName: 'Weekly Score Averages', Component: WeeklyScoreAverages },
+    { displayName: 'Best "Low" Week', Component: BestLowWeek },
+    { displayName: 'Worst "High" Week', Component: WorstHighWeek },
     { displayName: 'Heartbreaker', Component: Heartbreaker },
     { displayName: 'GetWreckd', Component: GetWreckd }, 
     { displayName: 'Better Lucky Than Good', Component: BetterLuckyThanGood },
@@ -77,6 +81,7 @@ const POINT_COMPONENTS: PointStatItem[] = [
     { displayName: 'Last 2 Week Performance', Component: Last2WeekPerformance },
     { displayName: 'Point Breakdown', Component: PointBreakdown },
     { displayName: 'Point Breakdown Slider', Component: PointBreakdownSlider },
+    { displayName: 'Riding Defensive Waivers', Component: RidingDefensiveWaivers },
 ];
 
 
