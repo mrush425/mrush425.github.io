@@ -12,7 +12,7 @@ import {
   getRecordInTop50,
   recordAgainstWinningTeams
 } from '../../Helper Files/RecordCalculations';
-import { getUserLongestStreak, getCurrentStreak } from '../../Helper Files/StreakMethods';
+import { getUserLongestStreak, getCurrentStreak, getPreviousStreakRecordLength } from '../../Helper Files/StreakMethods';
 import { calculateMoneyStats } from '../../Helper Files/MoneyMethods';
 import { isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 import { buildPointBreakdownRows, BUCKET_LABELS } from '../League Pages/Points Stats/PointBreakdown';
@@ -604,6 +604,15 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
     return opponents;
   }, [stats.opponentRecords, sortOpponentColumn, sortOpponentDirection]);
 
+  const currentStreakRecordLength = stats.currentStreak
+    ? getPreviousStreakRecordLength(userId, stats.currentStreak.type, stats.currentStreak, leagueData)
+    : 0;
+  const currentStreakProgress = stats.currentStreak && currentStreakRecordLength > 0
+    ? Math.round((stats.currentStreak.length / currentStreakRecordLength) * 100)
+    : 0;
+  const isCurrentStreakRecord = stats.currentStreak !== null &&
+    (currentStreakRecordLength === 0 || stats.currentStreak.length >= currentStreakRecordLength);
+
   return (
     <div className="troll-home">
       <div className="troll-stats-overview">
@@ -934,14 +943,20 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
               
               {/* Current Streak Card */}
               {stats.currentStreak && (
-                <div className={`streak-card current-streak ${stats.currentStreak.type}`}>
+                <div className={`streak-card current-streak ${stats.currentStreak.type}${isCurrentStreakRecord ? ' record' : ''}`}>
                   <div className="streak-card-header">
-                    <div className="streak-card-icon">{stats.currentStreak.type === 'win' ? '⚡' : '💧'}</div>
+                    <div className="streak-card-icon">
+                      {isCurrentStreakRecord
+                        ? (stats.currentStreak.type === 'win' ? '🔥' : '🧊')
+                        : (stats.currentStreak.type === 'win' ? '⚡' : '💧')}
+                    </div>
                     <h3 className="streak-card-title">Current Streak</h3>
                   </div>
                   <div className="current-streak-display">
                     <div className="current-streak-badge">
-                      {stats.currentStreak.type === 'win' ? 'Winning' : 'Losing'}
+                      {isCurrentStreakRecord
+                        ? (stats.currentStreak.type === 'win' ? 'Best Win Streak' : 'Worst Loss Streak')
+                        : (stats.currentStreak.type === 'win' ? 'Winning' : 'Losing')}
                     </div>
                     <div className="current-streak-count">
                       <span className="current-streak-number">{stats.currentStreak.length}</span>
@@ -951,22 +966,30 @@ const TrollHome: React.FC<TrollHomeProps> = ({ userId, userName, leagueData }) =
                   
                   <div className="streak-comparison">
                     <div className="streak-comparison-header">
-                      <span>Progress to Record</span>
+                      <span>
+                        {currentStreakRecordLength > 0
+                          ? `${currentStreakProgress}% of ${stats.currentStreak.type === 'win' ? 'best' : 'worst'}`
+                          : `First ${stats.currentStreak.type} streak`}
+                      </span>
                       <span className="streak-comparison-record">
-                        {stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 0) : (stats.longestLossStreaks[0]?.length || 0)} games
+                        {currentStreakRecordLength > 0 ? `${currentStreakRecordLength} games` : 'No prior streak'}
                       </span>
                     </div>
                     <div className="streak-comparison-bar">
                       <div 
                         className="streak-comparison-fill" 
                         style={{ 
-                          width: `${Math.min(100, (stats.currentStreak.length / (stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 1) : (stats.longestLossStreaks[0]?.length || 1))) * 100)}%` 
+                          width: `${Math.min(100, currentStreakRecordLength > 0 ? currentStreakProgress : 100)}%`
                         }}
-                      >
-                        <span className="streak-comparison-percentage">
-                          {Math.round((stats.currentStreak.length / (stats.currentStreak.type === 'win' ? (stats.longestWinStreaks[0]?.length || 1) : (stats.longestLossStreaks[0]?.length || 1))) * 100)}%
-                        </span>
-                      </div>
+                        role="progressbar"
+                        aria-label={`Progress to ${stats.currentStreak.type === 'win' ? 'best' : 'worst'} streak`}
+                        aria-valuemin={0}
+                        aria-valuemax={currentStreakRecordLength || stats.currentStreak.length}
+                        aria-valuenow={Math.min(stats.currentStreak.length, currentStreakRecordLength || stats.currentStreak.length)}
+                        aria-valuetext={currentStreakRecordLength > 0
+                          ? `${currentStreakProgress}% of ${stats.currentStreak.type === 'win' ? 'best' : 'worst'} (${currentStreakRecordLength} games)`
+                          : `First ${stats.currentStreak.type} streak`}
+                      />
                     </div>
                   </div>
                   

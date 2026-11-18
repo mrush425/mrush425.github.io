@@ -4,7 +4,7 @@ import LeagueProps from './LeagueProps';
 import LeagueNavBar from '../../Navigation/LeagueNavBar';
 import yearTrollData from '../../Data/yearTrollData.json';
 import { getUserSeasonPlace, isByeWeekForUser } from '../../Helper Files/HelperMethods';
-import { getUserLongestStreak } from '../../Helper Files/StreakMethods';
+import { getCurrentStreak, getPreviousStreakRecordLength, getUserLongestStreak } from '../../Helper Files/StreakMethods';
 
 interface WeekScore {
   points: number;
@@ -40,6 +40,13 @@ interface HeadToHead {
   pointsDiff: number;
 }
 
+interface CurrentStreakEntry {
+  userId: string;
+  teamName: string;
+  streak: ReturnType<typeof getCurrentStreak>;
+  recordLength: number;
+}
+
 const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
   // Sort data newest first for current champion/butler
   const sortedData = useMemo(() => 
@@ -53,6 +60,41 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
     sortedData.find(d => d.season !== currentYear) || sortedData[0],
     [sortedData, currentYear]
   );
+
+  const currentStreaks = useMemo((): CurrentStreakEntry[] => {
+    const currentLeague = sortedData[0];
+    if (!currentLeague) return [];
+
+    const activeUserIds = new Set(currentLeague.rosters.map((roster) => roster.owner_id));
+    return currentLeague.users.filter((user) => activeUserIds.has(user.user_id)).map((user) => {
+      const streak = getCurrentStreak(user.user_id, data);
+      const previousRecordLength = streak
+        ? getPreviousStreakRecordLength(user.user_id, streak.type, streak, data)
+        : 0;
+
+      return {
+        userId: user.user_id,
+        teamName: user.metadata?.team_name || user.display_name || 'Unknown',
+        streak,
+        recordLength: previousRecordLength,
+      };
+    }).sort((a, b) => {
+      const getStreakOrder = (entry: CurrentStreakEntry) => {
+        if (!entry.streak) return 1;
+        return entry.streak.type === 'win' ? 0 : 2;
+      };
+      const orderDifference = getStreakOrder(a) - getStreakOrder(b);
+      if (orderDifference !== 0) return orderDifference;
+
+      if (a.streak && b.streak) {
+        const streakLengthDifference = a.streak.type === 'win'
+          ? b.streak.length - a.streak.length
+          : a.streak.length - b.streak.length;
+        if (streakLengthDifference !== 0) return streakLengthDifference;
+      }
+      return a.teamName.localeCompare(b.teamName);
+    });
+  }, [data, sortedData]);
 
   // Get champion and butler from most recent completed year
   const { champion, butler } = useMemo(() => {
@@ -913,6 +955,80 @@ const LeagueHome: React.FC<LeagueProps> = ({ data }) => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Current Streaks */}
+        <div className="dashboard-section">
+          <h3 className="section-header">⚡ Current Streaks</h3>
+          <div className="current-streak-grid">
+            {currentStreaks.map(({ userId, teamName, streak, recordLength }) => {
+              const progress = streak && recordLength > 0
+                ? Math.round((streak.length / recordLength) * 100)
+                : null;
+              const isStreakRecord = streak !== null && streak.length >= recordLength;
+
+              return (
+                <div
+                  key={userId}
+                  className={`league-current-streak-card ${streak ? streak.type : 'inactive'}${isStreakRecord ? ' record' : ''}`}
+                >
+                  <div className="league-current-streak-heading">
+                    <span className="league-current-streak-icon" aria-hidden="true">
+                      {streak
+                        ? (isStreakRecord
+                          ? (streak.type === 'win' ? '🔥' : '🧊')
+                          : (streak.type === 'win' ? '⚡' : '💧'))
+                        : '—'}
+                    </span>
+                    <span className="league-current-streak-team">{teamName}</span>
+                    {streak && (
+                      <span
+                        className="league-current-streak-badge"
+                        title={isStreakRecord
+                          ? (streak.type === 'win' ? 'Best win streak' : 'Worst losing streak')
+                          : undefined}
+                      >
+                        {isStreakRecord
+                          ? (streak.type === 'win' ? 'Best' : 'Worst')
+                          : (streak.type === 'win' ? 'Winning' : 'Losing')}
+                      </span>
+                    )}
+                  </div>
+                  {streak ? (
+                    <>
+                      <div className="league-current-streak-count">
+                        <strong>{streak.length}</strong>
+                        <span>game{streak.length !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div
+                        className="league-current-streak-bar"
+                        role="progressbar"
+                        aria-label={`${teamName} progress to their longest ${streak.type} streak`}
+                        aria-valuemin={0}
+                        aria-valuemax={recordLength || streak.length}
+                        aria-valuenow={Math.min(streak.length, recordLength || streak.length)}
+                        aria-valuetext={progress === null
+                          ? `First ${streak.type} streak`
+                          : `${progress}% of ${streak.type === 'win' ? 'best' : 'worst'} (${recordLength} games)`}
+                      >
+                        <div
+                          className="league-current-streak-fill"
+                          style={{ width: `${Math.min(100, progress ?? 100)}%` }}
+                        />
+                      </div>
+                      <div className="league-current-streak-detail">
+                        {progress === null
+                          ? `First ${streak.type} streak`
+                          : `${progress}% of ${streak.type === 'win' ? 'best' : 'worst'} (${recordLength} games)`} · Started {streak.start.label}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="league-current-streak-detail">No active win or loss streak</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

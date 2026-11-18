@@ -96,12 +96,10 @@ function buildUserWeekResults(userId: string, leagues: LeagueData[]): WeekResult
 }
 
 /**
- * Returns all longest win/loss streaks for a user across ALL years.
- * - Streaks carry across years: (year,lastRegularSeasonWeek) -> (nextYear,1)
- * - Ties break streaks.
- * - Gaps break streaks.
+ * Returns each win or loss streak for a user across all years.
+ * Streaks carry across consecutive season boundaries; ties and gaps break them.
  */
-export function getUserLongestStreak(
+export function getUserStreaks(
   userId: string,
   type: StreakType,
   leagues: LeagueData[]
@@ -131,8 +129,7 @@ export function getUserLongestStreak(
     return false;
   };
 
-  let maxLen = 0;
-  let best: Streak[] = [];
+  const streaks: Streak[] = [];
 
   let curLen = 0;
   let curStart: { year: number; week: number } | null = null;
@@ -147,12 +144,7 @@ export function getUserLongestStreak(
       end: { ...curEnd, label: formatWeekLabel(curEnd.week, curEnd.year) },
     };
 
-    if (curLen > maxLen) {
-      maxLen = curLen;
-      best = [streak];
-    } else if (curLen === maxLen && maxLen > 0) {
-      best.push(streak);
-    }
+    streaks.push(streak);
   };
 
   for (let i = 0; i < weekly.length; i++) {
@@ -179,7 +171,37 @@ export function getUserLongestStreak(
   }
 
   finalize();
-  return best;
+  return streaks;
+}
+
+/**
+ * Returns all longest win/loss streaks for a user across all years.
+ */
+export function getUserLongestStreak(
+  userId: string,
+  type: StreakType,
+  leagues: LeagueData[]
+): Streak[] {
+  const streaks = getUserStreaks(userId, type, leagues);
+  const longestLength = streaks.reduce((longest, streak) => Math.max(longest, streak.length), 0);
+  return streaks.filter((streak) => streak.length === longestLength);
+}
+
+/**
+ * Gets the best streak length before the user's current streak began.
+ */
+export function getPreviousStreakRecordLength(
+  userId: string,
+  type: StreakType,
+  currentStreak: Streak,
+  leagues: LeagueData[]
+): number {
+  return getUserStreaks(userId, type, leagues)
+    .filter((streak) =>
+      streak.start.year !== currentStreak.start.year ||
+      streak.start.week !== currentStreak.start.week
+    )
+    .reduce((longest, streak) => Math.max(longest, streak.length), 0);
 }
 
 /**
