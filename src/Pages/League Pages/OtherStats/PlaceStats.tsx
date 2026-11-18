@@ -4,8 +4,10 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { OtherComponentProps as PlaceComponentProps } from '../../../Interfaces/OtherStatItem'; // Renamed import for clarity
 import LeagueData from '../../../Interfaces/LeagueData';
 import SleeperUser from '../../../Interfaces/SleeperUser';
-import SleeperRoster from '../../../Interfaces/SleeperRoster';
 import yearTrollData from '../../../Data/yearTrollData.json';
+import { getUserSeasonPlace } from '../../../Helper Files/HelperMethods';
+
+export { getUserSeasonPlace } from '../../../Helper Files/HelperMethods';
 
 // =========================================================================
 // HELPER FUNCTIONS (Place Logic)
@@ -18,16 +20,6 @@ const getCurrentYear = (): string => {
     // Note: Based on the current time (Oct 2025), this will return "2025"
     return new Date().getFullYear().toString();
 };
-
-// Utility to find a user's season place based on W-L-T and fpts.
-export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
-    const sortedData = data.rosters.slice().sort((a, b) => {
-        // Sort: Wins (desc) -> Points (desc)
-        return b.settings.wins - a.settings.wins || (b.settings.fpts + b.settings.fpts_decimal) - (a.settings.fpts + a.settings.fpts_decimal);
-    });
-
-    return sortedData.findIndex((user) => user.owner_id === user_id) + 1;
-}
 
 /**
  * Function to retrieve overall place from yearTrollData.

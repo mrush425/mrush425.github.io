@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import LeagueData from '../../Interfaces/LeagueData';
 import YearNavBar from '../../Navigation/YearNavBar';
 import '../../Stylesheets/YearStylesheets/ScheduleComparison.css'; // Create a CSS file for styling
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId } from '../../Helper Files/HelperMethods';
-import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
+import { calculateScheduleRecord, getAverageLeagueRecordAtSchedule, getAverageRecordAgainstLeague } from '../../Helper Files/RecordCalculations';
 
 
 interface ScheduleComparisonProps {
@@ -88,27 +87,11 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
   };
 
   const getColumnAverage = (colIndex: number): { wins: number, losses: number, ties: number } => {
-    let winsSum = 0;
-    let lossesSum = 0;
-    let tiesSum = 0;
-
-    for (let rowIndex = 0; rowIndex < data.users.length; rowIndex++) {
-      if (colIndex !== rowIndex) { // Exclude the sum column from the average calculation
-        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
-        const [wins, losses, ties] = record;
-
-        winsSum += wins;
-        lossesSum += losses;
-        tiesSum += ties;
-      }
-    }
-
-    // Calculate the average based on the number of users (excluding the sum column)
-    const usersCount = data.users.length - 1;
+    const [wins, losses, ties] = getAverageLeagueRecordAtSchedule(data.users[colIndex], data);
     return {
-      wins: Math.round(winsSum / usersCount),
-      losses: Math.round(lossesSum / usersCount),
-      ties: Math.round(tiesSum / usersCount),
+      wins,
+      losses,
+      ties,
     };
   };
 
@@ -130,27 +113,11 @@ const ScheduleComparison: React.FC<ScheduleComparisonProps> = ({ data }) => {
   };
   
   const getRowAverage = (rowIndex: number): { wins: number, losses: number, ties: number } => {
-    let winsSum = 0;
-    let lossesSum = 0;
-    let tiesSum = 0;
-  
-    for (let colIndex = 0; colIndex < data.users.length; colIndex++) {
-      if (colIndex !== rowIndex) { // Exclude the sum row from the average calculation
-        const record = calculateScheduleRecord(data.users[rowIndex], data.users[colIndex],data);
-        const [wins, losses, ties] = record;
-  
-        winsSum += wins;
-        lossesSum += losses;
-        tiesSum += ties;
-      }
-    }
-  
-    // Calculate the average based on the number of users (excluding the sum row)
-    const usersCount = data.users.length - 1;
+    const [wins, losses, ties] = getAverageRecordAgainstLeague(data.users[rowIndex], data);
     return {
-      wins: Math.round(winsSum / usersCount),
-      losses: Math.round(lossesSum / usersCount),
-      ties: Math.round(tiesSum / usersCount),
+      wins,
+      losses,
+      ties,
     };
   };
 

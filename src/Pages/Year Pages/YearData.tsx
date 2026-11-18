@@ -16,7 +16,7 @@ import SidebetMethods, { Sidebet, YearSidebet } from '../../Helper Files/Sidebet
 
 import SidebetStat from '../../Interfaces/SidebetStat';
 import SidebetStats from './SidebetStats';
-import { getLast3WeeksAveragePointsMap, getOverallPlace, getUserSeasonPlace, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
+import { compareRostersByRegularSeasonFinish, getLast3WeeksAveragePointsMap, getOverallPlace, getUserSeasonPlace, isCurrentActiveWeek } from '../../Helper Files/HelperMethods';
 
 interface YearDataProps {
     data: LeagueData;
@@ -75,7 +75,8 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                 return sortDirection === 'asc' ? placeA - placeB : placeB - placeA;
             }
             else if (sortBy === 'wins' || sortBy === 'default') {
-                return sortDirection === 'asc' ? a.settings.wins - b.settings.wins || a.settings.fpts - b.settings.fpts : b.settings.wins - a.settings.wins || b.settings.fpts - a.settings.fpts;
+                const finishComparison = compareRostersByRegularSeasonFinish(a, b);
+                return sortDirection === 'asc' ? -finishComparison : finishComparison;
             } else if (sortBy === 'fpts') {
                 const fptsA = parseFloat(`${a.settings.fpts}.${a.settings.fpts_decimal}`);
                 const fptsB = parseFloat(`${b.settings.fpts}.${b.settings.fpts_decimal}`);

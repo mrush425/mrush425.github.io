@@ -6,7 +6,7 @@ import MatchupInfo from '../../Interfaces/MatchupInfo';
 
 import '../../Stylesheets/YearStylesheets/AllPlayoffPossibilities.css';
 import SleeperUser from '../../Interfaces/SleeperUser';
-import { findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
+import { compareRostersByRegularSeasonFinish, findRosterByUserId, findUserByRosterId, getAveragePointsMap, getLast3WeeksAveragePointsMap, getUserSeasonPlace } from '../../Helper Files/HelperMethods';
 import Matchup from '../../Interfaces/Matchup';
 import { calculateScheduleRecord } from '../../Helper Files/RecordCalculations';
 
@@ -43,7 +43,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
     const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
     const rosterB = data.rosters.find((u) => u.owner_id === b.user_id);
     if (!rosterA || !rosterB) return 0;
-    return rosterB.settings.wins - rosterA.settings.wins || rosterB.settings.fpts - rosterA.settings.fpts;
+    return compareRostersByRegularSeasonFinish(rosterA, rosterB);
   });
 
   const calculateRecord = () => {
@@ -164,7 +164,7 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       const rosterA = data.rosters.find((u) => u.owner_id === a.user_id);
       const rosterB = data.rosters.find((u) => u.owner_id === b.user_id);
       if (!rosterA || !rosterB) return 0;
-      return rosterB.settings.wins - rosterA.settings.wins || rosterB.settings.fpts - rosterA.settings.fpts;
+      return compareRostersByRegularSeasonFinish(rosterA, rosterB);
     });
 
     const userMaps: Map<string, Map<number, number>>[] = sortedData.map((user) => {

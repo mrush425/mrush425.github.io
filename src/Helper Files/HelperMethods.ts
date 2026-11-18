@@ -95,13 +95,14 @@ export function findUserByRosterId(roster_id: number, data: LeagueData): Sleeper
     return data.users.find(u => u.user_id === data.rosters.find(r => r.roster_id === roster_id)?.owner_id)
 }
 
+export function compareRostersByRegularSeasonFinish(a: SleeperRoster, b: SleeperRoster): number {
+    return b.settings.wins - a.settings.wins ||
+        b.settings.fpts - a.settings.fpts ||
+        b.settings.fpts_decimal - a.settings.fpts_decimal;
+}
+
 export function getUserSeasonPlace(user_id: string, data: LeagueData): number {
-    const sortedData = data.rosters.slice().sort((a, b) => {
-        const userA = data.users.find((u) => u.user_id === a.owner_id);
-        const userB = data.users.find((u) => u.user_id === b.owner_id);
-        if (!userA || !userB) return 0;
-        return b.settings.wins - a.settings.wins || b.settings.fpts - a.settings.fpts;
-    });
+    const sortedData = data.rosters.slice().sort(compareRostersByRegularSeasonFinish);
 
     return sortedData.findIndex((user) => user.owner_id === user_id) + 1;
 }
