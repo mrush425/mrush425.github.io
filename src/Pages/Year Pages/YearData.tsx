@@ -24,7 +24,7 @@ interface YearDataProps {
 
 // Extend SortKey type to include the new column
 type SortKey = 'seasonPlace' | 'finalPlace' | 'wins' | 'fpts' | 'last3Ave' | 'fptsAgainst' | 'winsAgainstEveryone' | 'winsAtSchedule' | 'winsTop50' | 'winsAgainstWinningTeams' | 'default';
-type TabType = 'basic' | 'advanced' | 'sidebets';
+type TabType = 'basic' | 'advanced';
 
 const YearData: React.FC<YearDataProps> = ({ data }) => {
     // UPDATED: Added 'winsAgainstWinningTeams' to the possible sort keys
@@ -32,7 +32,7 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
     const [sortedRosters, setSortedRosters] = useState(data.rosters); // Initial state with data.rosters
     const [sidebetsDisplay, setSidebetsDisplay] = useState<SidebetDisplay[]>([]); // State to store sidebets data
-    const [activeTab, setActiveTab] = useState<TabType>('sidebets');
+    const [activeTab, setActiveTab] = useState<TabType>('basic');
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const users = data.users;
     const last3AveragePointsMap = getLast3WeeksAveragePointsMap(data);
@@ -228,9 +228,14 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
             <YearNavBar data={data} />
 
             <div className="year-data-container">
-                <h2 className="year-data-title">{`Season ${data.season}`}</h2>
+                <header className="year-season-header">
+                    <h2 className="year-data-title">{`Season ${data.season}`}</h2>
+                </header>
 
                 {/* Stat Cards Section */}
+                <div className="year-section-heading">
+                    <h3>Season standings</h3>
+                </div>
                 <div className="stat-cards-container">
                     {cardRosters.map((roster) => {
                         const user = users.find((u) => u.user_id === roster.owner_id);
@@ -284,20 +289,65 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                     })}
                 </div>
 
+                {sidebetsDisplay.length > 0 && (
+                    <section className="sidebets-section" aria-labelledby="sidebets-heading">
+                        <div className="year-section-heading">
+                            <h3 id="sidebets-heading">Sidebets</h3>
+                        </div>
+                        <div className="sidebet-awards">
+                            {sidebetsDisplay.map((sidebet, index) => {
+                                const isBelt = sidebet.sidebetName === 'The Belt';
+                                const isPending = sidebet.winners.every((winner) => winner === 'n/a');
+                                return (
+                                    <article key={`${sidebet.sidebetName}-${index}`} className={`sidebet-award${isPending ? ' sidebet-award-pending' : ''}`}>
+                                        <h4>{sidebet.sidebetName}</h4>
+                                        {isPending ? (
+                                            <div className="sidebet-award-label">To be decided</div>
+                                        ) : (
+                                            <div className="sidebet-award-winners">
+                                                {sidebet.winners.map((winner, wi) => (
+                                                    <span key={wi} className="sidebet-award-winner">{winner}</span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {isBelt && !isPending ? (
+                                            <details className="sidebet-award-history">
+                                                <summary>View Belt history</summary>
+                                                {sidebet.statDisplays.map((stat, si) => (
+                                                    <div key={si} dangerouslySetInnerHTML={{ __html: stat }} />
+                                                ))}
+                                            </details>
+                                        ) : (
+                                            <div className="sidebet-award-stats">
+                                                {sidebet.statDisplays.filter((stat) => stat !== 'n/a').map((stat, si) => (
+                                                    <div key={si} dangerouslySetInnerHTML={{ __html: stat }} />
+                                                ))}
+                                            </div>
+                                        )}
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
                 {/* Tab Navigation */}
+                <div className="year-section-heading">
+                    <h3>Team statistics</h3>
+                </div>
                 <div className="tab-navigation">
                     <button className={`tab-button ${activeTab === 'basic' ? 'active' : ''}`} onClick={() => setActiveTab('basic')}>
-                        Basic Stats
+                        Basic
                     </button>
                     <button className={`tab-button ${activeTab === 'advanced' ? 'active' : ''}`} onClick={() => setActiveTab('advanced')}>
-                        Advanced Stats
-                    </button>
-                    <button className={`tab-button ${activeTab === 'sidebets' ? 'active' : ''}`} onClick={() => setActiveTab('sidebets')}>
-                        Sidebets
+                        Advanced
                     </button>
                 </div>
 
                 {/* Tables Based on Tab */}
+                {activeTab === 'advanced' && (
+                    <p className="year-table-note">Records in parentheses are averages per team, rounded to whole games.</p>
+                )}
                 {(activeTab === 'basic' || activeTab === 'advanced') && (
                     <div className="horizontal-scroll">
                         <table className="records-table">
@@ -452,44 +502,6 @@ const YearData: React.FC<YearDataProps> = ({ data }) => {
                     </div>
                 )}
 
-                {activeTab === 'sidebets' && (
-                    <div className="sidebets-section">
-                        <div className="horizontal-scroll">
-                            <table className="sidebets-table">
-                                <thead>
-                                    <tr>
-                                        <th>Sidebet</th>
-                                        <th>Winners</th>
-                                        <th>Stats</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {sidebetsDisplay.map((sidebet, index) => (
-                                        <tr key={index}>
-                                            <td>{sidebet.sidebetName}</td>
-                                            <td>
-                                                {sidebet.winners.map((winner, wi) => (
-                                                    <div key={wi} className={`winner-badge${sidebet.winners.length > 1 ? ' tied-winner' : ''}`}>
-                                                        {winner}
-                                                    </div>
-                                                ))}
-                                            </td>
-                                            <td>
-                                                {sidebet.statDisplays.map((stat, si) => (
-                                                    <div
-                                                        key={si}
-                                                        className={sidebet.statDisplays.length > 1 ? 'tied-stat' : ''}
-                                                        dangerouslySetInnerHTML={{ __html: stat }}
-                                                    />
-                                                ))}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
