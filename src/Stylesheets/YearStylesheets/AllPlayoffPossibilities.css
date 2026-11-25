@@ -163,6 +163,44 @@
   color: var(--text-secondary);
 }
 
+.scenario-popup-trigger {
+  display: none;
+}
+
+.scenario-popup-dialog {
+  width: calc(100vw - 24px);
+  max-width: 800px;
+}
+
+.scenario-popup-content {
+  color: var(--text-secondary);
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border-light);
+}
+
+.scenario-popup-content .modal-header {
+  border-bottom-color: var(--border-light);
+}
+
+.scenario-popup-content .modal-title {
+  color: var(--text-primary);
+}
+
+.scenario-popup-content .btn-close {
+  filter: invert(1);
+}
+
+.scenario-popup-body {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.scenario-popup-panel {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
 .scenario-panel h3 {
   margin: 0 0 14px;
   color: var(--text-primary);
@@ -238,10 +276,91 @@
   text-transform: uppercase;
 }
 
+.scenario-outcome-table th small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font-size: 8px;
+  text-transform: none;
+  white-space: nowrap;
+}
+
 .scenario-outcome-table td small {
   display: block;
   color: var(--text-tertiary);
   font-size: 9px;
+  white-space: nowrap;
+}
+
+.scenario-expand-button {
+  padding: 0;
+  border: 0;
+  color: var(--accent-blue);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.scenario-expand-button:hover {
+  color: var(--text-primary);
+}
+
+.scenario-dependent-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent-blue);
+  cursor: help;
+}
+
+.scenario-dependent-indicator:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.scenario-points-matter-expanded > td {
+  padding: 10px;
+  text-align: left;
+  white-space: normal;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.scenario-points-matter-details p {
+  margin: 0 0 8px;
+}
+
+.scenario-competition-group {
+  margin-top: 12px;
+}
+
+.scenario-competition-group > p {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.scenario-competition-summary,
+.scenario-points-matter-details > h5 {
+  margin-top: 12px;
+}
+
+.scenario-competition-summary h5,
+.scenario-points-matter-details > h5 {
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.scenario-competitor-table {
+  min-width: 360px;
+  table-layout: auto;
+}
+
+.scenario-competitor-table th:first-child,
+.scenario-competitor-table td:first-child {
+  text-align: left;
+}
+
+.scenario-competitor-table td:last-child {
   white-space: nowrap;
 }
 
@@ -262,6 +381,66 @@
 
 .scenario-weekly-breakdown {
   margin-top: 22px;
+}
+
+.scenario-example-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.scenario-example-icon {
+  flex: 0 0 28px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.scenario-example-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.scenario-example-win-button {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.scenario-example-win-button:hover,
+.scenario-example-win-button.selected:not(.scenario-example-playoff-guaranteed):not(.scenario-example-butler-guaranteed) {
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+  background: rgba(65, 145, 255, 0.15);
+}
+
+.scenario-example-win-button.scenario-example-playoff-guaranteed {
+  color: #c9f3d4;
+  border-color: #3a9d5d;
+  background: rgba(58, 157, 93, 0.24);
+}
+
+.scenario-example-win-button.scenario-example-butler-guaranteed {
+  color: #f0c99d;
+  border-color: #9a6532;
+  background: rgba(154, 101, 50, 0.28);
+}
+
+.scenario-example-message {
+  margin: 10px 0;
+}
+
+.scenario-example-tiebreaker h5 {
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 .scenario-week-selector {
@@ -371,6 +550,21 @@
     padding: 0 12px 20px;
   }
 
+  .desktop-scenario-panel {
+    display: none;
+  }
+
+  .place-table-controls {
+    flex-wrap: wrap;
+  }
+
+  .place-table-controls > span {
+    flex: 1 1 100%;
+  }
+
+  .scenario-popup-trigger {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 1200px) {

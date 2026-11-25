@@ -47,7 +47,259 @@ export interface ByeWinDistribution {
   simulationCount: number;
   playoffByeCount: number;
   losersBracketByeCount: number;
-  butlerContentionCount: number;
+}
+
+export interface PointsMatterWinDistribution {
+  wins: number;
+  pointsMatter: boolean;
+  simulationCount: number;
+  insideCutoffCount: number;
+  competitionGroups: Map<string, PointsMatterCompetitionGroup>;
+}
+
+export interface PointsMatterCompetitionGroup {
+  competitorIndexes: number[];
+  spotsAvailable: number;
+  occurrenceCount: number;
+}
+
+export interface TeamTiebreakerDependencies {
+  exactPlace: boolean;
+  playoffBye: boolean;
+  butler: boolean;
+}
+
+export function getTeamTiebreakerDependencies(
+  scenarios: SimulationScenarios,
+  teamIndex: number
+): TeamTiebreakerDependencies {
+  const dependencies: TeamTiebreakerDependencies = {
+    exactPlace: false,
+    playoffBye: false,
+    butler: false,
+  };
+
+  for (let run = 0; run < scenarios.count; run++) {
+    const runOffset = run * scenarios.teamCount;
+    const selectedWins = scenarios.finalWins[runOffset + teamIndex];
+    let teamsAboveRecord = 0;
+    let recordGroupSize = 1;
+
+    for (let otherTeamIndex = 0; otherTeamIndex < scenarios.teamCount; otherTeamIndex++) {
+      if (otherTeamIndex === teamIndex) continue;
+
+      const otherWins = scenarios.finalWins[runOffset + otherTeamIndex];
+      if (otherWins > selectedWins) teamsAboveRecord++;
+      if (otherWins === selectedWins) recordGroupSize++;
+    }
+
+    dependencies.exactPlace = dependencies.exactPlace || recordGroupSize > 1;
+    dependencies.playoffBye = dependencies.playoffBye || isCutoffTiebreakerDependent(
+      2,
+      teamsAboveRecord,
+      recordGroupSize
+    );
+    dependencies.butler = dependencies.butler || isCutoffTiebreakerDependent(
+      8,
+      teamsAboveRecord,
+      recordGroupSize
+    );
+
+    if (
+      dependencies.exactPlace &&
+      dependencies.playoffBye &&
+      dependencies.butler
+    ) {
+      return dependencies;
+    }
+  }
+
+  return dependencies;
+}
+
+function isCutoffTiebreakerDependent(
+  cutoffPlace: number,
+  teamsAboveRecord: number,
+  recordGroupSize: number
+): boolean {
+  const spotsAvailable = cutoffPlace - teamsAboveRecord;
+  return spotsAvailable > 0 && spotsAvailable < recordGroupSize;
+}
+
+export function getMostCommonCompetitionGroupsBySpots(
+  groups: ReadonlyArray<PointsMatterCompetitionGroup>
+): PointsMatterCompetitionGroup[] {
+  const mostCommonBySpots = new Map<number, PointsMatterCompetitionGroup>();
+
+  groups.forEach((group) => {
+    const current = mostCommonBySpots.get(group.spotsAvailable);
+    if (!current || group.occurrenceCount > current.occurrenceCount) {
+      mostCommonBySpots.set(group.spotsAvailable, group);
+    }
+  });
+
+  return Array.from(mostCommonBySpots.values())
+    .sort((a, b) => b.spotsAvailable - a.spotsAvailable);
+}
+
+export type ExampleScenarioKind = 'playoffs' | 'butler';
+
+export interface ExampleScenarioOption {
+  kind: ExampleScenarioKind;
+  wins: number;
+  pointsMatter: boolean;
+  simulationCount: number;
+  representativeRunIndex: number;
+}
+
+export interface ExampleScenarioWinTotal {
+  wins: number;
+  simulationCount: number;
+  playoffCount: number;
+  butlerCount: number;
+  playoffPointsMatterCount: number;
+  butlerPointsMatterCount: number;
+}
+
+export interface ScenarioTiebreakerDetails {
+  pointsMatter: boolean;
+  spotsAvailable: number;
+  competitorIndexes: number[];
+}
+
+export function getScenarioTiebreakerDetails(
+  scenarios: SimulationScenarios,
+  teamIndex: number,
+  runIndex: number,
+  cutoffPlace: number
+): ScenarioTiebreakerDetails {
+  const runOffset = runIndex * scenarios.teamCount;
+  const selectedWins = scenarios.finalWins[runOffset + teamIndex];
+  const competitorIndexes: number[] = [];
+  let teamsAboveRecord = 0;
+
+  for (let otherTeamIndex = 0; otherTeamIndex < scenarios.teamCount; otherTeamIndex++) {
+    const otherWins = scenarios.finalWins[runOffset + otherTeamIndex];
+    if (otherWins > selectedWins) teamsAboveRecord++;
+    if (otherTeamIndex !== teamIndex && otherWins === selectedWins) {
+      competitorIndexes.push(otherTeamIndex);
+    }
+  }
+
+  const spotsAvailable = cutoffPlace - teamsAboveRecord;
+  const pointsMatter = spotsAvailable > 0 &&
+    spotsAvailable < competitorIndexes.length + 1;
+  return { pointsMatter, spotsAvailable, competitorIndexes };
+}
+
+export function getExampleScenarioDistribution(
+  scenarios: SimulationScenarios,
+  teamIndex: number,
+  currentWins: number,
+  playoffTeamCount: number
+): { options: ExampleScenarioOption[]; winTotals: ExampleScenarioWinTotal[] } {
+  const optionsByKey = new Map<string, ExampleScenarioOption>();
+  const winTotalsByWins = new Map<number, ExampleScenarioWinTotal>();
+
+  for (let run = 0; run < scenarios.count; run++) {
+    const offset = run * scenarios.teamCount + teamIndex;
+    const place = scenarios.placements[offset];
+    const wins = scenarios.finalWins[offset] - currentWins;
+    let teamsAboveRecord = 0;
+    let tiedRecordTeams = 0;
+
+    for (let otherTeamIndex = 0; otherTeamIndex < scenarios.teamCount; otherTeamIndex++) {
+      const otherWins = scenarios.finalWins[run * scenarios.teamCount + otherTeamIndex];
+      if (otherWins > scenarios.finalWins[offset]) teamsAboveRecord++;
+      if (otherWins === scenarios.finalWins[offset]) tiedRecordTeams++;
+    }
+
+    const playoffSpotsAvailable = playoffTeamCount - teamsAboveRecord;
+    const playoffPointsMatter = playoffSpotsAvailable > 0 &&
+      playoffSpotsAvailable < tiedRecordTeams;
+    const butlerSpotsAvailable = 8 - teamsAboveRecord;
+    const butlerPointsMatter = butlerSpotsAvailable > 0 &&
+      butlerSpotsAvailable < tiedRecordTeams;
+    let winTotal = winTotalsByWins.get(wins);
+
+    if (!winTotal) {
+      winTotal = {
+        wins,
+        simulationCount: 0,
+        playoffCount: 0,
+        butlerCount: 0,
+        playoffPointsMatterCount: 0,
+        butlerPointsMatterCount: 0,
+      };
+      winTotalsByWins.set(wins, winTotal);
+    }
+
+    winTotal.simulationCount++;
+    if (place <= playoffTeamCount) winTotal.playoffCount++;
+    if (place > 8) winTotal.butlerCount++;
+    if (playoffPointsMatter) winTotal.playoffPointsMatterCount++;
+    if (butlerPointsMatter) winTotal.butlerPointsMatterCount++;
+
+    const addOption = (kind: ExampleScenarioKind, pointsMatter: boolean) => {
+      const key = `${kind}-${wins}-${pointsMatter}`;
+      const option = optionsByKey.get(key);
+      if (option) {
+        option.simulationCount++;
+      } else {
+        optionsByKey.set(key, {
+          kind,
+          wins,
+          pointsMatter,
+          simulationCount: 1,
+          representativeRunIndex: run,
+        });
+      }
+    };
+
+    if (playoffPointsMatter || place <= playoffTeamCount) {
+      addOption('playoffs', playoffPointsMatter);
+    }
+    if (butlerPointsMatter || place > 8) {
+      addOption('butler', butlerPointsMatter);
+    }
+  }
+
+  return {
+    options: Array.from(optionsByKey.values()).sort((a, b) =>
+      b.wins - a.wins ||
+      Number(a.pointsMatter) - Number(b.pointsMatter) ||
+      a.kind.localeCompare(b.kind)
+    ),
+    winTotals: Array.from(winTotalsByWins.values()).sort((a, b) => b.wins - a.wins),
+  };
+}
+
+export function incrementPointsMatterCounts(
+  orderedTeamIndexes: ReadonlyArray<number>,
+  winsByTeam: ArrayLike<number>,
+  cutoffPlace: number,
+  pointsMatterCounts: Uint32Array
+): void {
+  let groupStart = 0;
+
+  while (groupStart < orderedTeamIndexes.length) {
+    const groupWins = winsByTeam[orderedTeamIndexes[groupStart]];
+    let groupEnd = groupStart + 1;
+    while (
+      groupEnd < orderedTeamIndexes.length &&
+      winsByTeam[orderedTeamIndexes[groupEnd]] === groupWins
+    ) {
+      groupEnd++;
+    }
+
+    const spotsAvailable = cutoffPlace - groupStart;
+    if (spotsAvailable > 0 && spotsAvailable < groupEnd - groupStart) {
+      for (let rank = groupStart; rank < groupEnd; rank++) {
+        pointsMatterCounts[orderedTeamIndexes[rank]]++;
+      }
+    }
+    groupStart = groupEnd;
+  }
 }
 
 export function getOrdinalPlaceLabel(place: number): string {
@@ -91,7 +343,6 @@ export function getByeWinDistribution(
         simulationCount: 0,
         playoffByeCount: 0,
         losersBracketByeCount: 0,
-        butlerContentionCount: 0,
       };
       countsByWins.set(wins, counts);
     }
@@ -99,10 +350,74 @@ export function getByeWinDistribution(
     counts.simulationCount++;
     if (place === 1 || place === 2) counts.playoffByeCount++;
     if (place === 7 || place === 8) counts.losersBracketByeCount++;
-    if (place > 8) counts.butlerContentionCount++;
   }
 
   return Array.from(countsByWins.values());
+}
+
+export function getPointsMatterWinDistribution(
+  scenarios: SimulationScenarios,
+  teamIndex: number,
+  currentWins: number,
+  cutoffPlace: number
+): PointsMatterWinDistribution[] {
+  const countsByWinsAndPointsMatter = new Map<string, PointsMatterWinDistribution>();
+
+  for (let run = 0; run < scenarios.count; run++) {
+    const runOffset = run * scenarios.teamCount;
+    const selectedFinalWins = scenarios.finalWins[runOffset + teamIndex];
+    const selectedPlace = scenarios.placements[runOffset + teamIndex];
+    const recordGroup: number[] = [];
+    let teamsAboveRecord = 0;
+
+    for (let otherTeamIndex = 0; otherTeamIndex < scenarios.teamCount; otherTeamIndex++) {
+      const otherFinalWins = scenarios.finalWins[runOffset + otherTeamIndex];
+      if (otherFinalWins > selectedFinalWins) teamsAboveRecord++;
+      if (otherFinalWins === selectedFinalWins) recordGroup.push(otherTeamIndex);
+    }
+
+    const spotsAvailable = cutoffPlace - teamsAboveRecord;
+    const pointsMatter = spotsAvailable > 0 && spotsAvailable < recordGroup.length;
+    const wins = selectedFinalWins - currentWins;
+    const key = `${wins}-${pointsMatter}`;
+    let counts = countsByWinsAndPointsMatter.get(key);
+
+    if (!counts) {
+      counts = {
+        wins,
+        pointsMatter,
+        simulationCount: 0,
+        insideCutoffCount: 0,
+        competitionGroups: new Map<string, PointsMatterCompetitionGroup>(),
+      };
+      countsByWinsAndPointsMatter.set(key, counts);
+    }
+
+    counts.simulationCount++;
+    if (selectedPlace <= cutoffPlace) counts.insideCutoffCount++;
+
+    if (!pointsMatter) continue;
+
+    const competitorIndexes = recordGroup
+      .filter((otherTeamIndex) => otherTeamIndex !== teamIndex)
+      .sort((a, b) => a - b);
+    const competitionKey = `${spotsAvailable}:${competitorIndexes.join(',')}`;
+    const competitionGroup = counts.competitionGroups.get(competitionKey);
+
+    if (competitionGroup) {
+      competitionGroup.occurrenceCount++;
+    } else {
+      counts.competitionGroups.set(competitionKey, {
+        competitorIndexes,
+        spotsAvailable,
+        occurrenceCount: 1,
+      });
+    }
+  }
+
+  return Array.from(countsByWinsAndPointsMatter.values()).sort((a, b) =>
+    b.wins - a.wins || Number(a.pointsMatter) - Number(b.pointsMatter)
+  );
 }
 
 export function getRelevantScenarioGameIndexes(
