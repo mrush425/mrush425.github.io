@@ -53,6 +53,7 @@ interface SimulationResults {
 const SIMULATION_COUNT = 500000;
 const MAX_BREAKDOWN_WEEKS = 4;
 const MAX_DETAILED_COMPETITION_GROUPS = 4;
+const MIN_KEY_MATCHUPS_PER_WEEK = 2;
 
 function formatPointsForGap(points: number): string {
   return points.toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -1447,11 +1448,39 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
       game.team1Index === selectedTarget.teamIndex ||
       game.team2Index === selectedTarget.teamIndex
     );
+    const importantGamesByWeek = new Map<number, typeof rankedImportantGames>();
+    rankedImportantGames.forEach((entry) => {
+      const weekGames = importantGamesByWeek.get(entry.game.week) || [];
+      weekGames.push(entry);
+      importantGamesByWeek.set(entry.game.week, weekGames);
+    });
+    const selectedGameIndexes = new Set<number>();
+    importantGamesByWeek.forEach((weekGames) => {
+      const clinchingGame = weekGames.find(
+        ({ index }) => index === selectedTeamClinchingGame?.index
+      );
+      if (clinchingGame) selectedGameIndexes.add(clinchingGame.index);
+
+      let selectedForWeek = clinchingGame ? 1 : 0;
+      for (const entry of weekGames) {
+        if (selectedForWeek >= MIN_KEY_MATCHUPS_PER_WEEK) break;
+        if (!selectedGameIndexes.has(entry.index)) {
+          selectedGameIndexes.add(entry.index);
+          selectedForWeek++;
+        }
+      }
+    });
+    const targetImportantGameCount = Math.max(
+      5,
+      new Set(games.map((game) => game.week)).size * MIN_KEY_MATCHUPS_PER_WEEK
+    );
+    for (const entry of rankedImportantGames) {
+      if (selectedGameIndexes.size >= targetImportantGameCount) break;
+      selectedGameIndexes.add(entry.index);
+    }
     const importantGames = rankedImportantGames
-      .filter((entry) => entry.index !== selectedTeamClinchingGame?.index)
-      .slice(0, selectedTeamClinchingGame ? 4 : 5);
-    if (selectedTeamClinchingGame) importantGames.push(selectedTeamClinchingGame);
-    importantGames.sort((a, b) => b.impact - a.impact);
+      .filter(({ index }) => selectedGameIndexes.has(index))
+      .sort((a, b) => a.game.week - b.game.week || b.impact - a.impact);
     const resultRateLabel = selectedTarget.place === 'playoffs'
       ? 'Playoff chance'
       : `Place ${selectedTarget.place} chance`;
