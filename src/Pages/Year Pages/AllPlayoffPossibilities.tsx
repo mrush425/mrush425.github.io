@@ -1523,20 +1523,54 @@ const AllPlayoffPossibilities: React.FC<AllPlayoffPossibilitiesProps> = ({ data 
               {importantGames.map(({ game, index }) => {
                 const team1 = sortedUsers[game.team1Index];
                 const team2 = sortedUsers[game.team2Index];
+                const team1Name = team1?.metadata.team_name || team1?.display_name || 'Team 1';
+                const team2Name = team2?.metadata.team_name || team2?.display_name || 'Team 2';
+                const team1OutcomeCount = scenarioAnalysis.targetCountIfTeam1Wins[index];
+                const team2OutcomeCount = scenarioAnalysis.targetCountIfTeam2Wins[index];
+                const team1IsPreferred = team1OutcomeCount > team2OutcomeCount;
+                const team2IsPreferred = team2OutcomeCount > team1OutcomeCount;
+                const firstTeamName = team1OutcomeCount >= team2OutcomeCount
+                  ? team1Name
+                  : team2Name;
+                const firstOutcomeCount = Math.max(team1OutcomeCount, team2OutcomeCount);
+                const secondTeamName = team1OutcomeCount >= team2OutcomeCount
+                  ? team2Name
+                  : team1Name;
+                const secondOutcomeCount = Math.min(team1OutcomeCount, team2OutcomeCount);
+                const firstTeamClass = team1OutcomeCount === team2OutcomeCount
+                  ? ''
+                  : 'scenario-impact-want-win';
+                const secondTeamClass = team1OutcomeCount === team2OutcomeCount
+                  ? ''
+                  : 'scenario-impact-want-lose';
                 return (
                   <li key={`${game.week}-${game.matchupId}`}>
                     <strong>
-                      Week {game.week}: {team1?.metadata.team_name || team1?.display_name}
-                      {' vs. '}{team2?.metadata.team_name || team2?.display_name}
+                      Week {game.week}:{' '}
+                      <span className={team1IsPreferred
+                        ? 'scenario-impact-want-win'
+                        : team2IsPreferred
+                          ? 'scenario-impact-want-lose'
+                          : ''}
+                      >
+                        {team1Name}
+                      </span>
+                      {' vs. '}
+                      <span className={team2IsPreferred
+                        ? 'scenario-impact-want-win'
+                        : team1IsPreferred
+                          ? 'scenario-impact-want-lose'
+                          : ''}
+                      >
+                        {team2Name}
+                      </span>
                     </strong>
                     <div>
                       {resultDescription} in{' '}
-                      {(scenarioAnalysis.targetCountIfTeam1Wins[index] /
-                        scenarioCount * 100).toFixed(1)}% of simulations if{' '}
-                      {team1?.metadata.team_name || team1?.display_name} wins, versus{' '}
-                      {(scenarioAnalysis.targetCountIfTeam2Wins[index] /
-                        scenarioCount * 100).toFixed(1)}% if{' '}
-                      {team2?.metadata.team_name || team2?.display_name} wins.
+                      {(firstOutcomeCount / scenarioCount * 100).toFixed(1)}% of simulations if{' '}
+                      <span className={firstTeamClass}>{firstTeamName}</span> wins, versus{' '}
+                      {(secondOutcomeCount / scenarioCount * 100).toFixed(1)}% if{' '}
+                      <span className={secondTeamClass}>{secondTeamName}</span> wins.
                     </div>
                   </li>
                 );

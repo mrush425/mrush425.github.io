@@ -510,6 +510,14 @@
   color: var(--text-tertiary);
 }
 
+.scenario-impact-want-win {
+  color: var(--accent-green);
+}
+
+.scenario-impact-want-lose {
+  color: var(--accent-red);
+}
+
 .scenario-progress,
 .simulation-progress {
   height: 8px;
